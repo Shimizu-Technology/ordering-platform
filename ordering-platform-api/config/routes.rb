@@ -9,6 +9,24 @@ Rails.application.routes.draw do
           end
         end
       end
+
+      # Admin namespace
+      namespace :admin do
+        resource :restaurant, only: [:show, :update]
+        resources :orders, only: [:index, :update]
+        resources :categories, only: [:index, :create, :update, :destroy] do
+          collection do
+            patch :reorder
+          end
+        end
+        resources :menu_items, only: [:create, :update, :destroy] do
+          collection do
+            patch :reorder
+          end
+        end
+        resources :modifier_groups, only: [:create, :update, :destroy]
+        resources :modifiers, only: [:create, :update, :destroy]
+      end
     end
   end
 

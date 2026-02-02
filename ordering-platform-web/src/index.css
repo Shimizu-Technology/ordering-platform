@@ -124,3 +124,39 @@ html {
 ::selection {
   background-color: color-mix(in srgb, var(--brand-primary) 20%, transparent);
 }
+
+/* ============================================================================
+   Admin Styles
+   ============================================================================ */
+
+/* Admin form inputs */
+.input-field {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  background-color: var(--surface-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 1px var(--brand-primary);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+/* Pulse-once animation for new orders */
+@keyframes pulse-once {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 0 4px oklch(0.8 0.15 80 / 0.3); }
+}
+
+.animate-pulse-once {
+  animation: pulse-once 1s ease-in-out 3;
+}
