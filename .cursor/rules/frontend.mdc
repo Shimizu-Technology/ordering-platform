@@ -1,0 +1,50 @@
+---
+description: Frontend development rules for React/TypeScript
+globs:
+  - "ordering-platform-web/**/*.tsx"
+  - "ordering-platform-web/**/*.ts"
+  - "ordering-platform-web/**/*.css"
+alwaysApply: false
+---
+
+# Frontend Rules
+
+## Tech
+- React 19 with Vite
+- TypeScript (strict, no `any`)
+- Tailwind CSS v4 (with @theme inline)
+- Framer Motion for animations
+- Zustand for state management
+- Lucide React for icons
+
+## Design System
+- Brand tokens via CSS custom properties (loaded from API)
+- Mobile-first responsive design
+- 44px minimum touch targets
+- NO emoji — use Lucide React icons
+
+## Component Patterns
+- Functional components only
+- Small, focused — one responsibility
+- Shared primitives in `components/ui/`
+- Feature components in `components/{feature}/`
+- Page-level components in `pages/`
+
+## Animations
+- Framer Motion for all transitions
+- Sheet/modal: spring with damping 28, stiffness 300
+- Duration: 150-300ms for UI, 300-600ms for page transitions
+- Easing: [0.22, 1, 0.36, 1] (dramatic ease-out)
+- Use `AnimatePresence` for exit animations
+- Use `whileTap={{ scale: 0.98 }}` for button feedback
+
+## Styling
+- Use brand token CSS variables, not direct Tailwind colors
+- `rounded-[var(--radius-md)]` over `rounded-lg`
+- `text-text-primary` / `text-text-secondary` / `text-text-muted`
+- `bg-surface` / `bg-surface-card` / `bg-surface-elevated`
+
+## API
+- All API calls through `src/api/client.ts`
+- TypeScript types in `src/types/index.ts`
+- Error handling in all async operations

@@ -1,0 +1,35 @@
+---
+description: Core project context for the Ordering Platform
+alwaysApply: true
+---
+
+# Ordering Platform
+
+## What This Is
+Multi-tenant restaurant ordering SaaS. HavaJava 671 Café is the first tenant.
+
+## Tech Stack
+- **Backend:** Rails 7 API-only, Ruby 3.3+, PostgreSQL
+- **Frontend:** React 19, Vite, TypeScript, Tailwind CSS v4, Framer Motion
+- **Payments:** Stripe
+- **State:** Zustand
+- **Icons:** Lucide React
+
+## Key Architecture
+- Multi-tenant: everything scoped to Restaurant by slug
+- API routes: `/api/v1/restaurants/:slug/...`
+- Brand tokens: CSS custom properties loaded from API
+- Modifier groups: flexible system for ALL item customization
+
+## Design Rules (NON-NEGOTIABLE)
+- NO emoji in UI — use Lucide React icons ONLY
+- Mobile-first, 44px minimum touch targets
+- Framer Motion for all animations
+- Brand tokens via CSS custom properties (never hardcode colors)
+- Follow Shimizu Technology design system
+
+## Code Style
+- Ruby: Rails conventions, thin controllers, model validations
+- TypeScript: strict mode, no `any`
+- Components: functional, small, focused
+- Files: kebab-case for CSS, PascalCase for components

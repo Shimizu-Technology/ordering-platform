@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   Brand Token System
+   Colors are injected as CSS custom properties from the API response.
+   Defaults are HavaJava's earthy palette.
+   ============================================================================ */
+:root {
+  --brand-primary: #2D5016;
+  --brand-secondary: #F5F0E8;
+  --brand-accent: #8B4513;
+  --brand-font: 'DM Sans', sans-serif;
+
+  /* Derived tokens */
+  --brand-primary-light: color-mix(in srgb, var(--brand-primary) 15%, white);
+  --brand-primary-dark: color-mix(in srgb, var(--brand-primary) 80%, black);
+
+  /* Surface colors */
+  --surface-bg: #FDFCFA;
+  --surface-card: #FFFFFF;
+  --surface-elevated: #F8F6F2;
+
+  /* Text */
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --text-muted: #A8A29E;
+
+  /* Borders */
+  --border-default: #E7E5E4;
+  --border-subtle: #F5F5F4;
+
+  /* Feedback */
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-error: #DC2626;
+
+  /* Spacing */
+  --section-padding: 1.5rem;
+  --container-max: 28rem; /* 448px — mobile-first, single-column */
+
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+
+  /* Animation */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+}
+
+@theme inline {
+  --color-brand: var(--brand-primary);
+  --color-brand-light: var(--brand-primary-light);
+  --color-brand-dark: var(--brand-primary-dark);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-accent: var(--brand-accent);
+  --color-surface: var(--surface-bg);
+  --color-surface-card: var(--surface-card);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border-default: var(--border-default);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-error: var(--color-error);
+}
+
+/* Global styles */
+body {
+  font-family: var(--brand-font);
+  background-color: var(--surface-bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Utility for minimum touch targets */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}

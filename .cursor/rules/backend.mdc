@@ -1,0 +1,42 @@
+---
+description: Backend development rules for Rails API
+globs:
+  - "ordering-platform-api/**/*.rb"
+  - "ordering-platform-api/**/*.yml"
+alwaysApply: false
+---
+
+# Backend Rules
+
+## General
+- Rails 7+ API-only mode
+- PostgreSQL database
+- Ruby 3.3+
+
+## API Structure
+- Namespace: `Api::V1`
+- RESTful routes
+- JSON responses (manual serialization, no jbuilder)
+- BaseController handles tenant lookup via `:restaurant_slug`
+
+## Models
+- Proper validations on all models
+- Scopes for common queries (`.active`, `.ordered`, `.available`)
+- Decimal fields: `precision: 8, scale: 2` for prices
+- JSONB for flexible fields (hours, metadata)
+
+## Controllers
+- Thin controllers — complex logic in models or service objects
+- Rescue `ActiveRecord::RecordNotFound` → 404
+- Rescue `ActiveRecord::RecordInvalid` → 422
+- Always return proper HTTP status codes
+
+## Database
+- Always index foreign keys
+- Use `null: false` on required columns
+- Use `default:` values where sensible
+- Migrations should be reversible
+
+## Seeds
+- Use `find_or_create_by!` for idempotent seeds
+- Seed data must match real restaurant menus exactly

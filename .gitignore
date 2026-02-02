@@ -1,0 +1,34 @@
+# Dependencies
+ordering-platform-web/node_modules/
+ordering-platform-api/vendor/bundle/
+
+# Environment
+.env
+.env.local
+.env.*.local
+ordering-platform-api/.env
+
+# Build output
+ordering-platform-web/dist/
+ordering-platform-api/tmp/
+ordering-platform-api/log/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Rails
+ordering-platform-api/tmp/pids/
+ordering-platform-api/tmp/cache/
+ordering-platform-api/tmp/sockets/
+ordering-platform-api/storage/
+
+# Misc
+*.pid
