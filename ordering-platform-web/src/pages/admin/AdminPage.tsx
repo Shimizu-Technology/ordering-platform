@@ -8,8 +8,9 @@ import { OrderQueue } from './OrderQueue';
 import { MenuManagement } from './MenuManagement';
 import { RestaurantSettings } from './RestaurantSettings';
 import { PromotionsManagement } from './PromotionsManagement';
+import { AnalyticsDashboard } from './AnalyticsDashboard';
 
-type AdminPageId = 'orders' | 'menu' | 'promotions' | 'settings';
+type AdminPageId = 'orders' | 'menu' | 'promotions' | 'analytics' | 'settings';
 
 export function AdminPage() {
   const isAuthenticated = useAdminStore((s) => s.isAuthenticated);
@@ -41,6 +42,7 @@ export function AdminPage() {
       {activePage === 'orders' && <OrderQueue restaurant={restaurant} />}
       {activePage === 'menu' && <MenuManagement />}
       {activePage === 'promotions' && <PromotionsManagement />}
+      {activePage === 'analytics' && <AnalyticsDashboard />}
       {activePage === 'settings' && <RestaurantSettings onRestaurantUpdate={setRestaurant} />}
     </AdminLayout>
   );

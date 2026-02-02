@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_03_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_03_100002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "customers", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email", null: false
+    t.string "phone"
+    t.bigint "restaurant_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["restaurant_id", "email"], name: "index_customers_on_restaurant_id_and_email", unique: true
+    t.index ["restaurant_id"], name: "index_customers_on_restaurant_id"
+  end
 
   create_table "menu_categories", force: :cascade do |t|
     t.boolean "active", default: true, null: false
@@ -85,6 +96,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_000001) do
 
   create_table "orders", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.bigint "customer_id"
     t.string "customer_name", null: false
     t.string "email"
     t.string "order_type", default: "pickup", null: false
@@ -95,9 +107,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_000001) do
     t.string "stripe_payment_intent_id"
     t.decimal "total", precision: 10, scale: 2, default: "0.0", null: false
     t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["restaurant_id"], name: "index_orders_on_restaurant_id"
     t.index ["status"], name: "index_orders_on_status"
     t.index ["stripe_payment_intent_id"], name: "index_orders_on_stripe_payment_intent_id", unique: true
+  end
+
+  create_table "promotions", force: :cascade do |t|
+    t.bigint "restaurant_id", null: false
+    t.string "name", null: false
+    t.string "promotion_type", null: false
+    t.decimal "value", precision: 8, scale: 2, null: false
+    t.time "start_time", null: false
+    t.time "end_time", null: false
+    t.jsonb "days_of_week", default: [], null: false
+    t.boolean "active", default: true, null: false
+    t.string "applies_to", default: "all", null: false
+    t.bigint "applies_to_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["applies_to"], name: "index_promotions_on_applies_to"
+    t.index ["restaurant_id", "active"], name: "index_promotions_on_restaurant_id_and_active"
+    t.index ["restaurant_id"], name: "index_promotions_on_restaurant_id"
   end
 
   create_table "restaurants", force: :cascade do |t|
@@ -117,14 +148,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_000001) do
     t.string "primary_color"
     t.string "secondary_color"
     t.string "slug"
+    t.string "status", default: "active", null: false
     t.string "stripe_account_id"
     t.boolean "stripe_onboarding_complete", default: false, null: false
     t.string "subdomain"
     t.datetime "updated_at", null: false
     t.string "webhook_url"
     t.index ["slug"], name: "index_restaurants_on_slug", unique: true
+    t.index ["status"], name: "index_restaurants_on_status"
   end
 
+  add_foreign_key "customers", "restaurants"
   add_foreign_key "menu_categories", "restaurants"
   add_foreign_key "menu_items", "menu_categories"
   add_foreign_key "modifier_groups", "menu_items"
@@ -133,5 +167,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_000001) do
   add_foreign_key "order_item_modifiers", "order_items"
   add_foreign_key "order_items", "menu_items"
   add_foreign_key "order_items", "orders"
+  add_foreign_key "orders", "customers"
   add_foreign_key "orders", "restaurants"
+  add_foreign_key "promotions", "restaurants"
 end

@@ -9,10 +9,11 @@ import {
   X,
   ChevronRight,
   Zap,
+  BarChart3,
 } from 'lucide-react';
 import { useAdminStore } from '../../stores/adminStore';
 
-type AdminPage = 'orders' | 'menu' | 'promotions' | 'settings';
+type AdminPage = 'orders' | 'menu' | 'promotions' | 'analytics' | 'settings';
 
 interface AdminLayoutProps {
   activePage: AdminPage;
@@ -24,6 +25,7 @@ const navItems: { id: AdminPage; label: string; icon: React.ElementType }[] = [
   { id: 'orders', label: 'Order Queue', icon: ClipboardList },
   { id: 'menu', label: 'Menu', icon: UtensilsCrossed },
   { id: 'promotions', label: 'Promos', icon: Zap },
+  { id: 'analytics', label: 'Analytics', icon: BarChart3 },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 

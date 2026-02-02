@@ -4,6 +4,7 @@ import { MenuPage } from './pages/MenuPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { ConfirmationPage } from './pages/ConfirmationPage';
 import { OnboardingPage } from './pages/OnboardingPage';
+import { MyOrdersPage } from './pages/MyOrdersPage';
 import { ToastContainer } from './components/ui/Toast';
 import { AdminPage } from './pages/admin/AdminPage';
 
@@ -22,6 +23,7 @@ function App() {
           {/* Restaurant routes */}
           <Route path="/:slug" element={<RestaurantMenu />} />
           <Route path="/:slug/checkout" element={<RestaurantCheckout />} />
+          <Route path="/:slug/orders" element={<RestaurantMyOrders />} />
           <Route path="/:slug/confirmation/:orderId" element={<RestaurantConfirmation />} />
 
           {/* Default redirect to HavaJava */}
@@ -40,6 +42,11 @@ function RestaurantMenu() {
 function RestaurantCheckout() {
   const { slug } = useParams<{ slug: string }>();
   return <CheckoutPage slug={slug!} />;
+}
+
+function RestaurantMyOrders() {
+  const { slug } = useParams<{ slug: string }>();
+  return <MyOrdersPage slug={slug!} />;
 }
 
 function RestaurantConfirmation() {

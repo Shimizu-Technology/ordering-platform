@@ -6,6 +6,12 @@ Rails.application.routes.draw do
         resources :orders, only: [:create, :show] do
           member do
             post :pay
+            post :reorder
+          end
+        end
+        resources :customers, only: [:create] do
+          member do
+            get :orders
           end
         end
         member do
@@ -41,6 +47,12 @@ Rails.application.routes.draw do
 
         # Promotions
         resources :promotions, only: [:index, :create, :update, :destroy]
+
+        # Analytics
+        get "analytics/overview", to: "analytics#overview"
+        get "analytics/revenue", to: "analytics#revenue"
+        get "analytics/items", to: "analytics#items"
+        get "analytics/hours", to: "analytics#hours"
       end
     end
   end
