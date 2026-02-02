@@ -2,17 +2,25 @@ import { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import type { MenuCategory, MenuItem } from '../../types';
 import { MenuItemCard } from './MenuItemCard';
+import { staggerContainer, staggerItem } from '../../utils/motion';
 
 interface MenuCategorySectionProps {
   category: MenuCategory;
   onItemSelect: (item: MenuItem) => void;
-  onInView: (categoryId: number) => void;
+  onInView?: (categoryId: number) => void;
+  staggerIndex?: number;
 }
 
-export function MenuCategorySection({ category, onItemSelect, onInView }: MenuCategorySectionProps) {
+export function MenuCategorySection({
+  category,
+  onItemSelect,
+  onInView,
+  staggerIndex = 0,
+}: MenuCategorySectionProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!onInView) return;
     const el = ref.current;
     if (!el) return;
 
@@ -30,22 +38,36 @@ export function MenuCategorySection({ category, onItemSelect, onInView }: MenuCa
   }, [category.id, onInView]);
 
   return (
-    <motion.section
+    <section
       ref={ref}
       id={`category-${category.id}`}
-      className="scroll-mt-16"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      className="scroll-mt-14"
+      role="tabpanel"
+      aria-labelledby={`cat-tab-${category.id}`}
     >
-      <h2 className="px-4 py-3 text-lg font-semibold text-text-primary sticky top-12 bg-surface/95 backdrop-blur-sm z-10">
+      <motion.h2
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: staggerIndex * 0.05 }}
+        className="px-4 py-3 text-lg font-semibold text-text-primary sticky top-[52px] bg-surface/95 backdrop-blur-sm z-10"
+      >
         {category.name}
-      </h2>
-      <div className="divide-y divide-border-default/50">
-        {category.items.map((item) => (
-          <MenuItemCard key={item.id} item={item} onSelect={onItemSelect} />
-        ))}
-      </div>
-    </motion.section>
+      </motion.h2>
+
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="divide-y divide-border-subtle"
+      >
+        {category.items
+          .filter((item) => item.available)
+          .map((item) => (
+            <motion.div key={item.id} variants={staggerItem}>
+              <MenuItemCard item={item} onSelect={onItemSelect} />
+            </motion.div>
+          ))}
+      </motion.div>
+    </section>
   );
 }

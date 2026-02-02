@@ -1,23 +1,42 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { MenuPage } from './pages/MenuPage';
+import { CheckoutPage } from './pages/CheckoutPage';
+import { ConfirmationPage } from './pages/ConfirmationPage';
+import { ToastContainer } from './components/ui/Toast';
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Restaurant menu by slug */}
-        <Route path="/:slug" element={<RestaurantRoute />} />
+      <ToastContainer />
+      <AnimatePresence mode="wait">
+        <Routes>
+          {/* Restaurant routes */}
+          <Route path="/:slug" element={<RestaurantMenu />} />
+          <Route path="/:slug/checkout" element={<RestaurantCheckout />} />
+          <Route path="/:slug/confirmation/:orderId" element={<RestaurantConfirmation />} />
 
-        {/* Default redirect to HavaJava */}
-        <Route path="/" element={<Navigate to="/havajava" replace />} />
-      </Routes>
+          {/* Default redirect to HavaJava */}
+          <Route path="/" element={<Navigate to="/havajava" replace />} />
+        </Routes>
+      </AnimatePresence>
     </BrowserRouter>
   );
 }
 
-function RestaurantRoute() {
-  const slug = window.location.pathname.split('/')[1];
-  return <MenuPage slug={slug} />;
+function RestaurantMenu() {
+  const { slug } = useParams<{ slug: string }>();
+  return <MenuPage slug={slug!} />;
+}
+
+function RestaurantCheckout() {
+  const { slug } = useParams<{ slug: string }>();
+  return <CheckoutPage slug={slug!} />;
+}
+
+function RestaurantConfirmation() {
+  const { slug, orderId } = useParams<{ slug: string; orderId: string }>();
+  return <ConfirmationPage slug={slug!} orderId={parseInt(orderId!, 10)} />;
 }
 
 export default App;
