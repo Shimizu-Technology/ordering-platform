@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_02_210528) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_03_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -112,13 +112,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_02_210528) do
     t.jsonb "hours"
     t.string "logo_url"
     t.string "name"
+    t.boolean "notifications_enabled", default: false, null: false
     t.string "phone"
     t.string "primary_color"
     t.string "secondary_color"
     t.string "slug"
     t.string "stripe_account_id"
+    t.boolean "stripe_onboarding_complete", default: false, null: false
     t.string "subdomain"
     t.datetime "updated_at", null: false
+    t.string "webhook_url"
     t.index ["slug"], name: "index_restaurants_on_slug", unique: true
   end
 

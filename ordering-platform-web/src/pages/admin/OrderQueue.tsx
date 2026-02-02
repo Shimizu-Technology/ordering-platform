@@ -7,7 +7,7 @@ import {
   BellOff,
   Inbox,
 } from 'lucide-react';
-import type { AdminOrder, OrderStatus } from '../../types/admin';
+import type { AdminOrder, AdminRestaurant, OrderStatus } from '../../types/admin';
 import { adminApi } from '../../api/adminClient';
 import { OrderCard } from '../../components/admin/OrderCard';
 import { playOrderChime } from '../../utils/sound';
@@ -23,7 +23,11 @@ const STATUS_TABS: { id: string; label: string }[] = [
 
 const POLL_INTERVAL = 8000; // 8 seconds
 
-export function OrderQueue() {
+interface OrderQueueProps {
+  restaurant?: AdminRestaurant | null;
+}
+
+export function OrderQueue({ restaurant }: OrderQueueProps) {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -103,6 +107,17 @@ export function OrderQueue() {
       setUpdatingId(null);
     }
   };
+
+  const handleNotifyReady = async (orderId: number) => {
+    try {
+      await adminApi.notifyOrderReady(orderId);
+    } catch (err) {
+      console.error('Failed to notify customer:', err);
+      throw err;
+    }
+  };
+
+  const smsConfigured = restaurant?.sms_configured ?? false;
 
   const activeCount = orders.filter((o) => !['completed', 'cancelled'].includes(o.status)).length;
 
@@ -204,7 +219,9 @@ export function OrderQueue() {
                 order={order}
                 isNew={newOrderIds.has(order.id)}
                 onStatusUpdate={handleStatusUpdate}
+                onNotifyReady={handleNotifyReady}
                 updating={updatingId === order.id}
+                smsConfigured={smsConfigured}
               />
             ))}
           </div>

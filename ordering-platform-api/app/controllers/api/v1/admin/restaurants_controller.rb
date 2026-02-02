@@ -21,6 +21,7 @@ module Api
             :name, :phone, :email, :address, :description,
             :primary_color, :secondary_color, :accent_color,
             :font_family, :logo_url,
+            :notifications_enabled, :webhook_url,
             hours: {}
           )
         end
@@ -42,7 +43,13 @@ module Api
               font_family: restaurant.font_family,
               logo_url: restaurant.logo_url
             },
-            active: restaurant.active
+            notifications_enabled: restaurant.notifications_enabled,
+            webhook_url: restaurant.webhook_url,
+            stripe_account_id: restaurant.stripe_account_id,
+            stripe_onboarding_complete: restaurant.stripe_onboarding_complete,
+            active: restaurant.active,
+            sms_configured: SmsService.configured?,
+            smtp_configured: ENV["SMTP_HOST"].present?
           }
         end
       end

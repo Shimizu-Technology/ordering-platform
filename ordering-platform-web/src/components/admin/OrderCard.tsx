@@ -8,6 +8,9 @@ import {
   Phone,
   FileText,
   ArrowRight,
+  MessageSquare,
+  Loader2,
+  Check,
 } from 'lucide-react';
 import type { AdminOrder, OrderStatus } from '../../types/admin';
 import { StatusBadge } from './StatusBadge';
@@ -24,11 +27,15 @@ interface OrderCardProps {
   order: AdminOrder;
   isNew?: boolean;
   onStatusUpdate: (orderId: number, status: OrderStatus) => void;
+  onNotifyReady?: (orderId: number) => Promise<void>;
   updating?: boolean;
+  smsConfigured?: boolean;
 }
 
-export function OrderCard({ order, isNew, onStatusUpdate, updating }: OrderCardProps) {
+export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, updating, smsConfigured }: OrderCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [notifying, setNotifying] = useState(false);
+  const [notified, setNotified] = useState(false);
   const next = nextStatus[order.status];
 
   const timeAgo = getTimeAgo(order.created_at);
@@ -144,22 +151,60 @@ export function OrderCard({ order, isNew, onStatusUpdate, updating }: OrderCardP
               )}
 
               {/* Action buttons */}
-              {next && (
-                <div className="flex gap-2 pt-1">
-                  <button
-                    onClick={() => onStatusUpdate(order.id, next.status)}
-                    disabled={updating}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white rounded-[var(--radius-md)] font-medium text-sm transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 touch-target"
-                  >
-                    {updating ? (
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        {next.label}
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
+              {(next || order.status === 'ready') && (
+                <div className="flex gap-2 pt-1 flex-wrap">
+                  {next && (
+                    <button
+                      onClick={() => onStatusUpdate(order.id, next.status)}
+                      disabled={updating}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white rounded-[var(--radius-md)] font-medium text-sm transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 touch-target"
+                    >
+                      {updating ? (
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          {next.label}
+                          <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
+                    </button>
+                  )}
+                  {order.status === 'ready' && onNotifyReady && (
+                    <div className="relative group">
+                      <button
+                        onClick={async () => {
+                          if (!smsConfigured || notified || notifying) return;
+                          setNotifying(true);
+                          try {
+                            await onNotifyReady(order.id);
+                            setNotified(true);
+                            setTimeout(() => setNotified(false), 5000);
+                          } catch {
+                            // error handled by parent
+                          } finally {
+                            setNotifying(false);
+                          }
+                        }}
+                        disabled={!smsConfigured || notifying || notified}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 text-blue-600 rounded-[var(--radius-md)] font-medium text-sm transition-all hover:bg-blue-500/20 active:bg-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
+                      >
+                        {notifying ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : notified ? (
+                          <Check className="w-4 h-4" />
+                        ) : (
+                          <MessageSquare className="w-4 h-4" />
+                        )}
+                        {notified ? 'Sent' : 'Notify Customer'}
+                      </button>
+                      {!smsConfigured && (
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-neutral-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                          SMS not configured
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-neutral-900" />
+                        </div>
+                      )}
+                    </div>
+                  )}
                   {order.status !== 'completed' && order.status !== 'cancelled' && (
                     <button
                       onClick={() => onStatusUpdate(order.id, 'cancelled')}

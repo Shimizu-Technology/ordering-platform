@@ -28,6 +28,9 @@ module Api
           order.recalculate!
         end
 
+        # Fire notifications
+        send_order_notifications(order)
+
         render json: order_json(order), status: :created
       rescue ActiveRecord::RecordInvalid => e
         render json: { error: e.message }, status: :unprocessable_entity
@@ -46,7 +49,7 @@ module Api
           return render json: { error: "Payment processing is not configured" }, status: :service_unavailable
         end
 
-        payment_intent = Stripe::PaymentIntent.create(
+        intent_params = {
           amount: (order.total * 100).to_i,
           currency: "usd",
           metadata: {
@@ -54,7 +57,17 @@ module Api
             restaurant_id: @restaurant.id,
             restaurant_slug: @restaurant.slug
           }
-        )
+        }
+
+        # Use Stripe Connect if restaurant has a connected account
+        if @restaurant.stripe_account_id.present? && @restaurant.stripe_onboarding_complete
+          fee_percent = StripeConnectService.platform_fee_percent
+          application_fee = ((order.total * 100) * (fee_percent / 100.0)).round
+          intent_params[:application_fee_amount] = application_fee
+          intent_params[:transfer_data] = { destination: @restaurant.stripe_account_id }
+        end
+
+        payment_intent = Stripe::PaymentIntent.create(intent_params)
 
         order.update!(stripe_payment_intent_id: payment_intent.id)
 
@@ -68,6 +81,25 @@ module Api
       end
 
       private
+
+      def send_order_notifications(order)
+        restaurant = order.restaurant
+        return unless restaurant.notifications_enabled
+
+        # Email confirmation to customer
+        if order.email.present? && ENV["SMTP_HOST"].present?
+          begin
+            OrderMailer.order_confirmation(order).deliver_later
+          rescue StandardError => e
+            Rails.logger.error "[Notification] Email failed: #{e.message}"
+          end
+        end
+
+        # Webhook to restaurant
+        WebhookService.notify_new_order(order)
+      rescue StandardError => e
+        Rails.logger.error "[Notification] Unexpected error: #{e.message}"
+      end
 
       def order_params
         params.require(:order).permit(

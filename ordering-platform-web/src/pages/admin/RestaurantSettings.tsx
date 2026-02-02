@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Save,
   Clock,
@@ -11,8 +11,16 @@ import {
   Check,
   Loader2,
   RotateCcw,
+  Bell,
+  Globe,
+  CreditCard,
+  ExternalLink,
+  AlertCircle,
+  CheckCircle,
+  Link2,
+  MessageSquare,
 } from 'lucide-react';
-import type { AdminRestaurant } from '../../types/admin';
+import type { AdminRestaurant, StripeConnectStatus } from '../../types/admin';
 import { adminApi } from '../../api/adminClient';
 import { Skeleton } from '../../components/ui/Skeleton';
 
@@ -26,7 +34,11 @@ const DAYS = [
   { key: 'sunday', label: 'Sunday' },
 ] as const;
 
-export function RestaurantSettings() {
+interface RestaurantSettingsProps {
+  onRestaurantUpdate?: (restaurant: AdminRestaurant) => void;
+}
+
+export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsProps) {
   const [restaurant, setRestaurant] = useState<AdminRestaurant | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -45,21 +57,44 @@ export function RestaurantSettings() {
   const [fontFamily, setFontFamily] = useState('DM Sans');
   const [logoUrl, setLogoUrl] = useState('');
 
+  // Notification state
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [webhookUrl, setWebhookUrl] = useState('');
+
+  // Stripe Connect state
+  const [stripeStatus, setStripeStatus] = useState<StripeConnectStatus | null>(null);
+  const [stripeLoading, setStripeLoading] = useState(false);
+  const [stripeConnecting, setStripeConnecting] = useState(false);
+
   const fetchRestaurant = useCallback(async () => {
     try {
       const data = await adminApi.getRestaurant();
       setRestaurant(data);
       populateForm(data);
+      onRestaurantUpdate?.(data);
     } catch (err) {
       console.error('Failed to fetch restaurant:', err);
     } finally {
       setLoading(false);
     }
+  }, [onRestaurantUpdate]);
+
+  const fetchStripeStatus = useCallback(async () => {
+    setStripeLoading(true);
+    try {
+      const status = await adminApi.getStripeStatus();
+      setStripeStatus(status);
+    } catch {
+      setStripeStatus({ configured: false, connected: false, onboarding_complete: false });
+    } finally {
+      setStripeLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     fetchRestaurant();
-  }, [fetchRestaurant]);
+    fetchStripeStatus();
+  }, [fetchRestaurant, fetchStripeStatus]);
 
   const populateForm = (r: AdminRestaurant) => {
     setName(r.name || '');
@@ -73,6 +108,8 @@ export function RestaurantSettings() {
     setAccentColor(r.branding.accent_color || '#8B4513');
     setFontFamily(r.branding.font_family || 'DM Sans');
     setLogoUrl(r.branding.logo_url || '');
+    setNotificationsEnabled(r.notifications_enabled || false);
+    setWebhookUrl(r.webhook_url || '');
   };
 
   const handleSave = async () => {
@@ -91,8 +128,11 @@ export function RestaurantSettings() {
         accent_color: accentColor,
         font_family: fontFamily,
         logo_url: logoUrl || null,
+        notifications_enabled: notificationsEnabled,
+        webhook_url: webhookUrl || null,
       } as Partial<AdminRestaurant> & { hours: Record<string, unknown> });
       setRestaurant(data);
+      onRestaurantUpdate?.(data);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
@@ -114,6 +154,20 @@ export function RestaurantSettings() {
         [field]: value,
       },
     }));
+  };
+
+  const handleStripeConnect = async () => {
+    setStripeConnecting(true);
+    try {
+      const returnUrl = `${window.location.origin}/admin`;
+      const refreshUrl = `${window.location.origin}/admin`;
+      const result = await adminApi.connectStripe(returnUrl, refreshUrl);
+      window.location.href = result.url;
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to initiate Stripe Connect');
+    } finally {
+      setStripeConnecting(false);
+    }
   };
 
   // Live branding preview
@@ -257,6 +311,199 @@ export function RestaurantSettings() {
             );
           })}
         </div>
+      </Section>
+
+      {/* ── Notifications ───────────────────────────────────────────── */}
+      <Section title="Notifications" icon={<Bell className="w-5 h-5" />}>
+        <div className="space-y-4">
+          {/* Master toggle */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-text-primary">Enable Notifications</p>
+              <p className="text-xs text-text-muted mt-0.5">Send email confirmations and webhook events for new orders</p>
+            </div>
+            <button
+              onClick={() => setNotificationsEnabled(!notificationsEnabled)}
+              className={`relative w-12 h-7 rounded-full transition-colors duration-300 ${
+                notificationsEnabled ? 'bg-brand' : 'bg-neutral-300'
+              }`}
+              role="switch"
+              aria-checked={notificationsEnabled}
+            >
+              <motion.div
+                className="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md"
+                animate={{ x: notificationsEnabled ? 20 : 0 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              />
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {notificationsEnabled && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-4 pt-2">
+                  {/* Email status */}
+                  <div className="flex items-start gap-3 p-3 rounded-[var(--radius-md)] bg-surface-elevated">
+                    <Mail className="w-4 h-4 text-text-muted mt-0.5 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-text-primary">Email Confirmations</p>
+                      <p className="text-xs text-text-muted mt-0.5">
+                        Customers receive an order confirmation email when they place an order.
+                      </p>
+                      {restaurant?.smtp_configured ? (
+                        <p className="flex items-center gap-1 text-xs text-success mt-1.5">
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          SMTP configured
+                        </p>
+                      ) : (
+                        <p className="flex items-center gap-1 text-xs text-warning mt-1.5">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          SMTP not configured (set SMTP_HOST env var)
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* SMS status */}
+                  <div className="flex items-start gap-3 p-3 rounded-[var(--radius-md)] bg-surface-elevated">
+                    <MessageSquare className="w-4 h-4 text-text-muted mt-0.5 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-text-primary">SMS Notifications</p>
+                      <p className="text-xs text-text-muted mt-0.5">
+                        Customers receive an SMS when their order is marked as ready.
+                      </p>
+                      {restaurant?.sms_configured ? (
+                        <p className="flex items-center gap-1 text-xs text-success mt-1.5">
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          Twilio configured
+                        </p>
+                      ) : (
+                        <p className="flex items-center gap-1 text-xs text-warning mt-1.5">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          Twilio not configured (set TWILIO_ACCOUNT_SID env var)
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Webhook URL */}
+                  <FormField label="Webhook URL (optional)" icon={<Globe className="w-4 h-4" />}>
+                    <input
+                      type="url"
+                      value={webhookUrl}
+                      onChange={(e) => setWebhookUrl(e.target.value)}
+                      placeholder="https://hooks.example.com/orders"
+                      className="input-field"
+                    />
+                    <p className="text-xs text-text-muted mt-1">
+                      Receive a POST request with order data when new orders arrive.
+                    </p>
+                  </FormField>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </Section>
+
+      {/* ── Stripe Connect ──────────────────────────────────────────── */}
+      <Section title="Payment Processing" icon={<CreditCard className="w-5 h-5" />}>
+        {stripeLoading ? (
+          <div className="space-y-3">
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        ) : !stripeStatus?.configured ? (
+          <div className="flex items-start gap-3 p-4 rounded-[var(--radius-md)] bg-surface-elevated">
+            <AlertCircle className="w-5 h-5 text-text-muted shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-text-primary">Payment processing not configured</p>
+              <p className="text-xs text-text-muted mt-1">
+                Set STRIPE_SECRET_KEY and STRIPE_PUBLISHABLE_KEY environment variables to enable payment processing.
+              </p>
+            </div>
+          </div>
+        ) : stripeStatus.onboarding_complete ? (
+          <div className="space-y-3">
+            <div className="flex items-start gap-3 p-4 rounded-[var(--radius-md)] bg-success/10">
+              <CheckCircle className="w-5 h-5 text-success shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-text-primary">Stripe Connected</p>
+                <p className="text-xs text-text-muted mt-1">
+                  Payments are being processed through your Stripe account.
+                </p>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+                  {stripeStatus.account_id && (
+                    <p className="text-xs text-text-muted flex items-center gap-1">
+                      <Link2 className="w-3 h-3" />
+                      Account: {stripeStatus.account_id}
+                    </p>
+                  )}
+                  {stripeStatus.charges_enabled && (
+                    <p className="text-xs text-success flex items-center gap-1">
+                      <CheckCircle className="w-3 h-3" />
+                      Charges enabled
+                    </p>
+                  )}
+                  {stripeStatus.payouts_enabled && (
+                    <p className="text-xs text-success flex items-center gap-1">
+                      <CheckCircle className="w-3 h-3" />
+                      Payouts enabled
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : stripeStatus.connected ? (
+          <div className="space-y-3">
+            <div className="flex items-start gap-3 p-4 rounded-[var(--radius-md)] bg-warning/10">
+              <AlertCircle className="w-5 h-5 text-warning shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-text-primary">Onboarding Incomplete</p>
+                <p className="text-xs text-text-muted mt-1">
+                  Your Stripe account is connected but onboarding is not yet complete. Complete the setup to start accepting payments.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleStripeConnect}
+              disabled={stripeConnecting}
+              className="flex items-center gap-2 px-4 py-2.5 bg-brand text-white rounded-[var(--radius-md)] font-medium text-sm transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 touch-target"
+            >
+              {stripeConnecting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <ExternalLink className="w-4 h-4" />
+              )}
+              Continue Stripe Setup
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-sm text-text-secondary">
+              Connect your Stripe account to receive payments directly. A small platform fee is deducted from each transaction.
+            </p>
+            <button
+              onClick={handleStripeConnect}
+              disabled={stripeConnecting}
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#635BFF] text-white rounded-[var(--radius-md)] font-medium text-sm transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 touch-target"
+            >
+              {stripeConnecting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <CreditCard className="w-4 h-4" />
+              )}
+              Connect with Stripe
+            </button>
+          </div>
+        )}
       </Section>
 
       {/* ── Branding ────────────────────────────────────────────────── */}

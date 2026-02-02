@@ -97,5 +97,27 @@ export interface AdminRestaurant {
     font_family: string | null;
     logo_url: string | null;
   };
+  notifications_enabled: boolean;
+  webhook_url: string | null;
+  stripe_account_id: string | null;
+  stripe_onboarding_complete: boolean;
   active: boolean;
+  sms_configured: boolean;
+  smtp_configured: boolean;
+}
+
+export interface StripeConnectStatus {
+  configured: boolean;
+  connected: boolean;
+  onboarding_complete: boolean;
+  account_id?: string;
+  charges_enabled?: boolean;
+  payouts_enabled?: boolean;
+  error?: string;
+}
+
+export interface NotifyReadyResponse {
+  message?: string;
+  sid?: string;
+  error?: string;
 }

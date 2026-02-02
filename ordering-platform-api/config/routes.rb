@@ -13,7 +13,15 @@ Rails.application.routes.draw do
       # Admin namespace
       namespace :admin do
         resource :restaurant, only: [:show, :update]
-        resources :orders, only: [:index, :update]
+        resources :orders, only: [:index, :update] do
+          member do
+            post :notify_ready
+          end
+        end
+
+        # Stripe Connect
+        post "stripe/connect", to: "stripe#connect"
+        get "stripe/status", to: "stripe#status"
         resources :categories, only: [:index, :create, :update, :destroy] do
           collection do
             patch :reorder

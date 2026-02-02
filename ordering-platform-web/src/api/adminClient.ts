@@ -7,6 +7,8 @@ import type {
   AdminModifier,
   AdminRestaurant,
   OrderStatus,
+  StripeConnectStatus,
+  NotifyReadyResponse,
 } from '../types/admin';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -150,4 +152,20 @@ export const adminApi = {
 
   deleteModifier: (id: number) =>
     adminRequest<void>(`/modifiers/${id}`, { method: 'DELETE' }),
+
+  // ── Notifications ───────────────────────────────────────────────────
+  notifyOrderReady: (orderId: number) =>
+    adminRequest<NotifyReadyResponse>(`/orders/${orderId}/notify_ready`, {
+      method: 'POST',
+    }),
+
+  // ── Stripe Connect ─────────────────────────────────────────────────
+  getStripeStatus: () =>
+    adminRequest<StripeConnectStatus>('/stripe/status'),
+
+  connectStripe: (returnUrl: string, refreshUrl: string) =>
+    adminRequest<{ url: string; account_id: string }>('/stripe/connect', {
+      method: 'POST',
+      body: JSON.stringify({ return_url: returnUrl, refresh_url: refreshUrl }),
+    }),
 };

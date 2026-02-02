@@ -56,6 +56,28 @@ module Api
           render json: { error: "Order not found" }, status: :not_found
         end
 
+        def notify_ready
+          order = @restaurant.orders.find(params[:id])
+
+          unless order.status == "ready"
+            return render json: { error: "Order must be in 'ready' status to notify" }, status: :unprocessable_entity
+          end
+
+          unless SmsService.configured?
+            return render json: { error: "SMS not configured" }, status: :service_unavailable
+          end
+
+          result = SmsService.send_order_ready(order)
+
+          if result[:success]
+            render json: { message: "Customer notified via SMS", sid: result[:sid] }
+          else
+            render json: { error: result[:error] }, status: :unprocessable_entity
+          end
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: "Order not found" }, status: :not_found
+        end
+
         private
 
         def order_json(order)
