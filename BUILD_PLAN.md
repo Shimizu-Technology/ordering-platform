@@ -8,7 +8,7 @@
 |-------|--------|-------|
 | Phase 1: MVP | ✅ Complete | Menu, Cart, Orders, Stripe stub |
 | Phase 2: Admin | ✅ Complete | Order queue, menu CRUD, restaurant settings |
-| Phase 3: Polish | ⬜ Not Started | Notifications, analytics |
+| Phase 3: Polish | 🟡 In Progress | Notifications + Stripe Connect done |
 
 ---
 
@@ -113,9 +113,26 @@
 
 ## Phase 3: Polish (ORD-15 through ORD-20)
 
-- [ ] Email notifications (order confirmation, status updates)
-- [ ] SMS notifications via ClickSend
-- [ ] Stripe Connect (per-restaurant accounts)
+### ORD-15: Order Notifications ✅
+- [x] Email confirmation via Action Mailer (SMTP config via env vars)
+- [x] Mobile-friendly HTML email with order details, modifiers, total
+- [x] Webhook URL per restaurant (POST JSON on new orders)
+- [x] Twilio SMS integration for "order ready" notifications
+- [x] POST /api/v1/admin/orders/:id/notify_ready endpoint
+- [x] "Notify Customer" button in admin order queue (with tooltip when SMS not configured)
+- [x] Notification settings in Restaurant Settings (toggle, webhook, SMTP/SMS status)
+- [x] notifications_enabled + webhook_url columns on restaurants
+
+### ORD-16: Stripe Connect ✅
+- [x] stripe_onboarding_complete column on restaurants
+- [x] POST /api/v1/admin/stripe/connect — creates Connect account, returns onboarding URL
+- [x] GET /api/v1/admin/stripe/status — check onboarding completion
+- [x] Updated pay endpoint to use Connect (application_fee_amount + transfer_data)
+- [x] Configurable platform fee via STRIPE_PLATFORM_FEE_PERCENT env var
+- [x] "Connect Stripe" section in Restaurant Settings with full onboarding flow
+- [x] Graceful "not configured" states when Stripe keys missing
+
+### Remaining
 - [ ] Analytics dashboard
 - [ ] Customer accounts (repeat orders)
 - [ ] Promo/discount system
