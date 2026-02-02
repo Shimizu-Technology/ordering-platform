@@ -7,7 +7,7 @@
 | Phase | Status | Notes |
 |-------|--------|-------|
 | Phase 1: MVP | ✅ Complete | Menu, Cart, Orders, Stripe stub |
-| Phase 2: Admin | ⬜ Not Started | Order queue, menu CRUD |
+| Phase 2: Admin | ✅ Complete | Order queue, menu CRUD, restaurant settings |
 | Phase 3: Polish | ⬜ Not Started | Notifications, analytics |
 
 ---
@@ -83,18 +83,31 @@
 ## Phase 2: Admin Dashboard (ORD-12 through ORD-14)
 
 ### ORD-12: Order Queue
-- [ ] Real-time order list for staff
-- [ ] Status update (pending → confirmed → preparing → ready → completed)
-- [ ] Sound notification for new orders
+- [x] Real-time order list for staff (polling every 8s)
+- [x] Status update (pending → preparing → ready → completed, with cancel)
+- [x] Sound notification for new orders (Web Audio API chime)
+- [x] Visual pulse animation for new orders
+- [x] Filter by status, search by customer name
+- [x] Expand/collapse order details
+- [x] Admin auth (X-Admin-Token header)
+- [x] API: GET /api/v1/admin/orders, PATCH /api/v1/admin/orders/:id
 
 ### ORD-13: Menu Management
-- [ ] CRUD for categories, items, modifier groups, modifiers
-- [ ] Drag-and-drop reordering
-- [ ] Image upload to S3
+- [x] CRUD for categories, items, modifier groups, modifiers
+- [x] Reorder categories and items (up/down with position persistence)
+- [x] Toggle category active/hidden and item availability
+- [x] Inline editing for names, prices, image URLs
+- [x] Modifier group settings (required, min/max select)
+- [x] Full CRUD API under /api/v1/admin/ namespace
+- [ ] Image upload to S3 (future — currently URL input)
 
 ### ORD-14: Restaurant Settings
-- [ ] Business info, hours, branding editor
-- [ ] Stripe Connect onboarding
+- [x] Business hours editor (7 days, open/close, closed toggle)
+- [x] Contact info (name, phone, email, address, description)
+- [x] Branding: color pickers + hex, font family, logo URL
+- [x] Live branding preview (header + buttons)
+- [x] API: GET/PATCH /api/v1/admin/restaurant
+- [ ] Stripe Connect onboarding (future)
 
 ---
 
