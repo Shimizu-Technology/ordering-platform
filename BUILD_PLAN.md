@@ -8,7 +8,7 @@
 |-------|--------|-------|
 | Phase 1: MVP | ✅ Complete | Menu, Cart, Orders, Stripe stub |
 | Phase 2: Admin | ✅ Complete | Order queue, menu CRUD, restaurant settings |
-| Phase 3: Polish | 🟡 In Progress | Notifications + Stripe Connect done |
+| Phase 3: Polish | ✅ Complete | All features delivered |
 
 ---
 
@@ -66,7 +66,7 @@
 ### ORD-8: Stripe Payment Integration
 - [x] POST /api/v1/restaurants/:slug/orders/:id/pay — Create PaymentIntent
 - [x] Stripe gem configured (functional when key provided)
-- [ ] Webhook handler for payment confirmation (Phase 2)
+- [ ] Webhook handler for payment confirmation (future)
 
 ### Frontend (Bonus — completed in Phase 1)
 - [x] Menu browsing with category navigation
@@ -107,7 +107,6 @@
 - [x] Branding: color pickers + hex, font family, logo URL
 - [x] Live branding preview (header + buttons)
 - [x] API: GET/PATCH /api/v1/admin/restaurant
-- [ ] Stripe Connect onboarding (future)
 
 ---
 
@@ -132,11 +131,61 @@
 - [x] "Connect Stripe" section in Restaurant Settings with full onboarding flow
 - [x] Graceful "not configured" states when Stripe keys missing
 
-### Remaining
-- [ ] Analytics dashboard
-- [ ] Customer accounts (repeat orders)
-- [ ] Promo/discount system
-- [ ] Multi-tenant onboarding wizard
+### ORD-17: Sales Analytics Dashboard ✅
+- [x] Overview cards: total revenue, order count, avg order value, top item
+- [x] Revenue chart (daily/weekly/monthly with date range picker)
+- [x] Top-selling items with order count and revenue
+- [x] Peak hours heatmap
+- [x] API: GET /api/v1/admin/analytics/* (overview, revenue, items, hours)
+- [x] Analytics tab in admin dashboard
+
+### ORD-18: Customer Accounts & Order History ✅
+- [x] Customer model (name, email, phone, restaurant_id)
+- [x] POST /api/v1/restaurants/:slug/customers — create/retrieve customer
+- [x] GET /api/v1/restaurants/:slug/customers/:id/orders — order history
+- [x] customer_id column on orders table
+- [x] My Orders page (/slug/orders) with order history timeline
+- [x] Zustand customer store with localStorage persistence
+- [x] Customer identification at checkout (optional)
+
+### ORD-19: Happy Hour / Promo Scheduling System ✅
+- [x] Promotion model: name, type (percentage_off, fixed_off, bogo, happy_hour_price), value
+- [x] Schedule: start_time, end_time, days_of_week (array), active (boolean)
+- [x] Applies to: all / category / item with applies_to_id
+- [x] currently_active? method checks current time + day against schedule
+- [x] discounted_price() calculates price based on promotion type
+- [x] applies_to_item?() determines if promo covers a specific menu item
+- [x] Migration: create_promotions table with proper indexes
+- [x] GET /api/v1/admin/promotions — list all promotions
+- [x] POST /api/v1/admin/promotions — create promotion
+- [x] PATCH /api/v1/admin/promotions/:id — update promotion
+- [x] DELETE /api/v1/admin/promotions/:id — delete promotion
+- [x] GET /api/v1/restaurants/:slug/menu includes active promos (original_price + discounted_price)
+- [x] Admin: Promotions management page with create/edit/delete
+- [x] Admin: Form with name, type selector, value, schedule (days + time range), applies-to picker
+- [x] Admin: Weekly schedule overview (visual calendar of active promos)
+- [x] Admin: Toggle activation, expand details, inline controls
+- [x] Customer: "Happy Hour" badge on discounted items (Zap icon + promo name)
+- [x] Customer: Strikethrough original price, green discounted price
+- [x] HavaJava context: Wed/Thu 5-7pm happy hour easy to configure
+
+### ORD-20: Multi-Tenant Onboarding Flow ✅
+- [x] POST /api/v1/restaurants — create new restaurant (name, slug, contact info)
+- [x] POST /api/v1/restaurants/:slug/setup — complete setup (hours, branding)
+- [x] Auto-generate unique slug from restaurant name (parameterize + dedup)
+- [x] Seed default categories for new restaurants (Beverages, Food, Specials)
+- [x] Restaurant status field: setup_pending, active, suspended
+- [x] Migration: add status column to restaurants (default: 'active')
+- [x] Multi-step onboarding wizard (4 steps):
+  - Step 1: Restaurant basics (name, contact, address) → auto-generated slug preview
+  - Step 2: Hours & branding (7-day operating hours, 3 brand color pickers with preview)
+  - Step 3: Menu setup (template picker: coffee shop, restaurant, or blank)
+  - Step 4: Review & launch (mock ordering page preview, summary of all settings)
+- [x] Progress indicator with step icons, completion checkmarks, connecting lines
+- [x] Each step validates before proceeding (name required, min 2 chars)
+- [x] Framer Motion animations for step transitions (spring-based slide)
+- [x] After completion, redirects to admin dashboard
+- [x] Route: /onboarding
 
 ---
 
@@ -145,5 +194,5 @@
 | Phase | Duration |
 |-------|----------|
 | Phase 1 | Week 1 (Complete) |
-| Phase 2 | Week 2-3 |
-| Phase 3 | Week 4+ |
+| Phase 2 | Week 2-3 (Complete) |
+| Phase 3 | Week 4 (Complete) |
