@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { MenuPage } from './pages/MenuPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { ConfirmationPage } from './pages/ConfirmationPage';
+import { OnboardingPage } from './pages/OnboardingPage';
 import { ToastContainer } from './components/ui/Toast';
 import { AdminPage } from './pages/admin/AdminPage';
 
@@ -14,6 +15,9 @@ function App() {
         <Routes>
           {/* Admin routes */}
           <Route path="/admin/*" element={<AdminPage />} />
+
+          {/* Onboarding */}
+          <Route path="/onboarding" element={<OnboardingPage />} />
 
           {/* Restaurant routes */}
           <Route path="/:slug" element={<RestaurantMenu />} />

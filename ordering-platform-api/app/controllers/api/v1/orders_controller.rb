@@ -15,6 +15,7 @@ module Api
           email: order_params[:email],
           order_type: order_params[:order_type] || "pickup",
           special_instructions: order_params[:special_instructions],
+          customer_id: order_params[:customer_id],
           status: "pending"
         )
 
@@ -36,6 +37,49 @@ module Api
         render json: { error: e.message }, status: :unprocessable_entity
       rescue ActiveRecord::RecordNotFound => e
         render json: { error: "Menu item or modifier not found: #{e.message}" }, status: :unprocessable_entity
+      end
+
+      # POST /api/v1/restaurants/:slug/orders/:id/reorder
+      def reorder
+        original = @restaurant.orders.find(params[:id])
+
+        new_order = @restaurant.orders.new(
+          customer_name: original.customer_name,
+          phone: original.phone,
+          email: original.email,
+          order_type: original.order_type,
+          customer_id: original.customer_id,
+          status: "pending"
+        )
+
+        ActiveRecord::Base.transaction do
+          new_order.save!
+
+          original.order_items.includes(:menu_item, order_item_modifiers: :modifier).each do |orig_item|
+            # Skip items whose menu item is no longer available
+            next unless orig_item.menu_item&.available
+
+            order_item = new_order.order_items.create!(
+              menu_item: orig_item.menu_item,
+              quantity: orig_item.quantity,
+              unit_price: orig_item.menu_item.base_price, # Use current price
+              subtotal: 0
+            )
+
+            orig_item.order_item_modifiers.each do |oim|
+              order_item.order_item_modifiers.create!(
+                modifier: oim.modifier,
+                price_adjustment: oim.modifier.price_adjustment # Use current price
+              )
+            end
+          end
+
+          new_order.recalculate!
+        end
+
+        render json: order_json(new_order), status: :created
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Order not found" }, status: :not_found
       end
 
       def pay
@@ -103,7 +147,7 @@ module Api
 
       def order_params
         params.require(:order).permit(
-          :customer_name, :phone, :email, :order_type, :special_instructions,
+          :customer_name, :phone, :email, :order_type, :special_instructions, :customer_id,
           items: [:menu_item_id, :quantity, :special_instructions, modifier_ids: []]
         )
       end

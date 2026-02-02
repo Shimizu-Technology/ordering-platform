@@ -106,6 +106,22 @@ export interface AdminRestaurant {
   smtp_configured: boolean;
 }
 
+export interface AdminPromotion {
+  id: number;
+  name: string;
+  promotion_type: 'percentage_off' | 'fixed_off' | 'bogo' | 'happy_hour_price';
+  value: number;
+  start_time: string;
+  end_time: string;
+  days_of_week: string[];
+  active: boolean;
+  applies_to: 'all' | 'category' | 'item';
+  applies_to_id: number | null;
+  currently_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface StripeConnectStatus {
   configured: boolean;
   connected: boolean;

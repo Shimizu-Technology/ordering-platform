@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, User, Phone, Mail, MessageSquare,
-  Store, UtensilsCrossed, CreditCard, ShieldCheck,
+  Store, UtensilsCrossed, CreditCard, ShieldCheck, Bookmark,
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { useCartStore } from '../stores/cartStore';
 import { useRestaurantStore } from '../stores/restaurantStore';
+import { useCustomerStore } from '../stores/customerStore';
 import { formatPrice, calculateItemTotal } from '../utils/price';
 import { api } from '../api/client';
 import { toast } from '../components/ui/Toast';
@@ -22,10 +23,12 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
   const navigate = useNavigate();
   const { items, cartTotal, clearCart } = useCartStore();
   const { loadRestaurant } = useRestaurantStore();
+  const { savedInfo, saveEnabled, setSaveEnabled, updateFromCustomer } = useCustomerStore();
 
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState(savedInfo?.name ?? '');
+  const [phone, setPhone] = useState(savedInfo?.phone ?? '');
+  const [email, setEmail] = useState(savedInfo?.email ?? '');
+  const [saveInfo, setSaveInfo] = useState(saveEnabled);
   const [orderType, setOrderType] = useState<'pickup' | 'dine_in'>('pickup');
   const [instructions, setInstructions] = useState('');
   const [loading, setLoading] = useState(false);
@@ -63,12 +66,32 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
     setLoading(true);
 
     try {
+      // Create/lookup customer if saving info
+      let customerId: number | undefined;
+      if (saveInfo && email.trim()) {
+        try {
+          const customer = await api.createCustomer(slug, {
+            name: name.trim(),
+            email: email.trim(),
+            phone: phone.trim() || undefined,
+          });
+          customerId = customer.id;
+          updateFromCustomer(customer);
+          setSaveEnabled(true);
+        } catch {
+          // Non-critical; continue with order
+        }
+      } else if (!saveInfo) {
+        setSaveEnabled(false);
+      }
+
       const payload: OrderPayload = {
         customer_name: name.trim(),
         phone: phone.trim() || undefined,
         email: email.trim() || undefined,
         order_type: orderType,
         special_instructions: instructions.trim() || undefined,
+        customer_id: customerId,
         items: items.map((cartItem) => ({
           menu_item_id: cartItem.menuItem.id,
           quantity: cartItem.quantity,
@@ -198,6 +221,22 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
             )}
           </div>
         </fieldset>
+
+        {/* Save Info Checkbox */}
+        {email.trim() && (
+          <label className="flex items-center gap-3 px-4 py-3 bg-surface-elevated rounded-[var(--radius-md)] cursor-pointer touch-target">
+            <input
+              type="checkbox"
+              checked={saveInfo}
+              onChange={(e) => setSaveInfo(e.target.checked)}
+              className="w-5 h-5 rounded border-border-default text-brand focus:ring-brand/30 accent-[var(--brand-primary)]"
+            />
+            <div className="flex items-center gap-2 text-sm text-text-secondary">
+              <Bookmark className="w-4 h-4" />
+              Save my info for faster checkout next time
+            </div>
+          </label>
+        )}
 
         {/* Special Instructions */}
         <div>

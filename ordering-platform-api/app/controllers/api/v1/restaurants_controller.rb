@@ -8,7 +8,51 @@ module Api
         render json: { error: "Restaurant not found" }, status: :not_found
       end
 
+      # POST /api/v1/restaurants — create a new restaurant (onboarding step 1)
+      def create
+        restaurant = Restaurant.new(create_params)
+        restaurant.status = "setup_pending"
+        restaurant.active = false # Not active until setup completes
+
+        if restaurant.save
+          restaurant.seed_default_categories!
+          render json: restaurant_json(restaurant).merge(status: restaurant.status), status: :created
+        else
+          render json: { errors: restaurant.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
+      # POST /api/v1/restaurants/:slug/setup — complete setup (onboarding steps 2-4)
+      def setup
+        restaurant = Restaurant.find_by!(slug: params[:slug])
+
+        if restaurant.status == "active"
+          render json: { error: "Restaurant is already set up" }, status: :unprocessable_entity
+          return
+        end
+
+        if restaurant.update(setup_params)
+          restaurant.update!(status: "active", active: true)
+          render json: restaurant_json(restaurant).merge(status: restaurant.status)
+        else
+          render json: { errors: restaurant.errors.full_messages }, status: :unprocessable_entity
+        end
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Restaurant not found" }, status: :not_found
+      end
+
       private
+
+      def create_params
+        params.require(:restaurant).permit(:name, :phone, :email, :address, :description)
+      end
+
+      def setup_params
+        params.require(:restaurant).permit(
+          :primary_color, :secondary_color, :accent_color, :font_family, :logo_url,
+          hours: {}
+        )
+      end
 
       def restaurant_json(restaurant)
         {
@@ -16,6 +60,7 @@ module Api
           name: restaurant.name,
           slug: restaurant.slug,
           phone: restaurant.phone,
+          email: restaurant.email,
           address: restaurant.address,
           description: restaurant.description,
           hours: restaurant.hours,

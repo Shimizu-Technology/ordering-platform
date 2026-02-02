@@ -6,10 +6,17 @@ import type {
   AdminModifierGroup,
   AdminModifier,
   AdminRestaurant,
+  AdminPromotion,
   OrderStatus,
   StripeConnectStatus,
   NotifyReadyResponse,
 } from '../types/admin';
+import type {
+  AnalyticsOverview,
+  RevenueResponse,
+  ItemsResponse,
+  HoursResponse,
+} from '../types/analytics';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 
@@ -168,4 +175,53 @@ export const adminApi = {
       method: 'POST',
       body: JSON.stringify({ return_url: returnUrl, refresh_url: refreshUrl }),
     }),
+
+  // ── Promotions ──────────────────────────────────────────────────────
+  getPromotions: () =>
+    adminRequest<AdminPromotion[]>('/promotions'),
+
+  createPromotion: (data: Partial<AdminPromotion>) =>
+    adminRequest<AdminPromotion>('/promotions', {
+      method: 'POST',
+      body: JSON.stringify({ promotion: data }),
+    }),
+
+  updatePromotion: (id: number, data: Partial<AdminPromotion>) =>
+    adminRequest<AdminPromotion>(`/promotions/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ promotion: data }),
+    }),
+
+  deletePromotion: (id: number) =>
+    adminRequest<void>(`/promotions/${id}`, { method: 'DELETE' }),
+
+  // ── Analytics ───────────────────────────────────────────────────────
+  getAnalyticsOverview: () =>
+    adminRequest<AnalyticsOverview>('/analytics/overview'),
+
+  getAnalyticsRevenue: (params?: { start_date?: string; end_date?: string; granularity?: string }) => {
+    const search = new URLSearchParams();
+    if (params?.start_date) search.set('start_date', params.start_date);
+    if (params?.end_date) search.set('end_date', params.end_date);
+    if (params?.granularity) search.set('granularity', params.granularity);
+    const qs = search.toString();
+    return adminRequest<RevenueResponse>(`/analytics/revenue${qs ? `?${qs}` : ''}`);
+  },
+
+  getAnalyticsItems: (params?: { start_date?: string; end_date?: string; limit?: number }) => {
+    const search = new URLSearchParams();
+    if (params?.start_date) search.set('start_date', params.start_date);
+    if (params?.end_date) search.set('end_date', params.end_date);
+    if (params?.limit) search.set('limit', String(params.limit));
+    const qs = search.toString();
+    return adminRequest<ItemsResponse>(`/analytics/items${qs ? `?${qs}` : ''}`);
+  },
+
+  getAnalyticsHours: (params?: { start_date?: string; end_date?: string }) => {
+    const search = new URLSearchParams();
+    if (params?.start_date) search.set('start_date', params.start_date);
+    if (params?.end_date) search.set('end_date', params.end_date);
+    const qs = search.toString();
+    return adminRequest<HoursResponse>(`/analytics/hours${qs ? `?${qs}` : ''}`);
+  },
 };

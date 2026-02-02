@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Plus, ChevronRight } from 'lucide-react';
+import { Plus, ChevronRight, Zap } from 'lucide-react';
 import type { MenuItem } from '../../types';
 import { formatPrice } from '../../utils/price';
 
@@ -10,6 +10,7 @@ interface MenuItemCardProps {
 
 export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
   const hasModifiers = item.modifier_groups.length > 0;
+  const hasPromo = !!item.promotion;
 
   return (
     <motion.button
@@ -17,19 +18,38 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
       className="w-full flex gap-3 p-4 text-left rounded-[var(--radius-lg)] hover:bg-surface-elevated/80 transition-colors duration-[var(--duration-fast)] touch-target group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:ring-inset"
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.1 }}
-      aria-label={`${item.name}, ${formatPrice(item.base_price)}${hasModifiers ? ', customizable' : ''}`}
+      aria-label={`${item.name}, ${hasPromo ? formatPrice(item.discounted_price!) : formatPrice(item.base_price)}${hasModifiers ? ', customizable' : ''}`}
     >
       <div className="flex-1 min-w-0">
-        <h3 className="font-medium text-text-primary leading-tight">{item.name}</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="font-medium text-text-primary leading-tight">{item.name}</h3>
+          {hasPromo && (
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-warning/10 text-warning text-[10px] font-bold rounded-full shrink-0 uppercase tracking-wide">
+              <Zap className="w-2.5 h-2.5" />
+              {item.promotion!.name}
+            </span>
+          )}
+        </div>
         {item.description && (
           <p className="mt-1 text-sm text-text-secondary line-clamp-2 leading-relaxed">
             {item.description}
           </p>
         )}
         <div className="mt-2 flex items-center gap-2">
-          <span className="text-sm font-semibold text-text-primary">
-            {formatPrice(item.base_price)}
-          </span>
+          {hasPromo ? (
+            <>
+              <span className="text-sm font-semibold text-success">
+                {formatPrice(item.discounted_price!)}
+              </span>
+              <span className="text-sm text-text-muted line-through">
+                {formatPrice(item.original_price!)}
+              </span>
+            </>
+          ) : (
+            <span className="text-sm font-semibold text-text-primary">
+              {formatPrice(item.base_price)}
+            </span>
+          )}
           {hasModifiers && (
             <span className="inline-flex items-center gap-0.5 text-xs text-brand font-medium">
               Customize

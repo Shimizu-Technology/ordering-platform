@@ -7,6 +7,9 @@ module Api
           .ordered
           .includes(menu_items: { modifier_groups: :modifiers })
 
+        # Get currently active promotions
+        active_promos = @restaurant.active_promotions
+
         render json: {
           restaurant: {
             id: @restaurant.id,
@@ -14,23 +17,25 @@ module Api
             slug: @restaurant.slug,
             branding: @restaurant.branding
           },
-          categories: categories.map { |cat| category_json(cat) }
+          categories: categories.map { |cat| category_json(cat, active_promos) }
         }
       end
 
       private
 
-      def category_json(category)
+      def category_json(category, active_promos)
         {
           id: category.id,
           name: category.name,
           position: category.position,
-          items: category.menu_items.available.ordered.map { |item| item_json(item) }
+          items: category.menu_items.available.ordered.map { |item| item_json(item, active_promos) }
         }
       end
 
-      def item_json(item)
-        {
+      def item_json(item, active_promos)
+        promo = active_promos.find { |p| p.applies_to_item?(item) }
+
+        json = {
           id: item.id,
           name: item.name,
           description: item.description,
@@ -40,6 +45,19 @@ module Api
           position: item.position,
           modifier_groups: item.modifier_groups.ordered.map { |mg| modifier_group_json(mg) }
         }
+
+        if promo
+          json[:original_price] = item.base_price.to_f
+          json[:discounted_price] = promo.discounted_price(item.base_price)
+          json[:promotion] = {
+            id: promo.id,
+            name: promo.name,
+            promotion_type: promo.promotion_type,
+            value: promo.value.to_f
+          }
+        end
+
+        json
       end
 
       def modifier_group_json(group)

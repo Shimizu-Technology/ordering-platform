@@ -1,12 +1,15 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      resources :restaurants, param: :slug, only: [:show] do
+      resources :restaurants, param: :slug, only: [:show, :create] do
         resource :menu, only: [:show], controller: "menus"
         resources :orders, only: [:create, :show] do
           member do
             post :pay
           end
+        end
+        member do
+          post :setup
         end
       end
 
@@ -22,6 +25,7 @@ Rails.application.routes.draw do
         # Stripe Connect
         post "stripe/connect", to: "stripe#connect"
         get "stripe/status", to: "stripe#status"
+
         resources :categories, only: [:index, :create, :update, :destroy] do
           collection do
             patch :reorder
@@ -34,6 +38,9 @@ Rails.application.routes.draw do
         end
         resources :modifier_groups, only: [:create, :update, :destroy]
         resources :modifiers, only: [:create, :update, :destroy]
+
+        # Promotions
+        resources :promotions, only: [:index, :create, :update, :destroy]
       end
     end
   end
