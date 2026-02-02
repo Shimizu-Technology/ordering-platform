@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Minus, Plus, Check, Circle } from 'lucide-react';
+import { X, Minus, Plus, Check } from 'lucide-react';
 import type { MenuItem, ModifierGroup, Modifier, SelectedModifier } from '../../types';
 import { formatPrice, calculateItemTotal } from '../../utils/price';
 import { Button } from '../ui/Button';
