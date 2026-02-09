@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import {
   ArrowLeft, User, Phone, Mail, MessageSquare,
-  Store, UtensilsCrossed, CreditCard, ShieldCheck, Bookmark,
+  Store, UtensilsCrossed, ShieldCheck, Bookmark,
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { PaymentForm } from '../components/PaymentForm';
 import { useCartStore } from '../stores/cartStore';
 import { useRestaurantStore } from '../stores/restaurantStore';
 import { useCustomerStore } from '../stores/customerStore';
@@ -13,7 +16,12 @@ import { formatPrice, calculateItemTotal } from '../utils/price';
 import { api } from '../api/client';
 import { toast } from '../components/ui/Toast';
 import { pageTransition, pageTransitionConfig } from '../utils/motion';
-import type { OrderPayload } from '../types';
+import type { OrderPayload, Order } from '../types';
+
+// Initialize Stripe (only if key is available)
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 interface CheckoutPageProps {
   slug: string;
@@ -34,16 +42,24 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Payment state
+  const [showPayment, setShowPayment] = useState(false);
+  const [pendingOrder, setPendingOrder] = useState<Order | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+
+  // Check if Stripe is configured
+  const stripeEnabled = !!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+
   useEffect(() => {
     loadRestaurant(slug);
   }, [slug, loadRestaurant]);
 
   // Redirect if cart is empty
   useEffect(() => {
-    if (items.length === 0) {
+    if (items.length === 0 && !pendingOrder) {
       navigate(`/${slug}`, { replace: true });
     }
-  }, [items.length, navigate, slug]);
+  }, [items.length, navigate, slug, pendingOrder]);
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
@@ -100,9 +116,27 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
         })),
       };
 
+      // Create the order
       const order = await api.createOrder(slug, payload);
-      clearCart();
-      navigate(`/${slug}/confirmation/${order.id}`, { replace: true });
+      setPendingOrder(order);
+
+      // If Stripe is enabled, get payment intent
+      if (stripeEnabled && order.total > 0) {
+        try {
+          const paymentData = await api.payOrder(slug, order.id);
+          setClientSecret(paymentData.client_secret);
+          setShowPayment(true);
+        } catch {
+          // Payment setup failed - order is still created
+          toast.error('Payment setup failed. Please try again or pay at counter.');
+          clearCart();
+          navigate(`/${slug}/confirmation/${order.id}`, { replace: true });
+        }
+      } else {
+        // No payment needed (free order or Stripe not configured)
+        clearCart();
+        navigate(`/${slug}/confirmation/${order.id}`, { replace: true });
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to place order. Please try again.');
     } finally {
@@ -110,12 +144,78 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
     }
   };
 
+  const handlePaymentSuccess = () => {
+    if (pendingOrder) {
+      clearCart();
+      navigate(`/${slug}/confirmation/${pendingOrder.id}`, { replace: true });
+    }
+  };
+
+  const handlePaymentCancel = () => {
+    // Cancel the payment flow - order remains pending
+    setShowPayment(false);
+    setClientSecret(null);
+    toast.info('Payment cancelled. You can pay at the counter.');
+    if (pendingOrder) {
+      clearCart();
+      navigate(`/${slug}/confirmation/${pendingOrder.id}`, { replace: true });
+    }
+  };
+
+  // Stripe Elements appearance
+  const stripeAppearance = useMemo(() => ({
+    theme: 'stripe' as const,
+    variables: {
+      colorPrimary: 'var(--brand-primary)',
+      colorBackground: 'var(--surface-card)',
+      colorText: 'var(--text-primary)',
+      colorDanger: 'var(--error)',
+      fontFamily: 'system-ui, sans-serif',
+      borderRadius: '8px',
+    },
+  }), []);
+
   return (
     <motion.div
       className="min-h-screen bg-surface"
       {...pageTransition}
       transition={pageTransitionConfig}
     >
+      {/* Payment Modal */}
+      <AnimatePresence>
+        {showPayment && clientSecret && pendingOrder && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            onClick={(e) => e.target === e.currentTarget && handlePaymentCancel()}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="w-full max-w-md"
+            >
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  clientSecret,
+                  appearance: stripeAppearance,
+                }}
+              >
+                <PaymentForm
+                  amount={pendingOrder.total}
+                  orderId={pendingOrder.id}
+                  onSuccess={handlePaymentSuccess}
+                  onCancel={handlePaymentCancel}
+                />
+              </Elements>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <div className="sticky top-0 z-20 bg-surface/95 backdrop-blur-sm border-b border-border-default">
         <div className="flex items-center gap-3 px-4 py-3">
@@ -294,18 +394,10 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
           </div>
         </div>
 
-        {/* Payment info */}
-        <div className="flex items-start gap-2.5 p-3 bg-brand/5 rounded-[var(--radius-md)] border border-brand/10">
-          <CreditCard className="w-4 h-4 text-brand shrink-0 mt-0.5" />
-          <p className="text-xs text-text-secondary leading-relaxed">
-            Payment will be collected at the counter. Online payment coming soon.
-          </p>
-        </div>
-
         {/* Security note */}
         <div className="flex items-center justify-center gap-1.5 text-xs text-text-muted">
           <ShieldCheck className="w-3.5 h-3.5" />
-          <span>Your information is secure</span>
+          <span>{stripeEnabled ? 'Payments secured by Stripe' : 'Your information is secure'}</span>
         </div>
 
         {/* Submit */}
@@ -316,7 +408,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
           className="w-full"
           loading={loading}
         >
-          Place Order · {formatPrice(cartTotal())}
+          {stripeEnabled ? `Continue to Payment · ${formatPrice(cartTotal())}` : `Place Order · ${formatPrice(cartTotal())}`}
         </Button>
       </form>
     </motion.div>
