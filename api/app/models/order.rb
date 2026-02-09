@@ -1,18 +1,34 @@
 class Order < ApplicationRecord
+  include SafeStatusTransitions
+
   belongs_to :restaurant
   belongs_to :customer, optional: true
   belongs_to :location, optional: true
   has_many :order_items, dependent: :destroy
   has_many :menu_items, through: :order_items
 
+  STATUSES = %w[pending confirmed preparing ready completed cancelled].freeze
+
+  # Valid status transitions (from => [to])
+  VALID_TRANSITIONS = {
+    "pending" => %w[confirmed cancelled],
+    "confirmed" => %w[preparing cancelled],
+    "preparing" => %w[ready cancelled],
+    "ready" => %w[completed],
+    "completed" => [],
+    "cancelled" => []
+  }.freeze
+
   validates :customer_name, presence: true
   validates :order_type, inclusion: { in: %w[pickup dine_in] }
-  validates :status, inclusion: { in: %w[pending confirmed preparing ready completed cancelled] }
+  validates :status, inclusion: { in: STATUSES }
+  validates :idempotency_key, uniqueness: true, allow_nil: true
 
   scope :active, -> { where.not(status: %w[completed cancelled]) }
   scope :by_status, ->(status) { where(status: status) }
 
   before_save :calculate_total
+  before_create :generate_idempotency_key
 
   def calculate_total
     self.total = order_items.sum { |item| item.subtotal || 0 }
@@ -22,5 +38,36 @@ class Order < ApplicationRecord
     order_items.each(&:recalculate!)
     calculate_total
     save!
+  end
+
+  # Safe status transitions with validation
+  def confirm!
+    transition_status!("confirmed", allowed_from: %w[pending])
+  end
+
+  def start_preparing!
+    transition_status!("preparing", allowed_from: %w[confirmed])
+  end
+
+  def mark_ready!
+    transition_status!("ready", allowed_from: %w[preparing])
+  end
+
+  def complete!
+    transition_status!("completed", allowed_from: %w[ready])
+  end
+
+  def cancel!
+    transition_status!("cancelled", allowed_from: %w[pending confirmed preparing])
+  end
+
+  def can_cancel?
+    can_transition_to?("cancelled", allowed_from: %w[pending confirmed preparing])
+  end
+
+  private
+
+  def generate_idempotency_key
+    self.idempotency_key ||= "order_#{SecureRandom.uuid}"
   end
 end
