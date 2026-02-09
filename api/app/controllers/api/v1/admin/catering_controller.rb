@@ -9,7 +9,7 @@ module Api
 
         # GET /api/v1/admin/catering
         def index
-          inquiries = current_restaurant.catering_inquiries
+          inquiries = @restaurant.catering_inquiries
 
           # Filter by status
           if params[:status].present?
@@ -22,9 +22,9 @@ module Api
           render json: {
             inquiries: inquiries.map { |i| inquiry_json(i) },
             counts: {
-              pending: current_restaurant.catering_inquiries.pending.count,
-              quoted: current_restaurant.catering_inquiries.quoted.count,
-              upcoming: current_restaurant.catering_inquiries.active.upcoming.count
+              pending: @restaurant.catering_inquiries.pending.count,
+              quoted: @restaurant.catering_inquiries.quoted.count,
+              upcoming: @restaurant.catering_inquiries.active.upcoming.count
             }
           }
         end
@@ -68,7 +68,7 @@ module Api
         private
 
         def set_inquiry
-          @inquiry = current_restaurant.catering_inquiries.find(params[:id])
+          @inquiry = @restaurant.catering_inquiries.find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: { error: "Inquiry not found" }, status: :not_found
         end

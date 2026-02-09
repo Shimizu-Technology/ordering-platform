@@ -10,6 +10,9 @@ import type {
   OrderStatus,
   StripeConnectStatus,
   NotifyReadyResponse,
+  CateringInquiry,
+  CateringInquiriesResponse,
+  CateringStatus,
 } from '../types/admin';
 import type {
   AnalyticsOverview,
@@ -19,13 +22,16 @@ import type {
 } from '../types/analytics';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
+const RESTAURANT_SLUG = 'threesquares';
 
 function getToken(): string {
   return localStorage.getItem('admin_token') || '';
 }
 
 async function adminRequest<T>(path: string, options?: RequestInit): Promise<T> {
-  const url = `${API_BASE}/admin${path}`;
+  // Add restaurant_slug to the URL
+  const separator = path.includes('?') ? '&' : '?';
+  const url = `${API_BASE}/admin${path}${separator}restaurant_slug=${RESTAURANT_SLUG}`;
   const res = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -224,4 +230,28 @@ export const adminApi = {
     const qs = search.toString();
     return adminRequest<HoursResponse>(`/analytics/hours${qs ? `?${qs}` : ''}`);
   },
+
+  // ── Catering ────────────────────────────────────────────────────────
+  getCateringInquiries: (params?: { status?: string; all?: boolean }) => {
+    const search = new URLSearchParams();
+    if (params?.status) search.set('status', params.status);
+    if (params?.all) search.set('all', 'true');
+    const qs = search.toString();
+    return adminRequest<CateringInquiriesResponse>(`/catering${qs ? `?${qs}` : ''}`);
+  },
+
+  getCateringInquiry: (id: number) =>
+    adminRequest<CateringInquiry>(`/catering/${id}`),
+
+  updateCateringInquiry: (id: number, data: { status?: CateringStatus; admin_notes?: string }) =>
+    adminRequest<CateringInquiry>(`/catering/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
+  sendCateringQuote: (id: number, data: { quoted_amount: number; admin_notes?: string }) =>
+    adminRequest<{ message: string; inquiry: CateringInquiry }>(`/catering/${id}/quote`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 };

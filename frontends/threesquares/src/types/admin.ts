@@ -137,3 +137,45 @@ export interface NotifyReadyResponse {
   sid?: string;
   error?: string;
 }
+
+// ============================================================================
+// Catering Types
+// ============================================================================
+
+export type CateringStatus = 'pending' | 'quoted' | 'accepted' | 'declined' | 'cancelled';
+
+export interface CateringInquiry {
+  id: number;
+  contact_name: string;
+  contact_email: string;
+  contact_phone: string | null;
+  company_name: string | null;
+  event_type: string;
+  event_date: string;
+  event_time: string | null;
+  guest_count: number;
+  budget_range: string | null;
+  status: CateringStatus;
+  quoted_amount: number | null;
+  quoted_at: string | null;
+  days_until_event: number;
+  urgent: boolean;
+  created_at: string;
+  // Full details (when fetching single inquiry)
+  venue_address?: string | null;
+  menu_preferences?: string | null;
+  special_requests?: string | null;
+  dietary_restrictions?: string | null;
+  admin_notes?: string | null;
+  location?: { id: number; name: string } | null;
+  responded_by?: { id: number; name: string } | null;
+}
+
+export interface CateringInquiriesResponse {
+  inquiries: CateringInquiry[];
+  counts: {
+    pending: number;
+    quoted: number;
+    upcoming: number;
+  };
+}

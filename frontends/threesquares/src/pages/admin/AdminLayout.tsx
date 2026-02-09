@@ -10,28 +10,41 @@ import {
   ChevronRight,
   Zap,
   BarChart3,
+  Users,
 } from 'lucide-react';
 import { useAdminStore } from '../../stores/adminStore';
+import type { AdminRestaurant } from '../../types/admin';
 
-type AdminPage = 'orders' | 'menu' | 'promotions' | 'analytics' | 'settings';
+type AdminPage = 'orders' | 'catering' | 'menu' | 'promotions' | 'analytics' | 'settings';
 
 interface AdminLayoutProps {
   activePage: AdminPage;
   onNavigate: (page: AdminPage) => void;
   children: React.ReactNode;
+  restaurant?: AdminRestaurant | null;
 }
 
-const navItems: { id: AdminPage; label: string; icon: React.ElementType }[] = [
+const navItems: { id: AdminPage; label: string; icon: React.ElementType; requiresFeature?: string }[] = [
   { id: 'orders', label: 'Order Queue', icon: ClipboardList },
+  { id: 'catering', label: 'Catering', icon: Users, requiresFeature: 'catering' },
   { id: 'menu', label: 'Menu', icon: UtensilsCrossed },
   { id: 'promotions', label: 'Promos', icon: Zap },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-export function AdminLayout({ activePage, onNavigate, children }: AdminLayoutProps) {
+export function AdminLayout({ activePage, onNavigate, children, restaurant }: AdminLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const logout = useAdminStore((s) => s.logout);
+
+  // Filter nav items based on restaurant features
+  const filteredNavItems = navItems.filter(item => {
+    if (!item.requiresFeature) return true;
+    // For now, show catering for Three Squares (or when we have features data)
+    // TODO: Check actual features from restaurant when API returns it
+    if (item.requiresFeature === 'catering') return true;
+    return true;
+  });
 
   const handleNav = (page: AdminPage) => {
     onNavigate(page);
@@ -56,7 +69,7 @@ export function AdminLayout({ activePage, onNavigate, children }: AdminLayoutPro
 
           {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-1">
-            {navItems.map((item) => {
+            {filteredNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = activePage === item.id;
               return (
@@ -105,7 +118,7 @@ export function AdminLayout({ activePage, onNavigate, children }: AdminLayoutPro
               className="fixed top-14 left-0 bottom-0 w-[280px] bg-surface-card border-r border-border-default z-20 lg:hidden p-4"
             >
               <div className="space-y-1">
-                {navItems.map((item) => {
+                {filteredNavItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activePage === item.id;
                   return (
