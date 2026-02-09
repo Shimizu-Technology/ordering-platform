@@ -696,9 +696,11 @@ puts "  Created #{threesquares.merchandise_categories.count} merchandise categor
 
 # Assortment items
 [
-  [ "6pc Chocolate Dipped Assortment", "6 individually wrapped shortbread cookies dipped in chocolate. Vanilla, Chocolate, Coconut, Mango, Pineapple, and Passionfruit.", 11.00 ],
-  [ "12pc Grand Assortment", "12 cookies featuring all 6 flavors - plain and dipped varieties", 20.00 ],
-  [ "30pc Grand Assortment", "30 cookies - the ultimate Latte Stone collection for gatherings", 48.00 ]
+  [ "2pc Gift Box", "Perfect sampler with 1 vanilla and 1 chocolate shortbread cookie. Ideal for first-timers or small gifts.", 4.50 ],
+  [ "6pc Chocolate Dipped Assortment", "6 individually wrapped shortbread cookies dipped in premium chocolate. Includes vanilla, chocolate, coconut, mango, pineapple, and passionfruit - all our signature flavors!", 11.00 ],
+  [ "8pc Fruit Assortment", "Tropical fruit flavors: mango, pineapple, passionfruit, and coconut shortbread cookies.", 15.00 ],
+  [ "12pc Grand Assortment", "Our most popular box! 12 cookies featuring all 6 flavors: vanilla, chocolate, coconut, mango, pineapple, and passionfruit. Perfect for sharing or gifting.", 20.00 ],
+  [ "30pc Grand Assortment", "The ultimate cookie collection! 30 cookies with 5 of each flavor. Perfect for parties, offices, or sending to loved ones on the mainland.", 48.00 ]
 ].each_with_index do |(name, desc, price), i|
   assortments.merchandise_items.find_or_create_by!(name: name) do |mi|
     mi.description = desc
@@ -708,12 +710,14 @@ puts "  Created #{threesquares.merchandise_categories.count} merchandise categor
   end
 end
 
-# Single flavor items (with dipped variants)
+# Single flavor items (all 6 tropical flavors)
 [
-  [ "Vanilla Shortbread 10pc", "10 vanilla shortbread cookies", 16.00 ],
-  [ "Chocolate Shortbread 10pc", "10 chocolate shortbread cookies", 16.00 ],
-  [ "Coconut Shortbread 10pc", "10 coconut shortbread cookies", 16.00 ],
-  [ "Mango Shortbread 10pc", "10 mango shortbread cookies", 16.00 ]
+  [ "Vanilla Shortbread 10pc", "10 classic vanilla shortbread cookies. Our original recipe, buttery and delicious.", 16.00 ],
+  [ "Chocolate Shortbread 10pc", "10 rich chocolate shortbread cookies. Perfect for chocolate lovers.", 16.00 ],
+  [ "Coconut Shortbread 10pc", "10 tropical coconut shortbread cookies. Island flavor in every bite.", 16.00 ],
+  [ "Mango Shortbread 10pc", "10 sweet mango shortbread cookies. Taste of tropical Guam.", 16.00 ],
+  [ "Pineapple Shortbread 10pc", "10 pineapple-flavored shortbread cookies. Sweet tropical taste of Guam.", 16.00 ],
+  [ "Passionfruit Shortbread 10pc", "10 passionfruit-flavored shortbread cookies. Tangy and tropical.", 16.00 ]
 ].each_with_index do |(name, desc, price), i|
   single_flavors.merchandise_items.find_or_create_by!(name: name) do |mi|
     mi.description = desc
@@ -723,15 +727,24 @@ end
   end
 end
 
-# Tin collection (with size variants)
-classic_tin = tin_collection.merchandise_items.find_or_create_by!(name: "Classic Assortment Tin") do |mi|
-  mi.description = "Assorted Latte Stone cookies in a beautiful keepsake tin shaped like a latte stone"
-  mi.base_price = nil # Price comes from variants
+# Tin collection
+# Small gift tin (fixed price)
+tin_collection.merchandise_items.find_or_create_by!(name: "3pc Chocolate Dipped Tin") do |mi|
+  mi.description = "3 chocolate-dipped shortbread cookies in a keepsake latte stone shaped tin. Perfect small gift."
+  mi.base_price = 9.00
   mi.position = 0
   mi.available = true
 end
 
-# Add variants for tin
+# Classic tin (with size variants)
+classic_tin = tin_collection.merchandise_items.find_or_create_by!(name: "Classic Assortment Tin") do |mi|
+  mi.description = "Signature latte stone shaped tin filled with our classic assortment. A beautiful keepsake that captures the spirit of Guam."
+  mi.base_price = nil # Price comes from variants
+  mi.position = 1
+  mi.available = true
+end
+
+# Add variants for classic tin
 classic_tin.merchandise_variants.find_or_create_by!(name: "9pc Tin") do |v|
   v.price = 18.00
   v.position = 0

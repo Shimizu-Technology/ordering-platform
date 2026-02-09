@@ -82,7 +82,7 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
   - [x] MerchandiseCategory, MerchandiseItem, MerchandiseVariant models
   - [x] features JSON column to restaurants
   - [x] Seed Three Squares data (32 menu items across 5 categories)
-  - [ ] Seed Latte Stone Cookies data (see docs/seed-data/latte-stone-cookies.md)
+  - [x] Seed Latte Stone Cookies data ✅ (Feb 9, 2026)
 
 - [x] **0.7** Add starter-app docs ✅
   - Copied 20+ guides to docs/starter-app/
@@ -265,7 +265,7 @@ Based on actual Shopify store research — they have 6 flavors, dipped versions,
 - [x] Merchandise admin CRUD (MerchandiseAdmin.tsx)
 
 **POC Scope:**
-- [ ] Seed real Latte Stone Cookies products (data ready in docs/seed-data/)
+- [x] Seed real Latte Stone Cookies products ✅ (Feb 9, 2026)
 - [x] Local pickup only
 - [ ] Simple inquiry link for corporate/bulk orders
 
