@@ -727,9 +727,90 @@ Both HavaJava (KwickPOS) and Three Squares (Revel/Clover) have existing POS syst
 
 ### Future
 - [ ] Rewards/loyalty system
-- [ ] Inventory tracking
 - [ ] POS integrations
 - [ ] Mobile apps
+
+---
+
+## Inventory System
+
+Stock tracking for menu items and merchandise variants.
+
+### Database Models
+
+```ruby
+# Menu items (simple tracking)
+class MenuItem
+  # track_inventory: boolean - enable/disable per item
+  # stock_quantity: integer - current count
+  # low_stock_threshold: integer - alert threshold
+end
+
+# Merchandise variants (variant-level tracking)
+class MerchandiseVariant
+  # Blue/Large t-shirt has separate stock from Red/Medium
+  # track_inventory: boolean (default true for merch)
+  # stock_quantity: integer
+  # low_stock_threshold: integer
+end
+
+# Audit log for all stock changes
+class StockAdjustment
+  # adjustable: polymorphic (MenuItem or MerchandiseVariant)
+  # location_id: for multi-location stock
+  # quantity_before, quantity_after, adjustment
+  # reason: 'order', 'refund', 'manual', 'import'
+  # reference: polymorphic (Order, Refund, etc.)
+  # user_id: who made the change
+end
+```
+
+### Stock Flow
+
+```
+Order Placed → Decrement Stock → Audit Log Entry
+     ↓
+Payment Failed? → Restore Stock
+     ↓
+Refunded? → Restore Stock (if enabled)
+```
+
+See [docs/INVENTORY_DESIGN.md](./docs/INVENTORY_DESIGN.md) for full specification.
+
+---
+
+## Refunds System
+
+Full and partial refunds via Stripe with inventory restoration.
+
+### Database Models
+
+```ruby
+class Refund
+  # order_id: which order
+  # user_id: admin who processed
+  # amount: refund amount
+  # refund_type: 'full' or 'partial'
+  # stripe_refund_id: Stripe's refund ID
+  # reason: enum (customer_request, quality_issue, etc.)
+  # restore_inventory: boolean
+  # status: pending, completed, failed
+end
+
+class Order
+  # refunded_amount: cumulative refunds
+  # refund_status: nil, 'partial', 'full'
+end
+```
+
+### Refund Types
+
+| Type | Behavior |
+|------|----------|
+| Full | Refund remaining balance, restore all inventory |
+| Partial | Refund specified amount, optionally restore inventory |
+
+See [docs/REFUNDS_DESIGN.md](./docs/REFUNDS_DESIGN.md) for full specification.
 
 ---
 

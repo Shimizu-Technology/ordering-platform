@@ -155,7 +155,45 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
 - [ ] Hours display on homepage
 - [ ] Simple POS mode for staff orders
 
-### Status: ~85% complete (from previous build)
+### 1.8 Clerk Admin Auth ✅ (Feb 9, 2026)
+- [x] Clerk frontend integration (ClerkProvider, SignIn)
+- [x] Auth context for token management
+- [x] Backend JWT verification via JWKS
+- [x] Auto-create first user as super_admin
+- [x] Admin dashboard protected by auth
+
+### 1.9 Stripe Payments ⬅️ IN PROGRESS (Feb 9, 2026)
+- [x] PaymentForm component with Stripe Elements
+- [x] Payment modal in checkout flow
+- [x] PaymentIntent creation via API
+- [x] Real Stripe test keys configured
+- [ ] Webhook handler for payment confirmation
+- [ ] Handle failed payments gracefully
+
+### 1.10 Refunds System
+See [docs/REFUNDS_DESIGN.md](./docs/REFUNDS_DESIGN.md) for full spec.
+
+- [ ] Refunds table migration
+- [ ] RefundService (Stripe integration)
+- [ ] Full refund (one-click)
+- [ ] Partial refund (enter amount)
+- [ ] Refund reasons enum
+- [ ] Admin UI for refund processing
+- [ ] Refund history on order detail
+
+### 1.11 Inventory Tracking
+See [docs/INVENTORY_DESIGN.md](./docs/INVENTORY_DESIGN.md) for full spec.
+
+- [ ] Add inventory fields to menu_items
+- [ ] Add inventory fields to merchandise_variants
+- [ ] StockAdjustment audit log table
+- [ ] Decrement stock on order
+- [ ] Restore stock on refund
+- [ ] Block ordering when stock = 0
+- [ ] Admin inventory dashboard
+- [ ] Low stock indicators
+
+### Status: ~90% complete
 
 ---
 
