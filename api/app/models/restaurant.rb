@@ -4,6 +4,9 @@ class Restaurant < ApplicationRecord
   has_many :orders, dependent: :destroy
   has_many :customers, dependent: :destroy
   has_many :promotions, dependent: :destroy
+  has_many :locations, -> { order(:position) }, dependent: :destroy
+  has_many :merchandise_categories, -> { order(:position) }, dependent: :destroy
+  has_many :merchandise_items, through: :merchandise_categories
 
   STATUSES = %w[setup_pending active suspended].freeze
 
@@ -24,6 +27,31 @@ class Restaurant < ApplicationRecord
       font_family: font_family,
       logo_url: logo_url
     }
+  end
+
+  # Feature flag helpers
+  def feature_enabled?(feature_name)
+    features&.dig(feature_name.to_s) == true
+  end
+
+  def catering_enabled?
+    feature_enabled?(:catering)
+  end
+
+  def multi_location_enabled?
+    feature_enabled?(:multi_location)
+  end
+
+  def merchandise_enabled?
+    feature_enabled?(:merchandise)
+  end
+
+  def pos_enabled?
+    feature_enabled?(:pos)
+  end
+
+  def rewards_enabled?
+    feature_enabled?(:rewards)
   end
 
   # Get currently active promotions

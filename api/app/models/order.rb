@@ -1,6 +1,7 @@
 class Order < ApplicationRecord
   belongs_to :restaurant
   belongs_to :customer, optional: true
+  belongs_to :location, optional: true
   has_many :order_items, dependent: :destroy
   has_many :menu_items, through: :order_items
 
