@@ -11,6 +11,7 @@ api/vendor/bundle/
 .env.local
 .env.*.local
 api/.env
+frontends/*/.env
 
 # Build output
 **/dist/
