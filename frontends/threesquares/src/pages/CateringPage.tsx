@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { toast } from '../components/ui/Toast';
+import { SectionNav } from '../components/SectionNav';
 import { pageTransition, pageTransitionConfig } from '../utils/motion';
 
 interface CateringPageProps {
@@ -178,6 +179,9 @@ export function CateringPage({ slug }: CateringPageProps) {
           </div>
         </div>
       </div>
+
+      {/* Section Navigation */}
+      <SectionNav slug={slug} />
 
       {/* Hero Section */}
       <div className="bg-brand/5 border-b border-brand/10 px-4 py-6">

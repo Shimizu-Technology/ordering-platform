@@ -10,6 +10,7 @@ import { ItemDetailSheet } from '../components/menu/ItemDetailSheet';
 import { CartFab } from '../components/cart/CartFab';
 import { CartSheet } from '../components/cart/CartSheet';
 import { HeaderSkeleton, CategoryNavSkeleton, CategorySkeleton } from '../components/ui/Skeleton';
+import { SectionNav } from '../components/SectionNav';
 import { pageTransition, pageTransitionConfig } from '../utils/motion';
 
 interface MenuPageProps {
@@ -207,6 +208,9 @@ export function MenuPage({ slug }: MenuPageProps) {
           </div>
         </motion.div>
       </motion.header>
+
+      {/* Section Navigation */}
+      <SectionNav slug={slug} />
 
       {/* Category Navigation */}
       {!searchQuery && (

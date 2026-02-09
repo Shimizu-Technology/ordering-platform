@@ -9,6 +9,7 @@ import { Button } from '../components/ui/Button';
 import { toast } from '../components/ui/Toast';
 import { formatPrice } from '../utils/price';
 import { pageTransition, pageTransitionConfig } from '../utils/motion';
+import { SectionNav } from '../components/SectionNav';
 
 interface CookieStorePageProps {
   slug: string;
@@ -173,6 +174,9 @@ export function CookieStorePage({ slug }: CookieStorePageProps) {
           </button>
         </div>
       </div>
+
+      {/* Section Navigation */}
+      <SectionNav slug={slug} />
 
       {/* Hero */}
       <div className="px-4 py-6 text-center border-b border-amber-200">
