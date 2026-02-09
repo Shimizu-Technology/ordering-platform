@@ -35,16 +35,26 @@ module Api
       def item_json(item, active_promos)
         promo = active_promos.find { |p| p.applies_to_item?(item) }
 
+        # Determine effective availability based on stock
+        in_stock = item.in_stock?
+        effectively_available = item.available && in_stock
+
         json = {
           id: item.id,
           name: item.name,
           description: item.description,
           base_price: item.base_price.to_f,
           image_url: item.image_url,
-          available: item.available,
+          available: effectively_available,
           position: item.position,
           modifier_groups: item.modifier_groups.ordered.map { |mg| modifier_group_json(mg) }
         }
+
+        # Add stock info if tracking is enabled
+        if item.track_inventory
+          json[:stock_status] = item.stock_status  # 'in_stock', 'low_stock', 'sold_out'
+          json[:sold_out] = item.out_of_stock?
+        end
 
         if promo
           json[:original_price] = item.base_price.to_f

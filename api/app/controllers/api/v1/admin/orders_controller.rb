@@ -58,6 +58,12 @@ module Api
           end
 
           order.update!(status: new_status)
+
+          # Restore inventory if order is cancelled
+          if new_status == "cancelled"
+            restore_order_inventory(order)
+          end
+
           render json: order_json(order)
         rescue ActiveRecord::RecordNotFound
           render json: { error: "Order not found" }, status: :not_found
@@ -119,6 +125,21 @@ module Api
         end
 
         private
+
+        def restore_order_inventory(order)
+          order.order_items.includes(:menu_item).each do |order_item|
+            menu_item = order_item.menu_item
+            next unless menu_item&.track_inventory
+
+            menu_item.restore_stock!(
+              order_item.quantity,
+              reason: "cancelled",
+              reference: order,
+              user: current_user,
+              notes: "Order ##{order.id} cancelled"
+            )
+          end
+        end
 
         def refund_params
           params.require(:refund).permit(:amount, :refund_type, :reason, :notes, :restore_inventory)

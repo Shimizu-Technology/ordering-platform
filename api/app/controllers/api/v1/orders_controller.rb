@@ -1,6 +1,7 @@
 module Api
   module V1
     class OrdersController < BaseController
+      class OrderError < StandardError; end
       def show
         order = @restaurant.orders.find(params[:id])
         render json: order_json(order)
@@ -33,6 +34,8 @@ module Api
         send_order_notifications(order)
 
         render json: order_json(order), status: :created
+      rescue OrderError => e
+        render json: { error: e.message }, status: :unprocessable_entity
       rescue ActiveRecord::RecordInvalid => e
         render json: { error: e.message }, status: :unprocessable_entity
       rescue ActiveRecord::RecordNotFound => e
@@ -155,9 +158,26 @@ module Api
       def build_order_items(order, items_data)
         items_data.each do |item_data|
           menu_item = MenuItem.find(item_data[:menu_item_id])
+          quantity = item_data[:quantity] || 1
+
+          # Check availability
+          unless menu_item.available
+            raise OrderError, "#{menu_item.name} is currently unavailable"
+          end
+
+          # Check stock if inventory tracking is enabled
+          if menu_item.track_inventory && !menu_item.can_fulfill?(quantity)
+            stock = menu_item.stock_quantity || 0
+            if stock <= 0
+              raise OrderError, "#{menu_item.name} is sold out"
+            else
+              raise OrderError, "Only #{stock} #{menu_item.name} available (requested #{quantity})"
+            end
+          end
+
           order_item = order.order_items.create!(
             menu_item: menu_item,
-            quantity: item_data[:quantity] || 1,
+            quantity: quantity,
             unit_price: menu_item.base_price,
             subtotal: 0 # Will be recalculated
           )
@@ -170,6 +190,11 @@ module Api
                 price_adjustment: modifier.price_adjustment
               )
             end
+          end
+
+          # Decrement stock after successful item creation
+          if menu_item.track_inventory
+            menu_item.decrement_stock!(quantity, order: order)
           end
         end
       end

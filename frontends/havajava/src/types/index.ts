@@ -44,6 +44,9 @@ export interface MenuItem {
   original_price?: number;
   discounted_price?: number;
   promotion?: MenuItemPromotion;
+  // Inventory fields (present when tracking is enabled)
+  stock_status?: 'in_stock' | 'low_stock' | 'sold_out';
+  sold_out?: boolean;
 }
 
 export interface MenuItemPromotion {

@@ -11,19 +11,32 @@ interface MenuItemCardProps {
 export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
   const hasModifiers = item.modifier_groups.length > 0;
   const hasPromo = !!item.promotion;
+  const isSoldOut = item.sold_out === true || item.available === false;
 
   return (
     <motion.button
-      onClick={() => onSelect(item)}
-      className="w-full flex gap-3 p-4 text-left rounded-[var(--radius-lg)] hover:bg-surface-elevated/80 transition-colors duration-[var(--duration-fast)] touch-target group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:ring-inset"
-      whileTap={{ scale: 0.98 }}
+      onClick={() => !isSoldOut && onSelect(item)}
+      disabled={isSoldOut}
+      className={`w-full flex gap-3 p-4 text-left rounded-[var(--radius-lg)] transition-colors duration-[var(--duration-fast)] touch-target group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:ring-inset ${
+        isSoldOut 
+          ? 'opacity-60 cursor-not-allowed' 
+          : 'hover:bg-surface-elevated/80'
+      }`}
+      whileTap={isSoldOut ? undefined : { scale: 0.98 }}
       transition={{ duration: 0.1 }}
-      aria-label={`${item.name}, ${hasPromo ? formatPrice(item.discounted_price!) : formatPrice(item.base_price)}${hasModifiers ? ', customizable' : ''}`}
+      aria-label={`${item.name}, ${isSoldOut ? 'sold out' : hasPromo ? formatPrice(item.discounted_price!) : formatPrice(item.base_price)}${hasModifiers ? ', customizable' : ''}`}
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h3 className="font-medium text-text-primary leading-tight">{item.name}</h3>
-          {hasPromo && (
+          <h3 className={`font-medium leading-tight ${isSoldOut ? 'text-text-muted' : 'text-text-primary'}`}>
+            {item.name}
+          </h3>
+          {isSoldOut && (
+            <span className="inline-flex items-center px-1.5 py-0.5 bg-error/10 text-error text-[10px] font-bold rounded-full shrink-0 uppercase tracking-wide">
+              Sold Out
+            </span>
+          )}
+          {!isSoldOut && hasPromo && (
             <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-warning/10 text-warning text-[10px] font-bold rounded-full shrink-0 uppercase tracking-wide">
               <Zap className="w-2.5 h-2.5" />
               {item.promotion!.name}

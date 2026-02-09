@@ -61,7 +61,7 @@ export function MenuCategorySection({
         className="divide-y divide-border-subtle"
       >
         {category.items
-          .filter((item) => item.available)
+          .filter((item) => item.available || item.sold_out)
           .map((item) => (
             <motion.div key={item.id} variants={staggerItem}>
               <MenuItemCard item={item} onSelect={onItemSelect} />
