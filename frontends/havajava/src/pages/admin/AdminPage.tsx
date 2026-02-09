@@ -11,8 +11,9 @@ import { InventoryManagement } from './InventoryManagement';
 import { RestaurantSettings } from './RestaurantSettings';
 import { PromotionsManagement } from './PromotionsManagement';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
+import { POSPage } from './POSPage';
 
-type AdminPageId = 'orders' | 'menu' | 'inventory' | 'promotions' | 'analytics' | 'settings';
+type AdminPageId = 'orders' | 'menu' | 'inventory' | 'promotions' | 'analytics' | 'settings' | 'pos';
 
 export function AdminPage() {
   const isAuthenticated = useAdminStore((s) => s.isAuthenticated);
@@ -59,6 +60,11 @@ export function AdminPage() {
 
   if (needsLogin) {
     return <AdminLogin onSuccess={() => setForceRender((n) => n + 1)} />;
+  }
+
+  // POS mode is full-screen, not inside the admin layout
+  if (activePage === 'pos') {
+    return <POSPage onBack={() => setActivePage('orders')} />;
   }
 
   return (

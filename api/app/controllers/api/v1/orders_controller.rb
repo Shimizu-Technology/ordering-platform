@@ -19,6 +19,7 @@ module Api
           customer_id: order_params[:customer_id],
           tip_amount: order_params[:tip_amount] || 0,
           tip_percentage: order_params[:tip_percentage],
+          source: order_params[:source] || "online",
           status: "pending"
         )
 
@@ -153,7 +154,7 @@ module Api
       def order_params
         params.require(:order).permit(
           :customer_name, :phone, :email, :order_type, :special_instructions, :customer_id, :location_id,
-          :tip_amount, :tip_percentage,
+          :tip_amount, :tip_percentage, :source,
           items: [ :menu_item_id, :quantity, :special_instructions, modifier_ids: [] ]
         )
       end
@@ -210,6 +211,7 @@ module Api
           email: order.email,
           order_type: order.order_type,
           status: order.status,
+          source: order.source,
           subtotal: order.subtotal.to_f,
           tip_amount: order.tip_amount.to_f,
           tip_percentage: order.tip_percentage,

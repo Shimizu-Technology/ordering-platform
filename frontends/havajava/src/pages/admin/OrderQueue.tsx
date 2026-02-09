@@ -27,7 +27,7 @@ interface OrderQueueProps {
   restaurant?: AdminRestaurant | null;
 }
 
-export function OrderQueue({ restaurant }: OrderQueueProps) {
+export function OrderQueue({ restaurant: _restaurant }: OrderQueueProps) {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -116,10 +116,6 @@ export function OrderQueue({ restaurant }: OrderQueueProps) {
       throw err;
     }
   };
-
-  // Notifications are available if SMS is configured OR customer has email
-  // Backend sends email as primary notification method
-  const notificationsConfigured = (restaurant?.sms_configured ?? false) || (restaurant?.smtp_configured ?? false) || true;
 
   const activeCount = orders.filter((o) => !['completed', 'cancelled'].includes(o.status)).length;
 
@@ -223,7 +219,6 @@ export function OrderQueue({ restaurant }: OrderQueueProps) {
                 onStatusUpdate={handleStatusUpdate}
                 onNotifyReady={handleNotifyReady}
                 updating={updatingId === order.id}
-                smsConfigured={notificationsConfigured}
               />
             ))}
           </div>

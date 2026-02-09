@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_105805) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_115619) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -196,6 +196,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_105805) do
     t.string "refund_status"
     t.decimal "refunded_amount", precision: 10, scale: 2, default: "0.0", null: false
     t.bigint "restaurant_id", null: false
+    t.string "source", default: "online", null: false
     t.text "special_instructions"
     t.string "status", default: "pending", null: false
     t.string "stripe_payment_intent_id"
@@ -208,6 +209,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_105805) do
     t.index ["idempotency_key"], name: "index_orders_on_idempotency_key", unique: true, where: "(idempotency_key IS NOT NULL)"
     t.index ["location_id"], name: "index_orders_on_location_id"
     t.index ["restaurant_id"], name: "index_orders_on_restaurant_id"
+    t.index ["source"], name: "index_orders_on_source"
     t.index ["status"], name: "index_orders_on_status"
     t.index ["stripe_payment_intent_id"], name: "index_orders_on_stripe_payment_intent_id", unique: true
   end

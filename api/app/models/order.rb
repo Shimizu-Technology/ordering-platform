@@ -9,6 +9,7 @@ class Order < ApplicationRecord
   has_many :refunds, dependent: :destroy
 
   STATUSES = %w[pending confirmed preparing ready completed cancelled].freeze
+  SOURCES = %w[online pos phone].freeze
 
   # Valid status transitions (from => [to])
   VALID_TRANSITIONS = {
@@ -21,6 +22,7 @@ class Order < ApplicationRecord
   }.freeze
 
   validates :customer_name, presence: true
+  validates :source, inclusion: { in: SOURCES }
   validates :order_type, inclusion: { in: %w[pickup dine_in] }
   validates :status, inclusion: { in: STATUSES }
   validates :idempotency_key, uniqueness: true, allow_nil: true

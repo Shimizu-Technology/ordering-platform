@@ -33,10 +33,9 @@ interface OrderCardProps {
   onNotifyReady?: (orderId: number) => Promise<void>;
   onOrderUpdate?: (updatedOrder: AdminOrder) => void;
   updating?: boolean;
-  smsConfigured?: boolean;
 }
 
-export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, onOrderUpdate, updating, smsConfigured: _smsConfigured }: OrderCardProps) {
+export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, onOrderUpdate, updating }: OrderCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [notifying, setNotifying] = useState(false);
   const [notified, setNotified] = useState(false);

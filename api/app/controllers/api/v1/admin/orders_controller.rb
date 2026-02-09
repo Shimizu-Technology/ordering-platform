@@ -191,6 +191,7 @@ module Api
             email: order.email,
             order_type: order.order_type,
             status: order.status,
+            source: order.source,
             total: order.total.to_f,
             refunded_amount: order.refunded_amount.to_f,
             refundable_amount: order.refundable_amount.to_f,
