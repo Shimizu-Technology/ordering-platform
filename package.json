@@ -1,0 +1,23 @@
+{
+  "name": "ordering-platform",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Multi-tenant restaurant ordering platform",
+  "scripts": {
+    "dev:havajava": "pnpm --filter @shimizu/havajava dev",
+    "dev:threesquares": "pnpm --filter @shimizu/threesquares dev",
+    "build": "pnpm -r build",
+    "build:havajava": "pnpm --filter @shimizu/havajava build",
+    "build:threesquares": "pnpm --filter @shimizu/threesquares build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "gate": "./scripts/gate.sh"
+  },
+  "keywords": ["restaurant", "ordering", "saas", "multi-tenant"],
+  "author": "Shimizu Technology",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

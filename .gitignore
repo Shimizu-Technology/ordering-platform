@@ -1,17 +1,21 @@
 # Dependencies
-ordering-platform-web/node_modules/
-ordering-platform-api/vendor/bundle/
+node_modules/
+**/node_modules/
+api/vendor/bundle/
+
+# pnpm
+.pnpm-debug.log
 
 # Environment
 .env
 .env.local
 .env.*.local
-ordering-platform-api/.env
+api/.env
 
 # Build output
-ordering-platform-web/dist/
-ordering-platform-api/tmp/
-ordering-platform-api/log/
+**/dist/
+api/tmp/
+api/log/
 
 # IDE
 .idea/
@@ -25,10 +29,10 @@ ordering-platform-api/log/
 Thumbs.db
 
 # Rails
-ordering-platform-api/tmp/pids/
-ordering-platform-api/tmp/cache/
-ordering-platform-api/tmp/sockets/
-ordering-platform-api/storage/
+api/tmp/pids/
+api/tmp/cache/
+api/tmp/sockets/
+api/storage/
 
 # Misc
 *.pid
