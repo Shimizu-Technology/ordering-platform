@@ -23,7 +23,20 @@ This document tracks the development phases for the Ordering Platform monorepo. 
 
 **Goal:** Convert the existing single-frontend structure to a monorepo with shared components.
 
+### Key Decisions (Feb 9, 2026)
+- **Staging:** One environment with both tenants
+- **Domains:** Shimizu manages (clients don't have their own)
+- **Stripe:** Direct API keys per restaurant (not Connect)
+- **Auth:** Clerk (per starter-app guide)
+- **Testing:** Gate script + incremental test coverage
+
+See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
+
 ### Tasks
+
+- [ ] **0.0** Audit current frontend for blacklisted fonts/colors
+  - Check for Inter, Roboto, default Tailwind blue-500
+  - Update to recommended fonts per FRONTEND_DESIGN_GUIDE
 
 - [ ] **0.1** Initialize pnpm workspace
   - Create `pnpm-workspace.yaml`
@@ -55,8 +68,20 @@ This document tracks the development phases for the Ordering Platform monorepo. 
   - Seed Three Squares data
 
 - [ ] **0.7** Add starter-app docs
-  - Copy from Brain Dump
-  - Reference in AGENTS.md
+  - Copy from Brain Dump ✅ (Done Feb 9)
+  - Reference in AGENTS.md ✅ (Done Feb 9)
+
+- [ ] **0.8** Create gate script
+  - `scripts/gate.sh` — lint, types, build for all packages
+  - Add to CI workflow
+
+- [ ] **0.9** Add Stripe per-restaurant fields
+  - Migration: add stripe_publishable_key, stripe_secret_key, stripe_webhook_secret to restaurants
+  - Update payment flow to use restaurant's keys
+
+- [ ] **0.10** Set up Clerk auth
+  - Follow CLERK_AUTH_SETUP_GUIDE.md
+  - Admin/staff roles per restaurant
 
 ### Deliverables
 - Monorepo structure working locally
