@@ -167,13 +167,14 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
 - [x] Display "Ready in ~X min" on confirmation page
 - [x] Display estimated ready time on order tracking page
 
-### 1.14 Image Optimization (Imgix)
-- [ ] Copy OptimizedImage component from Hafaloha
-- [ ] Copy imageUtils.ts from Hafaloha
-- [ ] Add VITE_IMGIX_DOMAIN to env config
-- [ ] Replace img tags with OptimizedImage in menu components
-- [ ] Replace img tags with OptimizedImage in cart/checkout
-- [ ] Test with real Imgix source (or graceful fallback)
+### 1.14 Image Optimization (Imgix) ✅ (Feb 9, 2026)
+- [x] Create OptimizedImage component (adapted from Hafaloha)
+- [x] Create image utils (getImgixImageUrl, widths/sizes helpers)
+- [x] Add to packages/shared exports
+- [x] Add VITE_IMGIX_DOMAIN to env config (both frontends)
+- [x] Update MenuItemCard in both frontends
+- [x] Update CookieStorePage in Three Squares
+- [x] Graceful fallback when IMGIX_DOMAIN not set
 
 ### 1.8 Clerk Admin Auth ✅ (Feb 9, 2026)
 - [x] Clerk frontend integration (ClerkProvider, SignIn)
