@@ -189,9 +189,10 @@ See [docs/INVENTORY_DESIGN.md](./docs/INVENTORY_DESIGN.md) for full spec.
 - [x] Add inventory fields to merchandise_variants
 - [x] StockAdjustment audit log table
 - [x] TrackableInventory concern with decrement/restore methods
-- [ ] Decrement stock on order (integration pending)
-- [ ] Restore stock on refund (integration pending)
-- [ ] Block ordering when stock = 0 (integration pending)
+- [x] Decrement stock on order creation
+- [x] Restore stock on refund (via RefundService)
+- [x] Restore stock on order cancellation
+- [x] Block ordering when stock = 0 (with "Sold Out" badge)
 - [x] Admin inventory dashboard (InventoryManagement.tsx)
 - [x] Low stock indicators
 - [x] Quick +/- stock adjustment
