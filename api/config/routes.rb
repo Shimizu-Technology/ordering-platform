@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
+      # Current user endpoint
+      get "me", to: "me#show"
+
       resources :restaurants, param: :slug, only: [ :show, :create ] do
         resource :menu, only: [ :show ], controller: "menus"
         resources :orders, only: [ :create, :show ] do
@@ -22,6 +25,7 @@ Rails.application.routes.draw do
       # Admin namespace
       namespace :admin do
         resource :restaurant, only: [ :show, :update ]
+        resources :users, only: [ :index, :show, :create, :update, :destroy ]
         resources :orders, only: [ :index, :update ] do
           member do
             post :notify_ready

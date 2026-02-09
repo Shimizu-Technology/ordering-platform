@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_033459) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_041011) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -220,6 +220,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_033459) do
     t.index ["status"], name: "index_restaurants_on_status"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "clerk_id", null: false
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.string "first_name"
+    t.string "last_name"
+    t.bigint "restaurant_id"
+    t.string "role", default: "staff", null: false
+    t.datetime "updated_at", null: false
+    t.index ["clerk_id"], name: "index_users_on_clerk_id", unique: true
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["restaurant_id", "role"], name: "index_users_on_restaurant_id_and_role"
+    t.index ["restaurant_id"], name: "index_users_on_restaurant_id"
+  end
+
   add_foreign_key "customers", "restaurants"
   add_foreign_key "locations", "restaurants"
   add_foreign_key "menu_categories", "restaurants"
@@ -237,4 +252,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_033459) do
   add_foreign_key "orders", "locations"
   add_foreign_key "orders", "restaurants"
   add_foreign_key "promotions", "restaurants"
+  add_foreign_key "users", "restaurants"
 end

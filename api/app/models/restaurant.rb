@@ -7,6 +7,7 @@ class Restaurant < ApplicationRecord
   has_many :locations, -> { order(:position) }, dependent: :destroy
   has_many :merchandise_categories, -> { order(:position) }, dependent: :destroy
   has_many :merchandise_items, through: :merchandise_categories
+  has_many :users, dependent: :nullify
 
   STATUSES = %w[setup_pending active suspended].freeze
 
