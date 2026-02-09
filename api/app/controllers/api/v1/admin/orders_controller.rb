@@ -76,16 +76,41 @@ module Api
             return render json: { error: "Order must be in 'ready' status to notify" }, status: :unprocessable_entity
           end
 
-          unless SmsService.configured?
-            return render json: { error: "SMS not configured" }, status: :service_unavailable
+          notifications_sent = []
+          errors = []
+
+          # Try SMS if configured and customer has phone
+          if SmsService.configured? && order.phone.present?
+            result = SmsService.send_order_ready(order)
+            if result[:success]
+              notifications_sent << "SMS"
+            else
+              errors << "SMS: #{result[:error]}"
+            end
           end
 
-          result = SmsService.send_order_ready(order)
+          # Send email if customer has email (primary notification method)
+          if order.email.present?
+            begin
+              OrderMailer.order_ready(order).deliver_later
+              notifications_sent << "Email"
+            rescue StandardError => e
+              errors << "Email: #{e.message}"
+              Rails.logger.error "[Notification] Email failed: #{e.message}"
+            end
+          end
 
-          if result[:success]
-            render json: { message: "Customer notified via SMS", sid: result[:sid] }
+          # Return appropriate response
+          if notifications_sent.any?
+            render json: {
+              message: "Customer notified via #{notifications_sent.join(' and ')}",
+              methods: notifications_sent,
+              errors: errors.presence
+            }
+          elsif order.email.blank? && order.phone.blank?
+            render json: { error: "No contact info available (no email or phone)" }, status: :unprocessable_entity
           else
-            render json: { error: result[:error] }, status: :unprocessable_entity
+            render json: { error: "Failed to send notifications: #{errors.join(', ')}" }, status: :unprocessable_entity
           end
         rescue ActiveRecord::RecordNotFound
           render json: { error: "Order not found" }, status: :not_found

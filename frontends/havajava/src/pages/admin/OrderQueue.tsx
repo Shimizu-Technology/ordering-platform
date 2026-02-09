@@ -117,7 +117,9 @@ export function OrderQueue({ restaurant }: OrderQueueProps) {
     }
   };
 
-  const smsConfigured = restaurant?.sms_configured ?? false;
+  // Notifications are available if SMS is configured OR customer has email
+  // Backend sends email as primary notification method
+  const notificationsConfigured = (restaurant?.sms_configured ?? false) || (restaurant?.smtp_configured ?? false) || true;
 
   const activeCount = orders.filter((o) => !['completed', 'cancelled'].includes(o.status)).length;
 
@@ -221,7 +223,7 @@ export function OrderQueue({ restaurant }: OrderQueueProps) {
                 onStatusUpdate={handleStatusUpdate}
                 onNotifyReady={handleNotifyReady}
                 updating={updatingId === order.id}
-                smsConfigured={smsConfigured}
+                smsConfigured={notificationsConfigured}
               />
             ))}
           </div>
