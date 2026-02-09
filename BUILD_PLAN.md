@@ -72,16 +72,16 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
   - Existing branding system works
   - Feature flags: simple menu ordering only
   
-- [ ] **0.5** Create `frontends/threesquares` ⬅️ NEXT
-  - Copy from havajava
-  - Apply Three Squares branding (green/gold)
-  - Enable: catering, multi-location, merchandise
+- [x] **0.5** Create `frontends/threesquares` ✅ (Feb 9, 2026)
+  - Forest green (#1B4332) / Gold (#FFD700) branding
+  - Montserrat + DM Sans fonts
+  - Features: catering, multi-location, merchandise enabled
   
 - [x] **0.6** Update API for multi-tenant routing ✅
   - [x] Location model for multi-location support
   - [x] MerchandiseCategory, MerchandiseItem, MerchandiseVariant models
   - [x] features JSON column to restaurants
-  - [ ] Seed Three Squares data (see docs/seed-data/three-squares.md)
+  - [x] Seed Three Squares data (32 menu items across 5 categories)
   - [ ] Seed Latte Stone Cookies data (see docs/seed-data/latte-stone-cookies.md)
 
 - [x] **0.7** Add starter-app docs ✅
