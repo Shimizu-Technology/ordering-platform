@@ -340,6 +340,12 @@ Based on actual Shopify store research — they have 6 flavors, dipped versions,
 - [ ] Admin user guide
 - [ ] API documentation
 
+### 4.5 Visual Polish (From Feb 9 Audit)
+- [ ] Add real product images (Latte Stone Cookies currently using placeholders)
+- [ ] Add subtle hover animations (card lifts, button hovers per Design Guide)
+- [ ] Add skeleton loaders for perceived performance
+- [ ] Dark mode support (token system already ready)
+
 ---
 
 ## Phase 5: Future Enhancements
