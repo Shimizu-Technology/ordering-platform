@@ -162,10 +162,10 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
 - [x] Update order total calculation
 - [x] Display tip on confirmation/receipt
 
-### 1.13 Prep Time Estimates
-- [ ] Add default_prep_time_minutes to restaurants
-- [ ] Display "Ready in ~X min" on confirmation page
-- [ ] Display estimated ready time on order tracking page
+### 1.13 Prep Time Estimates ✅ (Feb 9, 2026)
+- [x] Add default_prep_time_minutes to restaurants (default: 10)
+- [x] Display "Ready in ~X min" on confirmation page
+- [x] Display estimated ready time on order tracking page
 
 ### 1.14 Image Optimization (Imgix)
 - [ ] Copy OptimizedImage component from Hafaloha
