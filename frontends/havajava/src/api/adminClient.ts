@@ -20,16 +20,32 @@ import type {
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 
-function getToken(): string {
-  return localStorage.getItem('admin_token') || '';
+function getHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  
+  // Check for Clerk token first (JWT auth)
+  const clerkToken = localStorage.getItem('clerk_token');
+  if (clerkToken) {
+    headers['Authorization'] = `Bearer ${clerkToken}`;
+    return headers;
+  }
+  
+  // Fall back to admin token
+  const adminToken = localStorage.getItem('admin_token');
+  if (adminToken) {
+    headers['X-Admin-Token'] = adminToken;
+  }
+  
+  return headers;
 }
 
 async function adminRequest<T>(path: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE}/admin${path}`;
   const res = await fetch(url, {
     headers: {
-      'Content-Type': 'application/json',
-      'X-Admin-Token': getToken(),
+      ...getHeaders(),
       ...options?.headers,
     },
     ...options,

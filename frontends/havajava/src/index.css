@@ -6,9 +6,10 @@
    Defaults are HavaJava's earthy palette.
    ============================================================================ */
 :root {
-  --brand-primary: #2D5016;
+  /* HavaJava 671 Café — Coffee Brown theme */
+  --brand-primary: #5C4033;
   --brand-secondary: #F5F0E8;
-  --brand-accent: #8B4513;
+  --brand-accent: #8B6914;
   --brand-font: 'DM Sans', sans-serif;
 
   /* Derived tokens */

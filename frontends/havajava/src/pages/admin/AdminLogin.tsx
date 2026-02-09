@@ -1,14 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAdminStore } from '../../stores/adminStore';
 import { adminApi } from '../../api/adminClient';
 
+// Check if Clerk is configured
+const clerkEnabled = !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
 interface AdminLoginProps {
   onSuccess: () => void;
 }
 
-export function AdminLogin({ onSuccess }: AdminLoginProps) {
+// Token-based login component
+function TokenLogin({ onSuccess }: AdminLoginProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,7 +25,6 @@ export function AdminLogin({ onSuccess }: AdminLoginProps) {
     setLoading(true);
     setError('');
 
-    // Store the token and test it against the API
     localStorage.setItem('admin_token', password);
 
     try {
@@ -95,4 +98,69 @@ export function AdminLogin({ onSuccess }: AdminLoginProps) {
       </motion.div>
     </div>
   );
+}
+
+// Clerk-based login component (loaded dynamically)
+interface ClerkSignInProps {
+  appearance?: object;
+  redirectUrl?: string;
+}
+
+function ClerkLogin(_props: AdminLoginProps) {
+  const [ClerkSignIn, setClerkSignIn] = useState<React.ComponentType<ClerkSignInProps> | null>(null);
+
+  useEffect(() => {
+    import('@clerk/clerk-react').then((clerk) => {
+      setClerkSignIn(() => clerk.SignIn);
+    });
+  }, []);
+
+  // Show loading while Clerk loads
+  if (!ClerkSignIn) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-brand/30 border-t-brand rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-surface flex items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-sm"
+      >
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-8 h-8 text-brand" />
+          </div>
+          <h1 className="text-2xl font-bold text-text-primary">Admin Access</h1>
+          <p className="mt-2 text-text-secondary text-sm">
+            Sign in with your account to continue
+          </p>
+        </div>
+        
+        <ClerkSignIn 
+          appearance={{
+            elements: {
+              rootBox: 'w-full',
+              card: 'shadow-none border border-border-default rounded-xl',
+              formButtonPrimary: 'bg-brand hover:bg-brand-hover',
+            }
+          }}
+          redirectUrl="/admin"
+        />
+      </motion.div>
+    </div>
+  );
+}
+
+export function AdminLogin({ onSuccess }: AdminLoginProps) {
+  // Use Clerk login if configured, otherwise fall back to token-based
+  if (clerkEnabled) {
+    return <ClerkLogin onSuccess={onSuccess} />;
+  }
+  return <TokenLogin onSuccess={onSuccess} />;
 }
