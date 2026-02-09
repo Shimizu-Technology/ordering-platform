@@ -279,17 +279,17 @@ export function POSPage({ onBack }: POSPageProps) {
           </div>
         </header>
 
-        {/* Category Tabs */}
+        {/* Category Tabs - scrollable on smaller tablets */}
         {!searchQuery && (
-          <div className="flex gap-1 p-2 bg-surface-elevated overflow-x-auto scrollbar-hide">
+          <div className="flex gap-1.5 p-2 bg-surface-elevated overflow-x-auto scrollbar-hide touch-pan-x">
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`px-3 md:px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors shrink-0 ${
                   activeCategory === category.id
                     ? 'bg-brand text-white'
-                    : 'bg-white text-text-secondary hover:bg-gray-100'
+                    : 'bg-white text-text-secondary hover:bg-gray-100 active:bg-gray-200'
                 }`}
               >
                 {category.name}
@@ -299,24 +299,24 @@ export function POSPage({ onBack }: POSPageProps) {
         )}
 
         {/* Menu Grid */}
-        <div className="flex-1 overflow-auto p-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+        <div className="flex-1 overflow-auto p-3 md:p-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3">
             {filteredItems.map((item) => (
               <motion.button
                 key={item.id}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleItemClick(item)}
                 disabled={!item.available}
-                className={`p-4 rounded-xl text-left transition-all ${
+                className={`p-3 md:p-4 rounded-xl text-left transition-all min-h-[80px] ${
                   item.available
-                    ? 'bg-white hover:shadow-md hover:border-brand border-2 border-transparent'
+                    ? 'bg-white hover:shadow-md hover:border-brand border-2 border-transparent active:bg-gray-50'
                     : 'bg-gray-100 opacity-60 cursor-not-allowed'
                 }`}
               >
-                <div className="font-medium text-text-primary line-clamp-2 mb-1">
+                <div className="font-medium text-text-primary line-clamp-2 mb-1 text-sm md:text-base">
                   {item.name}
                 </div>
-                <div className="text-brand font-semibold">
+                <div className="text-brand font-semibold text-sm md:text-base">
                   ${item.base_price.toFixed(2)}
                 </div>
                 {!item.available && (
@@ -336,7 +336,7 @@ export function POSPage({ onBack }: POSPageProps) {
       </div>
 
       {/* Right Panel - Cart */}
-      <div className="w-96 bg-white border-l border-border-default flex flex-col">
+      <div className="w-72 md:w-80 lg:w-96 bg-white border-l border-border-default flex flex-col shrink-0">
         {/* Customer Info */}
         <div className="p-4 border-b border-border-default">
           <div className="flex items-center gap-2 mb-3">
