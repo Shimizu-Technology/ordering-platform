@@ -104,4 +104,47 @@ features: {
 
 ---
 
+## Latte Stone Cookies Store
+
+### 6. Separate Branding
+**Decision:** Cookie store has its own theme within the Three Squares app
+
+**Why:**
+- Latte Stone Cookies has a separate Shopify store with different branding
+- Gift-focused vs restaurant-focused messaging
+- Different customer journey
+
+**Implementation:**
+- `cookie-theme.css` for cookie store pages
+- Separate logo asset
+- Can share navigation/cart with restaurant
+
+### 7. Pickup Only for POC
+**Decision:** Local pickup only initially, shipping later
+
+**Why:**
+- Simpler to implement
+- Matches Three Squares restaurant model
+- Can add shipping post-POC (similar to Hafaloha EasyPost)
+
+**Future:** EasyPost integration for shipping
+
+### 8. Product Scope for POC
+**Decision:** Seed top 5-6 products with estimated prices
+
+**Products to seed:**
+- 2pc Box (~$5)
+- 6pc Chocolate Dipped Assortment ($11 confirmed)
+- 12pc Grand Assortment (~$22)
+- 30pc Grand Assortment (~$50)
+- 9pc Classic Tin (~$18)
+
+**Out of scope for POC:**
+- Full product catalog (need from client)
+- Wedding favor custom orders
+- Keepsakes/gifts
+- Slingstone Cookies (different product line)
+
+---
+
 *Add new decisions here as they're made.*

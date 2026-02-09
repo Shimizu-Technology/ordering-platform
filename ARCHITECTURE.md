@@ -92,6 +92,12 @@ ordering-platform/
 │       │   │   │   ├── CateringForm.tsx
 │       │   │   │   ├── PlattersBuilder.tsx
 │       │   │   │   └── QuoteRequest.tsx
+│       │   │   ├── merchandise/          # For Latte Stone Cookies store
+│       │   │   │   ├── MerchandiseGrid.tsx
+│       │   │   │   ├── MerchandiseCard.tsx
+│       │   │   │   ├── MerchandiseDetail.tsx
+│       │   │   │   ├── VariantSelector.tsx
+│       │   │   │   └── CollectionNav.tsx
 │       │   │   ├── locations/
 │       │   │   │   └── LocationPicker.tsx
 │       │   │   ├── pos/
@@ -185,12 +191,16 @@ ordering-platform/
 │       ├── src/
 │       │   ├── config.ts             # { catering: true, multiLocation: true, merchandise: true }
 │       │   ├── theme.css             # Three Squares brand colors
+│       │   ├── cookie-theme.css      # Latte Stone Cookies branding (separate look)
 │       │   ├── assets/
+│       │   │   ├── logo.svg          # Three Squares logo
+│       │   │   └── cookie-logo.svg   # Latte Stone Cookies logo
 │       │   └── pages/
 │       │       ├── HomePage.tsx
 │       │       ├── MenuPage.tsx
-│       │       ├── CateringPage.tsx      # Unique to Three Squares
-│       │       ├── CookieStorePage.tsx   # Latte Stone Cookies
+│       │       ├── CateringPage.tsx      # Catering inquiry form
+│       │       ├── CookieStorePage.tsx   # Latte Stone Cookies store
+│       │       ├── CookieProductPage.tsx # Individual cookie product
 │       │       └── ...
 │       └── README.md
 │

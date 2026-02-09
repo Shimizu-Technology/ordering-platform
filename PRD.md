@@ -175,10 +175,30 @@ hours (JSON), active
 #### Catering
 - **CateringInquiry:** restaurant_id, customer_name, email, phone, event_date, event_type, guest_count, budget, notes, status
 
-#### Merchandise
-- **MerchandiseCategory:** restaurant_id, name, position
-- **MerchandiseItem:** category_id, name, description, price, image_url, available
-- **MerchandiseVariant:** item_id, name, price_adjustment, stock_quantity
+#### Merchandise (Latte Stone Cookies)
+
+Based on actual Shopify store research (latte-stone-cookies.myshopify.com):
+
+- **MerchandiseCategory:** restaurant_id, name, description, position, active
+  - Examples: "Assortment Boxes", "Single Flavors", "Tin Collection", "Gift Sets"
+  
+- **MerchandiseItem:** category_id, name, description, base_price, image_url, available, position
+  - Examples: "6pc Chocolate Dipped Assortment" ($11.00), "12pc Grand Assortment", "30pc Grand Assortment"
+  
+- **MerchandiseVariant:** item_id, name, sku, price_adjustment, stock_quantity, available
+  - For items with size options (e.g., Classic Assortment Tin in 9pc or 20pc)
+
+**Product Lines Discovered:**
+- 6 cookie flavors: Vanilla, Chocolate, Coconut, Mango, Pineapple, Passionfruit
+- Each flavor available plain or chocolate-dipped
+- Collections: Tropical, Tin, Snack Bag, Fruit, Artist Edition, Slingstone
+- Also sells keepsakes/gifts (puzzles, souvenirs) — TBD if in scope
+
+**Branding Note:** Latte Stone Cookies has separate branding from Three Squares restaurant. The cookie store section will have its own theme within the Three Squares app.
+
+**Fulfillment:** 
+- POC: Local pickup only (at Three Squares locations)
+- Future: Add shipping (similar to Hafaloha's EasyPost integration)
 
 ---
 

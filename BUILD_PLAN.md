@@ -64,8 +64,11 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
   
 - [ ] **0.6** Update API for multi-tenant routing
   - Ensure all endpoints accept restaurant slug
-  - Add Location model for multi-location support
-  - Seed Three Squares data
+  - Add Location model for multi-location support (Chalan San Antonio + Donki)
+  - Add MerchandiseCategory, MerchandiseItem, MerchandiseVariant models
+  - Add features JSON column to restaurants
+  - Seed Three Squares data (see docs/seed-data/three-squares.md)
+  - Seed Latte Stone Cookies data (see docs/seed-data/latte-stone-cookies.md)
 
 - [ ] **0.7** Add starter-app docs
   - Copy from Brain Dump ✅ (Done Feb 9)
@@ -166,12 +169,31 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
 - [ ] Lead time rules (2-3 days for specialty items)
 
 ### 2.3 Merchandise Store (Latte Stone Cookies)
-- [ ] MerchandiseCategory model
-- [ ] MerchandiseItem model
-- [ ] MerchandiseVariant model
-- [ ] Cookie store page
-- [ ] Separate cart section (or combined)
-- [ ] Gift box builder (optional)
+
+Based on actual Shopify store research — they have 6 flavors, dipped versions, and multiple collections.
+
+**API Models:**
+- [ ] MerchandiseCategory model (Assortment Boxes, Single Flavors, Tin Collection, Gift Sets)
+- [ ] MerchandiseItem model (6pc Chocolate Dipped @ $11, 12pc Grand Assortment, etc.)
+- [ ] MerchandiseVariant model (for size options like 9pc vs 20pc tin)
+
+**Frontend:**
+- [ ] Cookie store page with separate branding (cookie-theme.css)
+- [ ] Collection navigation (Tropical, Tin, Fruit, etc.)
+- [ ] Product detail page with variant selection
+- [ ] Add to cart (shared cart or separate — TBD)
+- [ ] Checkout with pickup location selection
+
+**POC Scope:**
+- [ ] Seed top 5-6 products with estimated prices
+- [ ] Local pickup only (shipping is Phase 2+)
+- [ ] Simple inquiry link for corporate/bulk orders
+
+**Future (Post-POC):**
+- [ ] Full product catalog from client
+- [ ] Shipping integration (EasyPost like Hafaloha)
+- [ ] Wedding favor custom orders
+- [ ] Keepsakes/gifts section (if in scope)
 
 ### 2.4 Corporate/Bulk Ordering
 - [ ] Corporate inquiry form
