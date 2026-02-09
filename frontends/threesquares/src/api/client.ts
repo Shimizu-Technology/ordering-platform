@@ -28,7 +28,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json();
 }
 
-export const api = {
+export const apiClient = {
   getRestaurant: (slug: string) =>
     request<Restaurant>(`/restaurants/${slug}`),
 
@@ -83,3 +83,6 @@ export const api = {
       method: 'POST',
     }),
 };
+
+// Alias for backward compatibility
+export const api = apiClient;
