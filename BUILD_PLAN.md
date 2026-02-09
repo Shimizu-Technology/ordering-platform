@@ -19,6 +19,21 @@ This document tracks the development phases for the Ordering Platform monorepo. 
 
 ---
 
+## ⚠️ Testing Requirements (MANDATORY)
+
+**Every task must be tested before marking complete:**
+1. Run `./scripts/gate.sh` — must pass
+2. Start servers locally (API + Frontend)
+3. Open in browser (`profile="openclaw"`) — actually see the UI
+4. Test the flow end-to-end
+5. Check mobile viewport
+6. Screenshot as evidence
+7. Then commit
+
+**See AGENTS.md → "Testing Workflow" for full details.**
+
+---
+
 ## Phase 0: Monorepo Restructure ⬅️ CURRENT
 
 **Goal:** Convert the existing single-frontend structure to a monorepo with shared components.

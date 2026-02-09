@@ -162,6 +162,63 @@ cd frontends/havajava && pnpm test
 
 ---
 
+## Testing Workflow (MANDATORY)
+
+**Every feature must be visually tested before marking complete.**
+
+### 1. Run Gate Script First
+```bash
+./scripts/gate.sh
+# Must pass: lint, types, build
+```
+
+### 2. Start Servers Locally
+```bash
+# Terminal 1: API
+cd api && rails server -p 3000
+
+# Terminal 2: Frontend
+cd frontends/[client] && pnpm dev
+```
+
+### 3. Visual Testing with Browser
+Use the `browser` tool with `profile="openclaw"` to actually see the UI:
+```
+browser action=open profile=openclaw targetUrl=http://localhost:5173
+browser action=snapshot  # See what's rendered
+browser action=screenshot  # Capture visual
+```
+
+### 4. Test Critical Flows
+| Flow | Steps to Verify |
+|------|-----------------|
+| Menu | Categories load, items display, images show |
+| Add to Cart | Click item → modifiers appear → add works |
+| Checkout | Form validates, Stripe loads, order submits |
+| Order Confirmation | Shows order details, sends notifications |
+| Admin Dashboard | Login works, orders appear, status updates work |
+| Location Picker | Locations load, selection persists to checkout |
+| Catering Form | Form submits, appears in admin inbox |
+| Cookie Store | Products load, variants work, adds to cart |
+
+### 5. Mobile Testing
+Always test mobile viewport:
+```
+browser action=snapshot  # Check responsive layout
+```
+
+### 6. Screenshot Evidence
+Include screenshots when reporting progress. No "it should work" — show it working.
+
+### 7. Before Marking Task Complete
+- [ ] Gate passes
+- [ ] Visually tested in browser
+- [ ] Mobile viewport checked
+- [ ] Screenshot captured
+- [ ] Committed with descriptive message
+
+---
+
 ## Troubleshooting
 
 ### "Restaurant not found"
