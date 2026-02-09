@@ -65,6 +65,7 @@ module Api
           description: restaurant.description,
           hours: restaurant.hours,
           branding: restaurant.branding,
+          features: restaurant.features,
           active: restaurant.active
         }
       end
