@@ -13,7 +13,7 @@ import {
   Phone,
   MapPin,
 } from 'lucide-react';
-import { apiClient as api } from '../api/client';
+import { api } from '../api/client';
 
 interface OrderItem {
   id: number;

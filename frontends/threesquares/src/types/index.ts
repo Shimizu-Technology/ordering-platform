@@ -11,6 +11,7 @@ export interface Restaurant {
   address: string;
   description: string;
   hours: Record<string, { open?: string; close?: string; closed?: boolean }>;
+  timezone?: string;
   branding: Branding;
   features?: RestaurantFeatures;
   active: boolean;

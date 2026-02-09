@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users,
   Calendar,
-  Clock,
-  MapPin,
   Phone,
   Mail,
   Building2,
@@ -12,7 +10,6 @@ import {
   AlertCircle,
   CheckCircle,
   XCircle,
-  ChevronRight,
   Send,
   MessageSquare,
   RefreshCw,
@@ -81,16 +78,6 @@ export function CateringInbox() {
       month: 'short', 
       day: 'numeric',
       year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
-    });
-  };
-
-  const formatEventDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long',
-      month: 'long', 
-      day: 'numeric',
-      year: 'numeric'
     });
   };
 

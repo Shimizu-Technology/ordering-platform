@@ -19,3 +19,13 @@ export const VERSION = '1.0.0';
 export type { MenuItem, MenuCategory } from './types/menu';
 export type { Order, OrderItem, OrderStatus } from './types/order';
 export type { Restaurant } from './types/restaurant';
+
+// Utils
+export {
+  isCurrentlyOpen,
+  getTodayHours,
+  formatWeeklyHours,
+  formatTime,
+  type WeekHours,
+  type DayHours,
+} from './utils/hours';

@@ -12,6 +12,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { apiClient } from '../api/client';
+import { isCurrentlyOpen, getTodayHours, formatWeeklyHours, type WeekHours } from '@shimizu/shared';
 import type { Restaurant, Location } from '../types';
 import { LocationPicker } from '../components/LocationPicker';
 import { useLocationStore } from '../stores/locationStore';
@@ -26,7 +27,7 @@ export function LandingPage({ slug }: LandingPageProps) {
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
-  const { selectedLocation, setSelectedLocation } = useLocationStore();
+  const { selectedLocation, selectLocation } = useLocationStore();
 
   useEffect(() => {
     async function loadData() {
@@ -44,7 +45,7 @@ export function LandingPage({ slug }: LandingPageProps) {
         
         // Auto-select first location if none selected
         if (!selectedLocation && locationsData.length > 0) {
-          setSelectedLocation(locationsData[0]);
+          selectLocation(locationsData[0]);
         }
       } catch (error) {
         console.error('Failed to load restaurant:', error);
@@ -53,7 +54,7 @@ export function LandingPage({ slug }: LandingPageProps) {
       }
     }
     loadData();
-  }, [slug, selectedLocation, setSelectedLocation]);
+  }, [slug, selectedLocation, selectLocation]);
 
   if (loading) {
     return (
@@ -147,9 +148,26 @@ export function LandingPage({ slug }: LandingPageProps) {
               Good Food, Good Mood
             </p>
             
-            <p className="text-white/60 text-sm mb-6">
+            <p className="text-white/60 text-sm mb-4">
               B&G Pacific Food Services
             </p>
+
+            {/* Open/Closed Status */}
+            {restaurant.hours && (
+              <div className="mb-4">
+                {isCurrentlyOpen(restaurant.hours as WeekHours, restaurant.timezone) ? (
+                  <span className="inline-flex items-center gap-1.5 bg-green-500/20 text-green-200 px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                    Open · {getTodayHours(restaurant.hours as WeekHours, restaurant.timezone)}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 bg-red-500/20 text-red-200 px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="w-2 h-2 bg-red-400 rounded-full" />
+                    Closed · {getTodayHours(restaurant.hours as WeekHours, restaurant.timezone)}
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Location selector */}
             {locations.length > 1 && (
@@ -203,6 +221,25 @@ export function LandingPage({ slug }: LandingPageProps) {
         </div>
       </section>
 
+      {/* About Section */}
+      <section className="px-6 py-10 bg-brand/5">
+        <div className="max-w-md mx-auto">
+          <h2 className="text-xl font-semibold text-text-primary mb-4">
+            About Three Squares
+          </h2>
+          <p className="text-text-secondary leading-relaxed mb-4">
+            Three Squares is part of B&G Pacific Food Services, bringing quality 
+            food and exceptional service to Guam. From our kitchen to your table, 
+            we believe every meal should be a good one.
+          </p>
+          <p className="text-text-secondary leading-relaxed">
+            We also offer catering for events of all sizes and are proud home to 
+            <strong className="text-brand"> Latte Stone Cookies</strong> — authentic 
+            Chamorro-inspired shortbread made with island flavors.
+          </p>
+        </div>
+      </section>
+
       {/* Info Section */}
       <section className="px-6 py-10 bg-surface-elevated">
         <div className="max-w-md mx-auto space-y-6">
@@ -217,8 +254,20 @@ export function LandingPage({ slug }: LandingPageProps) {
             </div>
             <div>
               <h3 className="font-medium text-text-primary mb-1">Hours</h3>
-              <p className="text-text-secondary text-sm">Monday – Friday: 6:00am – 2:00pm</p>
-              <p className="text-text-secondary text-sm">Saturday – Sunday: Closed</p>
+              {restaurant.hours ? (
+                <div className="space-y-0.5">
+                  {formatWeeklyHours(restaurant.hours as WeekHours).map(({ day, hours }) => (
+                    <p key={day} className="text-text-secondary text-sm">
+                      <span className="inline-block w-24">{day}:</span> {hours}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <>
+                  <p className="text-text-secondary text-sm">Monday – Friday: 6:00am – 2:00pm</p>
+                  <p className="text-text-secondary text-sm">Saturday – Sunday: Closed</p>
+                </>
+              )}
             </div>
           </div>
           
@@ -276,14 +325,29 @@ export function LandingPage({ slug }: LandingPageProps) {
 
       {/* Location Picker Modal */}
       {showLocationPicker && (
-        <LocationPicker
-          locations={locations}
-          onSelect={(location) => {
-            setSelectedLocation(location);
-            setShowLocationPicker(false);
-          }}
-          onClose={() => setShowLocationPicker(false)}
-        />
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50" 
+            onClick={() => setShowLocationPicker(false)}
+          />
+          {/* Modal Content */}
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="relative w-full max-w-md bg-surface rounded-t-2xl sm:rounded-2xl p-6 max-h-[80vh] overflow-y-auto"
+          >
+            <LocationPicker
+              locations={locations}
+              selectedLocation={selectedLocation}
+              onSelect={(location) => {
+                selectLocation(location);
+                setShowLocationPicker(false);
+              }}
+            />
+          </motion.div>
+        </div>
       )}
     </div>
   );

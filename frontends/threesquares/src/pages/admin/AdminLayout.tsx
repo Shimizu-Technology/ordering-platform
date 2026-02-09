@@ -35,7 +35,7 @@ const navItems: { id: AdminPage; label: string; icon: React.ElementType; require
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-export function AdminLayout({ activePage, onNavigate, children, restaurant }: AdminLayoutProps) {
+export function AdminLayout({ activePage, onNavigate, children, restaurant: _restaurant }: AdminLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const logout = useAdminStore((s) => s.logout);
 

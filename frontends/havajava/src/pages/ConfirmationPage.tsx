@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   CheckCircle, Clock, MapPin, Phone as PhoneIcon,
-  ArrowLeft, AlertCircle, Loader2,
+  ArrowLeft, AlertCircle, Loader2, ExternalLink,
 } from 'lucide-react';
 import { api } from '../api/client';
 import { useRestaurantStore } from '../stores/restaurantStore';
@@ -205,13 +205,21 @@ export function ConfirmationPage({ slug, orderId }: ConfirmationPageProps) {
         )}
       </motion.div>
 
-      {/* New Order Button */}
+      {/* Action Buttons */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7, duration: 0.3 }}
-        className="mt-8"
+        className="mt-8 flex flex-col sm:flex-row gap-3"
       >
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={() => navigate(`/${slug}/track/${orderId}`)}
+        >
+          <ExternalLink className="w-4 h-4" />
+          Track Order
+        </Button>
         <Button
           variant="secondary"
           size="lg"

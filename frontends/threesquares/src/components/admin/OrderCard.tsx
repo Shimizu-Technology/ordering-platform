@@ -32,7 +32,7 @@ interface OrderCardProps {
   smsConfigured?: boolean;
 }
 
-export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, updating, smsConfigured }: OrderCardProps) {
+export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, updating, smsConfigured: _smsConfigured }: OrderCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [notifying, setNotifying] = useState(false);
   const [notified, setNotified] = useState(false);

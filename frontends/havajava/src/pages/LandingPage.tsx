@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Clock, MapPin, Phone, Coffee, ChevronRight } from 'lucide-react';
 import { api } from '../api/client';
+import { isCurrentlyOpen, getTodayHours, formatWeeklyHours, type WeekHours } from '@shimizu/shared';
 import type { Restaurant, MenuItem } from '../types';
 
 interface LandingPageProps {
@@ -90,9 +91,22 @@ export function LandingPage({ slug }: LandingPageProps) {
               Guam's Oldest Specialty Coffee Shop
             </p>
             
-            <p className="text-white/60 text-sm mb-8">
-              Serving gourmet coffee since 1995
-            </p>
+            {/* Open/Closed Status */}
+            {restaurant.hours && (
+              <div className="mb-6">
+                {isCurrentlyOpen(restaurant.hours as WeekHours, restaurant.timezone) ? (
+                  <span className="inline-flex items-center gap-1.5 bg-green-500/20 text-green-200 px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                    Open · {getTodayHours(restaurant.hours as WeekHours, restaurant.timezone)}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 bg-red-500/20 text-red-200 px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="w-2 h-2 bg-red-400 rounded-full" />
+                    Closed · {getTodayHours(restaurant.hours as WeekHours, restaurant.timezone)}
+                  </span>
+                )}
+              </div>
+            )}
 
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -152,6 +166,25 @@ export function LandingPage({ slug }: LandingPageProps) {
         </section>
       )}
 
+      {/* About Section */}
+      <section className="px-6 py-12 bg-brand/5">
+        <div className="max-w-md mx-auto">
+          <h2 className="text-xl font-semibold text-text-primary mb-4">
+            About Us
+          </h2>
+          <p className="text-text-secondary leading-relaxed mb-4">
+            Since 1995, HavaJava has been Guam's home for specialty coffee. 
+            What started as a small café in Hagåtña has grown into the island's 
+            longest-running coffee house, serving generations of coffee lovers.
+          </p>
+          <p className="text-text-secondary leading-relaxed">
+            We take pride in our craft, from locally-roasted beans to our signature 
+            drinks. Whether you're grabbing a quick espresso or settling in for a 
+            conversation, we're here to make your day a little brighter.
+          </p>
+        </div>
+      </section>
+
       {/* Info Section */}
       <section className="px-6 py-12 bg-surface-elevated">
         <div className="max-w-md mx-auto space-y-6">
@@ -166,8 +199,20 @@ export function LandingPage({ slug }: LandingPageProps) {
             </div>
             <div>
               <h3 className="font-medium text-text-primary mb-1">Hours</h3>
-              <p className="text-text-secondary text-sm">Monday – Saturday: 6:30am – 4:00pm</p>
-              <p className="text-text-secondary text-sm">Sunday: Closed</p>
+              {restaurant.hours ? (
+                <div className="space-y-0.5">
+                  {formatWeeklyHours(restaurant.hours as WeekHours).map(({ day, hours }) => (
+                    <p key={day} className="text-text-secondary text-sm">
+                      <span className="inline-block w-24">{day}:</span> {hours}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <>
+                  <p className="text-text-secondary text-sm">Monday – Saturday: 6:30am – 4:00pm</p>
+                  <p className="text-text-secondary text-sm">Sunday: Closed</p>
+                </>
+              )}
             </div>
           </div>
           
