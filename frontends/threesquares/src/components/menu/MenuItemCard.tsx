@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion';
 import { Plus, ChevronRight, Zap } from 'lucide-react';
+import { OptimizedImage } from '@shimizu/shared';
 import type { MenuItem } from '../../types';
 import { formatPrice } from '../../utils/price';
+
+const IMGIX_DOMAIN = import.meta.env.VITE_IMGIX_DOMAIN;
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -61,11 +64,12 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 
       {item.image_url ? (
         <div className="w-20 h-20 rounded-[var(--radius-md)] overflow-hidden shrink-0 bg-surface-elevated shadow-sm">
-          <img
+          <OptimizedImage
             src={item.image_url}
             alt=""
+            context="thumb"
+            imgixDomain={IMGIX_DOMAIN}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
           />
         </div>
       ) : (

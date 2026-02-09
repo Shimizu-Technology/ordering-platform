@@ -5,11 +5,14 @@ import {
   ArrowLeft, Cookie, ShoppingBag, Plus, Minus, X,
   MapPin, Gift, Sparkles
 } from 'lucide-react';
+import { OptimizedImage } from '@shimizu/shared';
 import { Button } from '../components/ui/Button';
 import { toast } from '../components/ui/Toast';
 import { formatPrice } from '../utils/price';
 import { pageTransition, pageTransitionConfig } from '../utils/motion';
 import { SectionNav } from '../components/SectionNav';
+
+const IMGIX_DOMAIN = import.meta.env.VITE_IMGIX_DOMAIN;
 
 interface CookieStorePageProps {
   slug: string;
@@ -215,7 +218,13 @@ export function CookieStorePage({ slug }: CookieStorePageProps) {
                 >
                   {item.image_url ? (
                     <div className="aspect-square bg-amber-50 rounded-lg mb-3 overflow-hidden">
-                      <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                      <OptimizedImage
+                        src={item.image_url}
+                        alt={item.name}
+                        context="card"
+                        imgixDomain={IMGIX_DOMAIN}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   ) : (
                     <div className="aspect-square bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg mb-3 flex items-center justify-center">

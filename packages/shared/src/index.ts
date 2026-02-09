@@ -32,3 +32,13 @@ export {
 
 // Components
 export { TipSelector, type TipOption } from './components/TipSelector';
+export { default as OptimizedImage } from './components/OptimizedImage';
+
+// Image Utils
+export {
+  getImgixImageUrl,
+  getWidthsForContext,
+  getSizesForContext,
+  type ImgixImageOptions,
+  type ImageContext,
+} from './utils/image';
