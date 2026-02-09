@@ -151,16 +151,16 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
 
 ### 1.7 HavaJava-Specific
 - [x] Custom landing page with hero ✅
-- [ ] About section
-- [ ] Hours display on homepage
+- [x] About section ✅ (Feb 9, 2026)
+- [x] Hours display on homepage ✅ (Feb 9, 2026)
 - [ ] Simple POS mode for staff orders
 
-### 1.12 Tips at Checkout
-- [ ] Add tip_amount, tip_percentage columns to orders
-- [ ] TipSelector component (15%, 20%, 25%, custom)
-- [ ] Update checkout flow to include tip selection
-- [ ] Update order total calculation
-- [ ] Display tip on confirmation/receipt
+### 1.12 Tips at Checkout ✅ (Feb 9, 2026)
+- [x] Add tip_amount, tip_percentage columns to orders
+- [x] TipSelector component (15%, 20%, 25%, custom)
+- [x] Update checkout flow to include tip selection
+- [x] Update order total calculation
+- [x] Display tip on confirmation/receipt
 
 ### 1.13 Prep Time Estimates
 - [ ] Add default_prep_time_minutes to restaurants
@@ -290,7 +290,7 @@ Based on actual Shopify store research — they have 6 flavors, dipped versions,
 - [x] Status progress visualization (pending → confirmed → preparing → ready)
 - [x] Auto-refresh every 30 seconds
 - [x] Ready for pickup banner
-- [ ] Add tracking link to ConfirmationPage
+- [x] Add tracking link to ConfirmationPage ✅
 
 ---
 
