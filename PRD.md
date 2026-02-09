@@ -1,27 +1,46 @@
 # Product Requirements Document — Ordering Platform
 
-**Version:** 1.0
-**Date:** February 2026
+**Version:** 2.0
+**Date:** February 9, 2026
+**Status:** Active Development
 
 ---
 
 ## Executive Summary
 
-A multi-tenant online ordering platform for restaurants. HavaJava 671 Café in Hagåtña, Guam is the first tenant. The platform enables customers to browse menus, customize items with modifier groups, and place orders with optional Stripe payment processing.
+A **multi-tenant restaurant ordering platform** built as a monorepo. Each restaurant gets a fully customized frontend while sharing a common Rails API and React component library.
+
+### Current Tenants
+
+| Restaurant | Type | Key Features |
+|------------|------|--------------|
+| **HavaJava Café** | Coffee shop | Online ordering, promotions |
+| **Three Squares / B&G Pacific** | Restaurant + Catering | Multi-location, catering quotes, cookie store |
+
+---
 
 ## Guiding Principles
 
-### 1. Mobile-First
-Every feature must work beautifully on a phone. Desktop is a bonus, not the target.
+### 1. One Repo, Full Context
+Everything in a monorepo so AI code review tools (CodeRabbit, Greptile) have complete visibility on every PR.
 
-### 2. Easy for Restaurants to Use
-New restaurants should be onboardable in 48 hours or less.
+### 2. Shared Core, Custom Shell
+Common functionality in `packages/shared`; each client gets a unique frontend in `frontends/`.
 
-### 3. Flexible Modifier System
-The modifier group model must handle ANY customization — from drink sizes to full sandwich builders.
+### 3. Mobile-First
+Every feature must work beautifully on a phone. Desktop is secondary.
 
-### 4. Multi-Tenant by Default
-Never build single-tenant features. Everything is scoped to a restaurant.
+### 4. Feature Flexibility
+Clients only use (and pay for) the features they need. Feature flags per tenant.
+
+### 5. Custom Domains
+Each client gets their own domain (order.havajava.com, not havajava.shimizu-tech.com).
+
+### 6. Augment, Don't Replace
+Works alongside existing POS systems (KwickPOS, Revel, Clover). We handle online orders; they keep their in-person systems.
+
+### 7. 48-Hour Onboarding
+New restaurants should be deployable within 48 hours using the `_template` frontend.
 
 ---
 
@@ -30,58 +49,168 @@ Never build single-tenant features. Everything is scoped to a restaurant.
 | Field | Value |
 |-------|-------|
 | **Company** | Shimizu Technology |
-| **First Tenant** | HavaJava 671 Café |
-| **Address** | 148 Aspinall Ave Suite 102, Hagåtña, Guam 96910 |
-| **Phone** | 671-477-0600 |
+| **Platform** | Ordering Platform (SaaS) |
 
 ### Pricing Model
 
-| Tier | Monthly | Includes |
+| Tier | Monthly | Features |
 |------|---------|----------|
-| Starter | $99/mo | Online ordering, menu management, basic dashboard |
-| Pro | $149/mo | + SMS notifications, analytics, priority support |
-| Custom | $199+/mo | + Custom domain, advanced features, API access |
+| **Starter** | $99/mo | Core ordering, notifications, basic dashboard |
+| **Pro** | $149/mo | + Analytics, promotions, SMS notifications |
+| **Business** | $249/mo | + Multi-location, catering, merchandise store |
+| **Enterprise** | Custom | + POS integration, custom features, SLA |
+
+- Setup fee: $0-500 (waived for early customers)
+- Stripe fees: Passed through to restaurant
+- Platform fee: Optional 1-2% per transaction (via Stripe Connect)
 
 ---
 
 ## Technical Architecture
 
+### Monorepo Structure
+
+```
+ordering-platform/
+├── api/                    # Rails 7 multi-tenant backend
+├── packages/
+│   └── shared/             # @shimizu/shared React components
+├── frontends/
+│   ├── _template/          # Starter for new clients
+│   ├── havajava/           # HavaJava custom frontend
+│   └── threesquares/       # Three Squares custom frontend
+└── docs/
+    └── starter-app/        # Shimizu Technology standards & guides
+```
+
+### Tech Stack
+
 | Layer | Technology |
 |-------|------------|
-| Backend | Rails 7 API-only, Ruby 3.3+, PostgreSQL |
-| Frontend | React 19, Vite, TypeScript, Tailwind CSS v4, Framer Motion |
-| Payments | Stripe |
-| Auth | Clerk (admin), Guest checkout (customers) |
-| State | Zustand |
-| Icons | Lucide React |
+| **Backend** | Rails 7 API-only, Ruby 3.3+, PostgreSQL |
+| **Frontend** | React 19, Vite, TypeScript, Tailwind CSS v4, Framer Motion |
+| **Payments** | Stripe + Stripe Connect |
+| **Auth** | Clerk (admin), Guest checkout (customers) |
+| **State** | Zustand |
+| **Icons** | Lucide React (NO emojis in UI — SVGs only) |
+| **Package Manager** | pnpm (monorepo workspaces) |
+| **Deployment** | Render (API), Netlify (frontends) |
+
+### Design Standards
+
+All frontends follow [FRONTEND_DESIGN_GUIDE.md](./docs/starter-app/FRONTEND_DESIGN_GUIDE.md):
+- Consistent component patterns
+- Responsive design (mobile-first)
+- Accessibility (WCAG 2.1 AA)
+- Performance (Core Web Vitals)
 
 ---
 
 ## User Roles
 
-| Role | Description |
-|------|-------------|
-| Customer | Browse menu, place orders (guest checkout) |
-| Staff | View order queue, update order status (Phase 2) |
-| Admin | Manage menu, settings, view analytics (Phase 2) |
+| Role | Description | Access |
+|------|-------------|--------|
+| **Customer** | Browse menu, place orders | Guest checkout (no account required) |
+| **Staff** | View orders, update status, create orders | Restaurant-specific login |
+| **Admin** | Manage menu, settings, analytics | Restaurant-specific login |
+| **Super Admin** | Manage all restaurants (Shimizu Tech) | Platform-wide access |
 
 ---
 
-## Data Model
+## Feature Matrix
 
-### Restaurant (Tenant)
-name, slug, logo_url, phone, address, description, hours (JSON), stripe_account_id, primary_color, secondary_color, accent_color, font_family, active, subdomain
+| Feature | Description | HavaJava | Three Squares |
+|---------|-------------|:--------:|:-------------:|
+| **Core Ordering** | Menu, cart, checkout | ✅ | ✅ |
+| **Guest Checkout** | Order without account | ✅ | ✅ |
+| **Order Management** | Staff dashboard | ✅ | ✅ |
+| **Notifications** | Email + SMS confirmations | ✅ | ✅ |
+| **Stripe Payments** | Online payment | ✅ | ✅ |
+| **Promotions** | Happy hour, discounts | ✅ | ✅ |
+| **Simple POS** | Staff order creation | ✅ | ✅ |
+| **Multi-Location** | Choose pickup location | ❌ | ✅ |
+| **Catering** | Quote requests, platters | ❌ | ✅ |
+| **Merchandise** | Separate product store | ❌ | ✅ |
+| **Bulk/Corporate** | Corporate account inquiries | ❌ | ✅ |
+| **Rewards** | Loyalty points | 🟡 Phase 2 | 🟡 Phase 2 |
+| **Inventory** | Stock tracking | 🟡 Phase 2 | 🟡 Phase 2 |
+| **POS Integration** | KwickPOS, Revel, Clover | 🟡 Phase 3 | 🟡 Phase 3 |
 
-### Menu System
-- **MenuCategory:** name, position, active, restaurant_id
-- **MenuItem:** name, description, base_price, image_url, available, position, menu_category_id
-- **ModifierGroup:** name, required, min_select, max_select, position, menu_item_id
-- **Modifier:** name, price_adjustment, default_selected, position, modifier_group_id
+---
 
-### Orders
-- **Order:** customer_name, phone, email, order_type, status, total, stripe_payment_intent_id, special_instructions, restaurant_id
-- **OrderItem:** order_id, menu_item_id, quantity, unit_price, subtotal, special_instructions
+## Data Models
+
+### Core Models
+
+#### Restaurant (Tenant)
+```
+name, slug, phone, email, address, description
+logo_url, primary_color, secondary_color, accent_color, font_family
+hours (JSON), timezone
+stripe_account_id, stripe_onboarding_complete
+features (JSON): { catering, multi_location, merchandise, rewards }
+notifications_enabled, webhook_url
+active, setup_complete
+```
+
+#### Location (Multi-location support)
+```
+restaurant_id, name, address, phone
+hours (JSON), active
+```
+
+#### Menu System
+- **MenuCategory:** restaurant_id, name, position, active
+- **MenuItem:** category_id, name, description, base_price, image_url, available, position
+- **ModifierGroup:** menu_item_id, name, required, min_select, max_select, position
+- **Modifier:** modifier_group_id, name, price_adjustment, default_selected, position
+
+#### Orders
+- **Order:** restaurant_id, location_id, order_number, customer_name, phone, email, order_type, status, total, stripe_payment_intent_id, special_instructions
+- **OrderItem:** order_id, menu_item_id, quantity, unit_price, subtotal
 - **OrderItemModifier:** order_item_id, modifier_id, price_adjustment
+
+### Extended Models (Business Tier)
+
+#### Catering
+- **CateringInquiry:** restaurant_id, customer_name, email, phone, event_date, event_type, guest_count, budget, notes, status
+
+#### Merchandise
+- **MerchandiseCategory:** restaurant_id, name, position
+- **MerchandiseItem:** category_id, name, description, price, image_url, available
+- **MerchandiseVariant:** item_id, name, price_adjustment, stock_quantity
+
+---
+
+## Order Flow
+
+### Customer Flow
+```
+1. Customer visits order.havajava.com
+2. Browses menu by category
+3. Selects item → Modifier sheet opens
+4. Configures modifiers (size, extras, etc.)
+5. Adds to cart
+6. Repeats for additional items
+7. Opens cart → Reviews order
+8. Proceeds to checkout
+9. Enters contact info (name, phone, email)
+10. Pays via Stripe
+11. Receives confirmation (screen + email/SMS)
+12. Waits for "Ready" notification
+13. Picks up order
+```
+
+### Staff Flow
+```
+1. New order notification (sound + visual)
+2. Staff views order in dashboard
+3. Marks as "In Progress"
+4. Prepares order
+5. Marks as "Ready" → Customer notified
+6. Customer arrives
+7. Staff verifies and marks "Completed"
+```
 
 ---
 
@@ -90,19 +219,57 @@ name, slug, logo_url, phone, address, description, hours (JSON), stripe_account_
 | Use Case | Config | Example |
 |----------|--------|---------|
 | Drink size | required, pick 1 | Tall ($0) / Grande (+$0.55) |
-| Hot/Cold | required, pick 1 | Hot / Iced |
+| Temperature | required, pick 1 | Hot / Iced |
 | Sandwich meat | required, pick 1 | Pastrami / Turkey / Ham |
 | Cheese | optional, pick 0-1 | American / Swiss (+$0.60) |
 | Veggies | optional, pick any | Lettuce / Tomato / Red Onion |
-| Smoothie fruits | required, pick 2 | Strawberry / Banana / Mango |
+| Smoothie fruits | required, pick exactly 2 | Strawberry / Banana / Mango |
 | Bagel toppings | optional, pick any | Butter / Jam / Cream Cheese (+$0.85) |
+| Bread | required, pick 1 | White / Wheat / Baguette |
 
 ---
 
-## Phase Roadmap
+## POS Integration Strategy
 
-| Phase | Focus | Status |
-|-------|-------|--------|
-| 1 | MVP — Menu + Cart + Orders | In Progress |
-| 2 | Admin Dashboard | Planned |
-| 3 | Polish + Notifications | Planned |
+Both HavaJava (KwickPOS) and Three Squares (Revel/Clover) have existing POS systems.
+
+### Phase 1: Separate Systems (Current)
+- Online orders → Our platform
+- In-person orders → Their POS
+- Staff checks two systems
+- Manual end-of-day reconciliation
+
+### Phase 2: Basic Integration (Future)
+- Push completed orders to POS via API
+- Unified reporting
+- Requires POS API access
+
+### Phase 3: Deep Integration (Future)
+- Real-time inventory sync
+- Unified menu management
+- Single source of truth
+
+---
+
+## Success Metrics
+
+| Metric | Target |
+|--------|--------|
+| Order conversion rate | > 60% (cart → completed) |
+| Average order time | < 3 minutes |
+| Order accuracy | > 99% |
+| Staff adoption | 100% within 1 week |
+| Customer satisfaction | > 4.5/5 rating |
+| Platform uptime | 99.9% |
+
+---
+
+## Related Documents
+
+- [ARCHITECTURE.md](./ARCHITECTURE.md) — Technical architecture & monorepo structure
+- [BUILD_PLAN.md](./BUILD_PLAN.md) — Development phases & timeline
+- [docs/starter-app/](./docs/starter-app/) — Shimizu Technology standards & guides
+
+---
+
+*Document maintained by Shimizu Technology | Last updated: February 9, 2026*
