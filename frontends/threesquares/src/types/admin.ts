@@ -179,3 +179,47 @@ export interface CateringInquiriesResponse {
     upcoming: number;
   };
 }
+
+// ============================================================================
+// Merchandise Types (Cookie Store)
+// ============================================================================
+
+export interface MerchandiseVariant {
+  id: number;
+  name: string;
+  price: number;
+  sku: string | null;
+  available: boolean;
+  position: number;
+  track_inventory: boolean;
+  stock_quantity: number;
+  low_stock_threshold: number;
+  in_stock: boolean;
+  low_stock: boolean;
+}
+
+export interface MerchandiseItem {
+  id: number;
+  name: string;
+  description: string | null;
+  base_price: number | null;
+  image_url: string | null;
+  available: boolean;
+  position: number;
+  category_id: number;
+  has_variants: boolean;
+  variants: MerchandiseVariant[];
+}
+
+export interface MerchandiseCategory {
+  id: number;
+  name: string;
+  description: string | null;
+  active: boolean;
+  position: number;
+  items: MerchandiseItem[];
+}
+
+export interface MerchandiseResponse {
+  categories: MerchandiseCategory[];
+}

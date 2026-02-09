@@ -13,6 +13,10 @@ import type {
   CateringInquiry,
   CateringInquiriesResponse,
   CateringStatus,
+  MerchandiseResponse,
+  MerchandiseCategory,
+  MerchandiseItem,
+  MerchandiseVariant,
 } from '../types/admin';
 import type {
   AnalyticsOverview,
@@ -253,5 +257,60 @@ export const adminApi = {
     adminRequest<{ message: string; inquiry: CateringInquiry }>(`/catering/${id}/quote`, {
       method: 'POST',
       body: JSON.stringify(data),
+    }),
+
+  // ── Merchandise (Cookie Store) ──────────────────────────────────────
+  getMerchandise: () =>
+    adminRequest<MerchandiseResponse>('/merchandise'),
+
+  createMerchandiseCategory: (data: Partial<MerchandiseCategory>) =>
+    adminRequest<MerchandiseCategory>('/merchandise/categories', {
+      method: 'POST',
+      body: JSON.stringify({ category: data }),
+    }),
+
+  updateMerchandiseCategory: (id: number, data: Partial<MerchandiseCategory>) =>
+    adminRequest<MerchandiseCategory>(`/merchandise/categories/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ category: data }),
+    }),
+
+  deleteMerchandiseCategory: (id: number) =>
+    adminRequest<void>(`/merchandise/categories/${id}`, { method: 'DELETE' }),
+
+  createMerchandiseItem: (categoryId: number, data: Partial<MerchandiseItem>) =>
+    adminRequest<MerchandiseItem>('/merchandise/items', {
+      method: 'POST',
+      body: JSON.stringify({ merchandise_category_id: categoryId, item: data }),
+    }),
+
+  updateMerchandiseItem: (id: number, data: Partial<MerchandiseItem>) =>
+    adminRequest<MerchandiseItem>(`/merchandise/items/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ item: data }),
+    }),
+
+  deleteMerchandiseItem: (id: number) =>
+    adminRequest<void>(`/merchandise/items/${id}`, { method: 'DELETE' }),
+
+  createMerchandiseVariant: (itemId: number, data: Partial<MerchandiseVariant>) =>
+    adminRequest<MerchandiseVariant>('/merchandise/variants', {
+      method: 'POST',
+      body: JSON.stringify({ merchandise_item_id: itemId, variant: data }),
+    }),
+
+  updateMerchandiseVariant: (id: number, data: Partial<MerchandiseVariant>) =>
+    adminRequest<MerchandiseVariant>(`/merchandise/variants/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ variant: data }),
+    }),
+
+  deleteMerchandiseVariant: (id: number) =>
+    adminRequest<void>(`/merchandise/variants/${id}`, { method: 'DELETE' }),
+
+  adjustMerchandiseStock: (variantId: number, adjustment: number, reason?: string, notes?: string) =>
+    adminRequest<MerchandiseVariant>(`/merchandise/variants/${variantId}/adjust_stock`, {
+      method: 'PATCH',
+      body: JSON.stringify({ adjustment, reason, notes }),
     }),
 };

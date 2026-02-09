@@ -15,7 +15,7 @@ class StockAdjustment < ApplicationRecord
   validates :adjustable_type, inclusion: { in: %w[MenuItem MerchandiseVariant] }
   validates :quantity_before, :quantity_after, :adjustment, presence: true
   validates :reason, presence: true, inclusion: {
-    in: %w[order refund manual import cancelled correction]
+    in: %w[order refund manual import cancelled correction restock damaged inventory_count returned other admin_adjustment]
   }
 
   # === Scopes ===

@@ -11,11 +11,12 @@ import {
   Zap,
   BarChart3,
   Users,
+  Cookie,
 } from 'lucide-react';
 import { useAdminStore } from '../../stores/adminStore';
 import type { AdminRestaurant } from '../../types/admin';
 
-type AdminPage = 'orders' | 'catering' | 'menu' | 'promotions' | 'analytics' | 'settings';
+type AdminPage = 'orders' | 'catering' | 'merchandise' | 'menu' | 'promotions' | 'analytics' | 'settings';
 
 interface AdminLayoutProps {
   activePage: AdminPage;
@@ -27,6 +28,7 @@ interface AdminLayoutProps {
 const navItems: { id: AdminPage; label: string; icon: React.ElementType; requiresFeature?: string }[] = [
   { id: 'orders', label: 'Order Queue', icon: ClipboardList },
   { id: 'catering', label: 'Catering', icon: Users, requiresFeature: 'catering' },
+  { id: 'merchandise', label: 'Cookies', icon: Cookie, requiresFeature: 'merchandise' },
   { id: 'menu', label: 'Menu', icon: UtensilsCrossed },
   { id: 'promotions', label: 'Promos', icon: Zap },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
@@ -40,9 +42,10 @@ export function AdminLayout({ activePage, onNavigate, children, restaurant }: Ad
   // Filter nav items based on restaurant features
   const filteredNavItems = navItems.filter(item => {
     if (!item.requiresFeature) return true;
-    // For now, show catering for Three Squares (or when we have features data)
+    // For now, show catering and merchandise for Three Squares
     // TODO: Check actual features from restaurant when API returns it
     if (item.requiresFeature === 'catering') return true;
+    if (item.requiresFeature === 'merchandise') return true;
     return true;
   });
 

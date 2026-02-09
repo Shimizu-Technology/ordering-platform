@@ -93,6 +93,19 @@ Rails.application.routes.draw do
         get "analytics/revenue", to: "analytics#revenue"
         get "analytics/items", to: "analytics#items"
         get "analytics/hours", to: "analytics#hours"
+
+        # Merchandise (Cookies store admin)
+        get "merchandise", to: "merchandise#index"
+        post "merchandise/categories", to: "merchandise#create_category"
+        patch "merchandise/categories/:id", to: "merchandise#update_category"
+        delete "merchandise/categories/:id", to: "merchandise#destroy_category"
+        post "merchandise/items", to: "merchandise#create_item"
+        patch "merchandise/items/:id", to: "merchandise#update_item"
+        delete "merchandise/items/:id", to: "merchandise#destroy_item"
+        post "merchandise/variants", to: "merchandise#create_variant"
+        patch "merchandise/variants/:id", to: "merchandise#update_variant"
+        delete "merchandise/variants/:id", to: "merchandise#destroy_variant"
+        patch "merchandise/variants/:id/adjust_stock", to: "merchandise#adjust_stock"
       end
     end
   end
