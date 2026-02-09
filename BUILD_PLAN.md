@@ -295,22 +295,24 @@ Based on actual Shopify store research — they have 6 flavors, dipped versions,
 
 ---
 
-## Phase 3: Simple POS Mode
+## Phase 3: Simple POS Mode ✅ (Feb 9, 2026)
 
 **Goal:** Allow staff to create orders for walk-in customers.
 
 ### 3.1 POS Interface
-- [ ] Quick-add menu grid
-- [ ] Modifier selection (streamlined)
-- [ ] Order builder
-- [ ] Payment options:
-  - [ ] Mark as "Pay at Counter" (cash/card via their POS)
-  - [ ] Process via Stripe (optional)
+- [x] Quick-add menu grid
+- [x] Modifier selection (streamlined modal)
+- [x] Order builder (cart with qty controls)
+- [x] Payment options:
+  - [x] Mark as "Pay at Counter" (auto-confirms for cash/card)
+  - [x] Process via Stripe (card button, uses existing flow)
 - [ ] Receipt/ticket printing (future)
+- [x] Search menu functionality
+- [x] Touch-friendly layout for iPad
 
 ### 3.2 Order Source Tracking
-- [ ] `order_source` field: `online` | `pos` | `phone`
-- [ ] Reporting by source
+- [x] `source` field: `online` | `pos` | `phone`
+- [ ] Reporting by source (future)
 
 ---
 
