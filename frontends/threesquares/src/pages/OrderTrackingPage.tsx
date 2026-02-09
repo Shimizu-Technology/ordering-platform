@@ -12,8 +12,10 @@ import {
   AlertCircle,
   Phone,
   MapPin,
+  Timer,
 } from 'lucide-react';
 import { api } from '../api/client';
+import { useRestaurantStore } from '../stores/restaurantStore';
 
 interface OrderItem {
   id: number;
@@ -49,11 +51,27 @@ export function OrderTrackingPage({ slug }: { slug: string }) {
   const [searchParams] = useSearchParams();
   const initialOrderId = paramOrderId || searchParams.get('id') || '';
 
+  const { restaurant, loadRestaurant } = useRestaurantStore();
   const [orderIdInput, setOrderIdInput] = useState(initialOrderId);
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+
+  // Load restaurant data for prep time
+  useEffect(() => {
+    loadRestaurant(slug);
+  }, [slug, loadRestaurant]);
+
+  // Calculate estimated ready time
+  const getEstimatedReadyTime = useCallback(() => {
+    if (!order || !restaurant?.default_prep_time_minutes) return null;
+    if (order.status === 'ready' || order.status === 'completed' || order.status === 'cancelled') return null;
+    
+    const orderTime = new Date(order.created_at);
+    const readyTime = new Date(orderTime.getTime() + restaurant.default_prep_time_minutes * 60 * 1000);
+    return readyTime;
+  }, [order, restaurant]);
 
   const fetchOrder = useCallback(async (id: string) => {
     if (!id.trim()) return;
@@ -200,6 +218,17 @@ export function OrderTrackingPage({ slug }: { slug: string }) {
                   </span>
                   <span className="capitalize">{order.order_type}</span>
                 </div>
+                
+                {/* Estimated Ready Time */}
+                {getEstimatedReadyTime() && (
+                  <div className="mt-3 flex items-center gap-2 text-brand bg-brand/10 px-3 py-2 rounded-lg">
+                    <Timer className="w-4 h-4" />
+                    <span className="text-sm font-medium">
+                      Estimated ready: ~{getEstimatedReadyTime()!.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                )}
+                
                 {lastRefresh && (
                   <p className="text-xs text-text-muted mt-2">
                     Last updated: {lastRefresh.toLocaleTimeString()}

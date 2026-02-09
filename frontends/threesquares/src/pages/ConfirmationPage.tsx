@@ -132,6 +132,21 @@ export function ConfirmationPage({ slug, orderId }: ConfirmationPageProps) {
         Your order #{order.id} has been received.
       </motion.p>
 
+      {/* Prep Time Estimate */}
+      {restaurant?.default_prep_time_minutes && order.status !== 'ready' && order.status !== 'completed' && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.45, duration: 0.3 }}
+          className="mt-4 inline-flex items-center gap-2 bg-brand/10 text-brand px-4 py-2 rounded-full"
+        >
+          <Clock className="w-4 h-4" />
+          <span className="text-sm font-medium">
+            Ready in ~{restaurant.default_prep_time_minutes} minutes
+          </span>
+        </motion.div>
+      )}
+
       {/* Order Details Card */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}

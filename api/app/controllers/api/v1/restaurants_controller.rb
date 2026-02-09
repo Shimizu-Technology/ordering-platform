@@ -66,6 +66,7 @@ module Api
           hours: restaurant.hours,
           branding: restaurant.branding,
           features: restaurant.features,
+          default_prep_time_minutes: restaurant.default_prep_time_minutes,
           active: restaurant.active
         }
       end

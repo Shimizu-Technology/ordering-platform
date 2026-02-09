@@ -13,6 +13,7 @@ export interface Restaurant {
   hours: Record<string, { open?: string; close?: string; closed?: boolean }>;
   timezone?: string;
   branding: Branding;
+  default_prep_time_minutes?: number;
   active: boolean;
   status?: string;
 }

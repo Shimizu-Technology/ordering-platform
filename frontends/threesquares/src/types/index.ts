@@ -14,6 +14,7 @@ export interface Restaurant {
   timezone?: string;
   branding: Branding;
   features?: RestaurantFeatures;
+  default_prep_time_minutes?: number;
   active: boolean;
   status?: string;
 }

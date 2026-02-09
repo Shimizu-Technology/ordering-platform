@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_104851) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_105805) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -257,6 +257,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_104851) do
     t.string "address"
     t.datetime "created_at", null: false
     t.jsonb "default_order_type", default: "pickup"
+    t.integer "default_prep_time_minutes", default: 10, null: false
     t.text "description"
     t.string "email"
     t.jsonb "features", default: {"pos"=>false, "rewards"=>false, "catering"=>false, "merchandise"=>false, "multi_location"=>false}, null: false
