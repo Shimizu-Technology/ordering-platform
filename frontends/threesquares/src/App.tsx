@@ -5,6 +5,7 @@ import { CheckoutPage } from './pages/CheckoutPage';
 import { ConfirmationPage } from './pages/ConfirmationPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { MyOrdersPage } from './pages/MyOrdersPage';
+import { CateringPage } from './pages/CateringPage';
 import { ToastContainer } from './components/ui/Toast';
 import { AdminPage } from './pages/admin/AdminPage';
 
@@ -23,6 +24,7 @@ function App() {
           {/* Restaurant routes */}
           <Route path="/:slug" element={<RestaurantMenu />} />
           <Route path="/:slug/checkout" element={<RestaurantCheckout />} />
+          <Route path="/:slug/catering" element={<RestaurantCatering />} />
           <Route path="/:slug/orders" element={<RestaurantMyOrders />} />
           <Route path="/:slug/confirmation/:orderId" element={<RestaurantConfirmation />} />
 
@@ -52,6 +54,11 @@ function RestaurantMyOrders() {
 function RestaurantConfirmation() {
   const { slug, orderId } = useParams<{ slug: string; orderId: string }>();
   return <ConfirmationPage slug={slug!} orderId={parseInt(orderId!, 10)} />;
+}
+
+function RestaurantCatering() {
+  const { slug } = useParams<{ slug: string }>();
+  return <CateringPage slug={slug!} />;
 }
 
 export default App;
