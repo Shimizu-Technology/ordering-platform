@@ -521,10 +521,11 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
             className="input-field"
           >
             <option value="DM Sans">DM Sans</option>
-            <option value="Inter">Inter</option>
             <option value="Outfit">Outfit</option>
             <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
             <option value="Space Grotesk">Space Grotesk</option>
+            <option value="Sora">Sora</option>
+            <option value="General Sans">General Sans</option>
           </select>
         </FormField>
 
