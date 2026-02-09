@@ -150,10 +150,30 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
 - [x] BOGO promotions
 
 ### 1.7 HavaJava-Specific
-- [ ] Custom landing page with hero
+- [x] Custom landing page with hero ✅
 - [ ] About section
 - [ ] Hours display on homepage
 - [ ] Simple POS mode for staff orders
+
+### 1.12 Tips at Checkout
+- [ ] Add tip_amount, tip_percentage columns to orders
+- [ ] TipSelector component (15%, 20%, 25%, custom)
+- [ ] Update checkout flow to include tip selection
+- [ ] Update order total calculation
+- [ ] Display tip on confirmation/receipt
+
+### 1.13 Prep Time Estimates
+- [ ] Add default_prep_time_minutes to restaurants
+- [ ] Display "Ready in ~X min" on confirmation page
+- [ ] Display estimated ready time on order tracking page
+
+### 1.14 Image Optimization (Imgix)
+- [ ] Copy OptimizedImage component from Hafaloha
+- [ ] Copy imageUtils.ts from Hafaloha
+- [ ] Add VITE_IMGIX_DOMAIN to env config
+- [ ] Replace img tags with OptimizedImage in menu components
+- [ ] Replace img tags with OptimizedImage in cart/checkout
+- [ ] Test with real Imgix source (or graceful fallback)
 
 ### 1.8 Clerk Admin Auth ✅ (Feb 9, 2026)
 - [x] Clerk frontend integration (ClerkProvider, SignIn)
@@ -202,48 +222,50 @@ See [docs/INVENTORY_DESIGN.md](./docs/INVENTORY_DESIGN.md) for full spec.
 
 ---
 
-## Phase 2: Three Squares Features
+## Phase 2: Three Squares Features ✅ MOSTLY COMPLETE
 
 **Goal:** Add features unique to Three Squares / B&G Pacific.
 
-### 2.1 Multi-Location Support
-- [ ] Location model in API
-- [ ] Location picker component
-- [ ] Location-scoped orders
+### 2.1 Multi-Location Support ✅ (Feb 9, 2026)
+- [x] Location model in API
+- [x] Location picker component (LocationPicker.tsx)
+- [x] Location-scoped orders
+- [x] 2 locations seeded (Hagåtña, Tamuning)
 - [ ] Location-specific hours
 - [ ] Location-specific menus (optional)
 
-### 2.2 Catering System
-- [ ] CateringInquiry model
-- [ ] Catering landing page
-- [ ] Quote request form
+### 2.2 Catering System ✅ (Feb 9, 2026)
+- [x] CateringInquiry model
+- [x] Catering landing page (CateringPage.tsx)
+- [x] Quote request form
   - Event date, time, type
   - Guest count
   - Budget range
   - Special requests
-- [ ] Admin catering inbox
-- [ ] Quote response workflow
+- [x] Admin catering inbox (CateringInbox.tsx)
+- [x] Quote response workflow (status: pending → quoted → accepted/declined)
 - [ ] Lead time rules (2-3 days for specialty items)
 
-### 2.3 Merchandise Store (Latte Stone Cookies)
+### 2.3 Merchandise Store (Latte Stone Cookies) ✅ (Feb 9, 2026)
 
 Based on actual Shopify store research — they have 6 flavors, dipped versions, and multiple collections.
 
 **API Models:**
-- [ ] MerchandiseCategory model (Assortment Boxes, Single Flavors, Tin Collection, Gift Sets)
-- [ ] MerchandiseItem model (6pc Chocolate Dipped @ $11, 12pc Grand Assortment, etc.)
-- [ ] MerchandiseVariant model (for size options like 9pc vs 20pc tin)
+- [x] MerchandiseCategory model
+- [x] MerchandiseItem model
+- [x] MerchandiseVariant model (for size options)
+- [x] Merchandise API endpoints
 
 **Frontend:**
-- [ ] Cookie store page with separate branding (cookie-theme.css)
-- [ ] Collection navigation (Tropical, Tin, Fruit, etc.)
-- [ ] Product detail page with variant selection
-- [ ] Add to cart (shared cart or separate — TBD)
-- [ ] Checkout with pickup location selection
+- [x] Cookie store page (CookieStorePage.tsx)
+- [x] Collection navigation
+- [x] Product cards with variant display
+- [x] Add to cart integration
+- [x] Merchandise admin CRUD (MerchandiseAdmin.tsx)
 
 **POC Scope:**
-- [ ] Seed top 5-6 products with estimated prices
-- [ ] Local pickup only (shipping is Phase 2+)
+- [ ] Seed real Latte Stone Cookies products (data ready in docs/seed-data/)
+- [x] Local pickup only
 - [ ] Simple inquiry link for corporate/bulk orders
 
 **Future (Post-POC):**
@@ -257,10 +279,18 @@ Based on actual Shopify store research — they have 6 flavors, dipped versions,
 - [ ] Recurring order setup (future)
 - [ ] Corporate account dashboard (future)
 
-### 2.5 Three Squares-Specific
-- [ ] Custom landing page
-- [ ] Restaurant vs Catering vs Cookies navigation
-- [ ] Location-aware homepage
+### 2.5 Three Squares-Specific ✅ (Feb 9, 2026)
+- [x] Custom landing page (LandingPage.tsx)
+- [x] Restaurant vs Catering vs Cookies navigation (landing page cards)
+- [x] Location-aware ordering
+
+### 2.6 Order Tracking ✅ (Feb 9, 2026)
+- [x] Order tracking page (OrderTrackingPage.tsx)
+- [x] Order lookup by ID
+- [x] Status progress visualization (pending → confirmed → preparing → ready)
+- [x] Auto-refresh every 30 seconds
+- [x] Ready for pickup banner
+- [ ] Add tracking link to ConfirmationPage
 
 ---
 

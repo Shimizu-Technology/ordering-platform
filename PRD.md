@@ -89,6 +89,7 @@ ordering-platform/
 |-------|------------|
 | **Backend** | Rails 7 API-only, Ruby 3.3+, PostgreSQL |
 | **Frontend** | React 19, Vite, TypeScript, Tailwind CSS v4, Framer Motion |
+| **Image CDN** | Imgix (responsive images, auto-format, compression) |
 | **Payments** | Stripe + Stripe Connect |
 | **Auth** | Clerk (admin), Guest checkout (customers) |
 | **State** | Zustand |
@@ -128,6 +129,9 @@ All frontends follow [FRONTEND_DESIGN_GUIDE.md](./docs/starter-app/FRONTEND_DESI
 | **Stripe Payments** | Online payment | ✅ | ✅ |
 | **Promotions** | Happy hour, discounts | ✅ | ✅ |
 | **Simple POS** | Staff order creation | ✅ | ✅ |
+| **Tips** | Tip selection at checkout | ✅ | ✅ |
+| **Prep Time Estimate** | "Ready in ~X min" display | ✅ | ✅ |
+| **Optimized Images** | Imgix CDN for fast loading | ✅ | ✅ |
 | **Multi-Location** | Choose pickup location | ❌ | ✅ |
 | **Catering** | Quote requests, platters | ❌ | ✅ |
 | **Merchandise** | Separate product store | ❌ | ✅ |
@@ -199,6 +203,88 @@ Based on actual Shopify store research (latte-stone-cookies.myshopify.com):
 **Fulfillment:** 
 - POC: Local pickup only (at Three Squares locations)
 - Future: Add shipping (similar to Hafaloha's EasyPost integration)
+
+---
+
+## Tips System
+
+Customers can add a tip at checkout. Standard for coffee shops and restaurants.
+
+### Tip Options
+| Option | Value |
+|--------|-------|
+| No Tip | $0 |
+| 15% | Calculated |
+| 20% | Calculated |
+| 25% | Calculated |
+| Custom | User-entered amount |
+
+### Data Model
+```
+Order
+  tip_amount: decimal       # Tip selected by customer
+  tip_percentage: integer   # For analytics (15, 20, 25, or null for custom)
+  subtotal: decimal         # Pre-tip total
+  total: decimal            # Subtotal + tip
+```
+
+### UX Notes
+- Tip selection appears after payment method, before final confirmation
+- Pre-select 20% by default (can configure per restaurant)
+- Show calculated amounts for percentage options
+- Tips go to restaurant (not platform fee)
+
+---
+
+## Prep Time Estimates
+
+Display estimated wait time to set customer expectations.
+
+### Configuration (per restaurant)
+```
+Restaurant
+  default_prep_time_minutes: integer  # Default: 10
+  busy_prep_time_minutes: integer     # Used during peak hours (optional)
+```
+
+### Display
+- Confirmation page: "Your order will be ready in approximately **10 minutes**"
+- Order tracking page: Show estimated ready time
+- Can be manually overridden by staff per order (future)
+
+### Future Enhancements
+- Auto-calculate based on order complexity (# of items, item types)
+- Real-time adjustment based on current queue depth
+- Staff can update estimate per order
+
+---
+
+## Image Optimization (Imgix)
+
+All product images served through Imgix CDN for fast loading and responsive delivery.
+
+### Implementation
+- **OptimizedImage component** — Wrapper that generates srcset for responsive images
+- **Auto-format** — Serves WebP/AVIF where supported
+- **Auto-compress** — Quality optimization
+- **Responsive widths** — Different sizes for card, detail, cart contexts
+
+### Image Contexts
+| Context | Widths | Use Case |
+|---------|--------|----------|
+| card | 240, 480, 720 | Menu item cards |
+| detail | 400, 800, 1200 | Item detail modal |
+| thumb | 80, 160, 240 | Small thumbnails |
+| cart | 80, 160 | Cart item images |
+| hero | 640, 1280, 1920 | Landing page hero |
+
+### Environment Variable
+```
+VITE_IMGIX_DOMAIN=your-source.imgix.net
+```
+
+### Fallback
+If Imgix not configured, images served directly from source URL.
 
 ---
 
