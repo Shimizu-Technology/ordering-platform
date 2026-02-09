@@ -1,6 +1,7 @@
 import type {
   OrdersResponse,
   AdminOrder,
+  AdminOrderWithRefunds,
   AdminCategory,
   AdminMenuItem,
   AdminModifierGroup,
@@ -10,6 +11,12 @@ import type {
   OrderStatus,
   StripeConnectStatus,
   NotifyReadyResponse,
+  InventoryResponse,
+  InventoryItem,
+  AuditLogResponse,
+  RefundRequest,
+  RefundResponse,
+  Refund,
 } from '../types/admin';
 import type {
   AnalyticsOverview,
@@ -240,5 +247,61 @@ export const adminApi = {
     if (params?.end_date) search.set('end_date', params.end_date);
     const qs = search.toString();
     return adminRequest<HoursResponse>(`/analytics/hours${qs ? `?${qs}` : ''}`);
+  },
+
+  // ── Inventory ───────────────────────────────────────────────────────
+  getInventory: (params?: { type?: string; status?: string; search?: string }) => {
+    const search = new URLSearchParams();
+    if (params?.type) search.set('type', params.type);
+    if (params?.status) search.set('status', params.status);
+    if (params?.search) search.set('search', params.search);
+    const qs = search.toString();
+    return adminRequest<InventoryResponse>(`/inventory${qs ? `?${qs}` : ''}`);
+  },
+
+  updateInventoryItem: (type: string, id: number, data: { track_inventory?: boolean; stock_quantity?: number; low_stock_threshold?: number }) =>
+    adminRequest<InventoryItem>(`/inventory/${type}/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
+  adjustStock: (type: string, id: number, data: { adjustment: number; reason: string; notes?: string }) =>
+    adminRequest<InventoryItem>(`/inventory/${type}/${id}/adjust`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  getLowStock: () =>
+    adminRequest<InventoryResponse>('/inventory/low-stock'),
+
+  getAuditLog: (params?: { type?: string; id?: number; page?: number; per_page?: number }) => {
+    const search = new URLSearchParams();
+    if (params?.type) search.set('type', params.type);
+    if (params?.id) search.set('id', String(params.id));
+    if (params?.page) search.set('page', String(params.page));
+    if (params?.per_page) search.set('per_page', String(params.per_page));
+    const qs = search.toString();
+    return adminRequest<AuditLogResponse>(`/inventory/audit-log${qs ? `?${qs}` : ''}`);
+  },
+
+  // ── Refunds ─────────────────────────────────────────────────────────
+  getOrder: (orderId: number) =>
+    adminRequest<AdminOrderWithRefunds>(`/orders/${orderId}`),
+
+  processRefund: (orderId: number, data: RefundRequest) =>
+    adminRequest<RefundResponse>(`/orders/${orderId}/refund`, {
+      method: 'POST',
+      body: JSON.stringify({ refund: data }),
+    }),
+
+  getOrderRefunds: (orderId: number) =>
+    adminRequest<{ refunds: Refund[] }>(`/orders/${orderId}/refunds`),
+
+  getAllRefunds: (params?: { page?: number; per_page?: number }) => {
+    const search = new URLSearchParams();
+    if (params?.page) search.set('page', String(params.page));
+    if (params?.per_page) search.set('per_page', String(params.per_page));
+    const qs = search.toString();
+    return adminRequest<{ refunds: Refund[]; meta: { page: number; per_page: number; total: number; total_pages: number } }>(`/refunds${qs ? `?${qs}` : ''}`);
   },
 };

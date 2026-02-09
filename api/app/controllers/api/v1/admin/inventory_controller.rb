@@ -5,23 +5,45 @@ module Api
     module Admin
       class InventoryController < BaseController
         # GET /admin/inventory
-        # List all items with inventory tracking
+        # List all items (with option to filter)
         def index
-          menu_items = MenuItem
+          items = MenuItem
             .joins(:menu_category)
             .where(menu_categories: { restaurant_id: @restaurant.id })
-            .tracking_inventory
             .includes(:menu_category)
             .order("menu_categories.position, menu_items.position")
 
-          # TODO: Add merchandise variants when that feature is enabled
+          # Filter by tracking status
+          if params[:type].present? && params[:type] != "all"
+            # Future: filter by MenuItem vs MerchandiseVariant
+          end
+
+          # Filter by stock status
+          case params[:status]
+          when "low_stock"
+            items = items.tracking_inventory.low_stock
+          when "sold_out", "out_of_stock"
+            items = items.tracking_inventory.out_of_stock
+          when "in_stock"
+            items = items.tracking_inventory.in_stock
+          end
+
+          # Search
+          if params[:search].present?
+            items = items.where("menu_items.name ILIKE ?", "%#{params[:search]}%")
+          end
+
+          # Calculate stats
+          all_items = MenuItem.joins(:menu_category).where(menu_categories: { restaurant_id: @restaurant.id })
+          tracked_items = all_items.tracking_inventory
 
           render json: {
-            menu_items: menu_items.map { |item| inventory_item_json(item) },
-            summary: {
-              total_tracked: menu_items.count,
-              low_stock: menu_items.low_stock.count,
-              out_of_stock: menu_items.out_of_stock.count
+            items: items.map { |item| inventory_item_json(item) },
+            meta: {
+              total: all_items.count,
+              tracked: tracked_items.count,
+              low_stock: tracked_items.low_stock.count,
+              sold_out: tracked_items.out_of_stock.count
             }
           }
         end
@@ -46,40 +68,34 @@ module Api
           }
         end
 
-        # PATCH /admin/inventory/menu_items/:id
-        # Update stock for a menu item
-        def update_menu_item
-          item = MenuItem
-            .joins(:menu_category)
-            .where(menu_categories: { restaurant_id: @restaurant.id })
-            .find(params[:id])
+        # PATCH /admin/inventory/:type/:id
+        # Update inventory settings for an item
+        def update_item
+          item = find_item_by_type
 
-          if inventory_params[:stock_quantity].present?
+          if params[:stock_quantity].present?
             item.adjust_stock!(
-              inventory_params[:stock_quantity].to_i,
-              reason: inventory_params[:reason] || "manual",
+              params[:stock_quantity].to_i,
+              reason: params[:reason] || "manual",
               user: current_user,
-              notes: inventory_params[:notes]
+              notes: params[:notes]
             )
           end
 
           # Update other inventory settings
           item.update!(inventory_settings_params) if inventory_settings_params.any?
 
-          render json: { item: inventory_item_json(item.reload) }
+          render json: inventory_item_json(item.reload)
         rescue ActiveRecord::RecordNotFound
-          render json: { error: "Menu item not found" }, status: :not_found
+          render json: { error: "Item not found" }, status: :not_found
         end
 
-        # POST /admin/inventory/menu_items/:id/adjust
+        # POST /admin/inventory/:type/:id/adjust
         # Manual stock adjustment with reason
-        def adjust_menu_item
-          item = MenuItem
-            .joins(:menu_category)
-            .where(menu_categories: { restaurant_id: @restaurant.id })
-            .find(params[:id])
+        def adjust_item
+          item = find_item_by_type
 
-          adjustment = adjustment_params[:adjustment].to_i
+          adjustment = params[:adjustment].to_i
           new_quantity = (item.stock_quantity || 0) + adjustment
 
           if new_quantity < 0
@@ -88,14 +104,31 @@ module Api
 
           item.adjust_stock!(
             new_quantity,
-            reason: adjustment_params[:reason] || "manual",
+            reason: params[:reason] || "manual",
             user: current_user,
-            notes: adjustment_params[:notes]
+            notes: params[:notes]
           )
 
-          render json: { item: inventory_item_json(item.reload) }
+          render json: inventory_item_json(item.reload)
         rescue ActiveRecord::RecordNotFound
-          render json: { error: "Menu item not found" }, status: :not_found
+          render json: { error: "Item not found" }, status: :not_found
+        end
+
+        def find_item_by_type
+          case params[:type]
+          when "MenuItem"
+            MenuItem
+              .joins(:menu_category)
+              .where(menu_categories: { restaurant_id: @restaurant.id })
+              .find(params[:id])
+          when "MerchandiseVariant"
+            MerchandiseVariant
+              .joins(merchandise_item: :merchandise_category)
+              .where(merchandise_categories: { restaurant_id: @restaurant.id })
+              .find(params[:id])
+          else
+            raise ActiveRecord::RecordNotFound, "Unknown item type"
+          end
         end
 
         # GET /admin/inventory/audit-log
@@ -139,13 +172,13 @@ module Api
             id: item.id,
             type: "MenuItem",
             name: item.name,
-            category: item.menu_category.name,
+            category_name: item.menu_category.name,
             track_inventory: item.track_inventory,
             stock_quantity: item.stock_quantity,
             low_stock_threshold: item.low_stock_threshold,
             stock_status: item.stock_status,
-            in_stock: item.in_stock?,
-            available: item.available
+            available: item.available,
+            base_price: item.base_price.to_f
           }
         end
 

@@ -4,7 +4,7 @@ module Api
   module V1
     module Admin
       class RefundsController < BaseController
-        before_action :set_order, only: [:create, :order_refunds]
+        before_action :set_order, only: [ :create, :order_refunds ]
 
         # GET /admin/refunds
         # List all refunds for the restaurant

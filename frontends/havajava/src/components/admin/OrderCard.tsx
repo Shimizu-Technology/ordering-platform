@@ -11,10 +11,13 @@ import {
   MessageSquare,
   Loader2,
   Check,
+  RotateCcw,
 } from 'lucide-react';
-import type { AdminOrder, OrderStatus } from '../../types/admin';
+import type { AdminOrder, AdminOrderWithRefunds, OrderStatus } from '../../types/admin';
 import { StatusBadge } from './StatusBadge';
 import { formatPrice } from '../../utils/price';
+import { RefundModal } from './RefundModal';
+import { adminApi } from '../../api/adminClient';
 
 const nextStatus: Partial<Record<OrderStatus, { label: string; status: OrderStatus }>> = {
   pending: { label: 'Start Preparing', status: 'preparing' },
@@ -28,17 +31,48 @@ interface OrderCardProps {
   isNew?: boolean;
   onStatusUpdate: (orderId: number, status: OrderStatus) => void;
   onNotifyReady?: (orderId: number) => Promise<void>;
+  onOrderUpdate?: (updatedOrder: AdminOrder) => void;
   updating?: boolean;
   smsConfigured?: boolean;
 }
 
-export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, updating, smsConfigured }: OrderCardProps) {
+export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, onOrderUpdate, updating, smsConfigured }: OrderCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [notifying, setNotifying] = useState(false);
   const [notified, setNotified] = useState(false);
+  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [orderWithRefunds, setOrderWithRefunds] = useState<AdminOrderWithRefunds | null>(null);
+  const [loadingRefundData, setLoadingRefundData] = useState(false);
   const next = nextStatus[order.status];
 
   const timeAgo = getTimeAgo(order.created_at);
+
+  // Check if order has refund info from extended type
+  const hasRefundInfo = 'refunded_amount' in order;
+  const refundedAmount = hasRefundInfo ? (order as AdminOrderWithRefunds).refunded_amount : 0;
+  const refundStatus = hasRefundInfo ? (order as AdminOrderWithRefunds).refund_status : null;
+
+  const openRefundModal = async () => {
+    setLoadingRefundData(true);
+    try {
+      const fullOrder = await adminApi.getOrder(order.id);
+      setOrderWithRefunds(fullOrder);
+      setShowRefundModal(true);
+    } catch (err) {
+      console.error('Failed to load order details:', err);
+    } finally {
+      setLoadingRefundData(false);
+    }
+  };
+
+  const handleRefundComplete = (updatedOrder: AdminOrderWithRefunds) => {
+    setShowRefundModal(false);
+    setOrderWithRefunds(null);
+    // Notify parent of the update
+    if (onOrderUpdate) {
+      onOrderUpdate(updatedOrder);
+    }
+  };
 
   return (
     <motion.div
@@ -150,8 +184,24 @@ export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, updatin
                 </div>
               )}
 
+              {/* Refund info */}
+              {refundedAmount > 0 && (
+                <div className="bg-error/5 border border-error/20 rounded-[var(--radius-sm)] p-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-text-secondary">Refunded</span>
+                    <span className="font-medium text-error">-{formatPrice(refundedAmount)}</span>
+                  </div>
+                  {refundStatus === 'partial' && (
+                    <p className="text-xs text-text-muted mt-1">Partial refund applied</p>
+                  )}
+                  {refundStatus === 'full' && (
+                    <p className="text-xs text-text-muted mt-1">Fully refunded</p>
+                  )}
+                </div>
+              )}
+
               {/* Action buttons */}
-              {(next || order.status === 'ready') && (
+              {(next || order.status === 'ready' || order.status === 'completed') && (
                 <div className="flex gap-2 pt-1 flex-wrap">
                   {next && (
                     <button
@@ -205,6 +255,21 @@ export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, updatin
                       )}
                     </div>
                   )}
+                  {/* Refund button - available for completed orders or orders with payments */}
+                  {(order.status === 'completed' || order.status === 'ready') && refundStatus !== 'full' && (
+                    <button
+                      onClick={openRefundModal}
+                      disabled={loadingRefundData}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-orange-500/10 text-orange-600 rounded-[var(--radius-md)] font-medium text-sm transition-all hover:bg-orange-500/20 active:bg-orange-500/30 disabled:opacity-50 touch-target"
+                    >
+                      {loadingRefundData ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <RotateCcw className="w-4 h-4" />
+                      )}
+                      Refund
+                    </button>
+                  )}
                   {order.status !== 'completed' && order.status !== 'cancelled' && (
                     <button
                       onClick={() => onStatusUpdate(order.id, 'cancelled')}
@@ -218,6 +283,20 @@ export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, updatin
               )}
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Refund Modal */}
+      <AnimatePresence>
+        {showRefundModal && orderWithRefunds && (
+          <RefundModal
+            order={orderWithRefunds}
+            onClose={() => {
+              setShowRefundModal(false);
+              setOrderWithRefunds(null);
+            }}
+            onRefundComplete={handleRefundComplete}
+          />
         )}
       </AnimatePresence>
     </motion.div>

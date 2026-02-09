@@ -7,11 +7,12 @@ import { AdminLogin } from './AdminLogin';
 import { AdminLayout } from './AdminLayout';
 import { OrderQueue } from './OrderQueue';
 import { MenuManagement } from './MenuManagement';
+import { InventoryManagement } from './InventoryManagement';
 import { RestaurantSettings } from './RestaurantSettings';
 import { PromotionsManagement } from './PromotionsManagement';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
 
-type AdminPageId = 'orders' | 'menu' | 'promotions' | 'analytics' | 'settings';
+type AdminPageId = 'orders' | 'menu' | 'inventory' | 'promotions' | 'analytics' | 'settings';
 
 export function AdminPage() {
   const isAuthenticated = useAdminStore((s) => s.isAuthenticated);
@@ -64,6 +65,7 @@ export function AdminPage() {
     <AdminLayout activePage={activePage} onNavigate={setActivePage}>
       {activePage === 'orders' && <OrderQueue restaurant={restaurant} />}
       {activePage === 'menu' && <MenuManagement />}
+      {activePage === 'inventory' && <InventoryManagement />}
       {activePage === 'promotions' && <PromotionsManagement />}
       {activePage === 'analytics' && <AnalyticsDashboard />}
       {activePage === 'settings' && <RestaurantSettings onRestaurantUpdate={setRestaurant} />}

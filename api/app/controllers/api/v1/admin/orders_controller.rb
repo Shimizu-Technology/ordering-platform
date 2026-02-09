@@ -32,6 +32,13 @@ module Api
           }
         end
 
+        def show
+          order = @restaurant.orders.includes(:refunds, order_items: [ :menu_item, { order_item_modifiers: :modifier } ]).find(params[:id])
+          render json: order_with_refunds_json(order)
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: "Order not found" }, status: :not_found
+        end
+
         def update
           order = @restaurant.orders.find(params[:id])
           valid_transitions = {
@@ -164,6 +171,27 @@ module Api
               }
             end
           }
+        end
+
+        def order_with_refunds_json(order)
+          order_json(order).merge(
+            stripe_payment_intent_id: order.stripe_payment_intent_id,
+            refunds: order.refunds.order(created_at: :desc).map do |r|
+              {
+                id: r.id,
+                amount: r.amount.to_f,
+                refund_type: r.refund_type,
+                reason: r.reason,
+                notes: r.notes,
+                status: r.status,
+                stripe_refund_id: r.stripe_refund_id,
+                restore_inventory: r.restore_inventory,
+                error_message: r.error_message,
+                user_email: r.user&.email,
+                created_at: r.created_at.iso8601
+              }
+            end
+          )
         end
       end
     end

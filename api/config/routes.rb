@@ -26,7 +26,7 @@ Rails.application.routes.draw do
       namespace :admin do
         resource :restaurant, only: [ :show, :update ]
         resources :users, only: [ :index, :show, :create, :update, :destroy ]
-        resources :orders, only: [ :index, :update ] do
+        resources :orders, only: [ :index, :show, :update ] do
           member do
             post :notify_ready
             post :refund
@@ -46,8 +46,8 @@ Rails.application.routes.draw do
         get "inventory/low-stock", to: "inventory#low_stock"
         get "inventory/out-of-stock", to: "inventory#out_of_stock"
         get "inventory/audit-log", to: "inventory#audit_log"
-        patch "inventory/menu_items/:id", to: "inventory#update_menu_item"
-        post "inventory/menu_items/:id/adjust", to: "inventory#adjust_menu_item"
+        patch "inventory/:type/:id", to: "inventory#update_item"
+        post "inventory/:type/:id/adjust", to: "inventory#adjust_item"
 
         # Stripe Connect
         post "stripe/connect", to: "stripe#connect"

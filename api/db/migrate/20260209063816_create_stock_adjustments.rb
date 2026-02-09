@@ -29,8 +29,8 @@ class CreateStockAdjustments < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :stock_adjustments, [:adjustable_type, :adjustable_id], name: 'idx_stock_adj_adjustable'
-    add_index :stock_adjustments, [:reference_type, :reference_id], name: 'idx_stock_adj_reference'
+    add_index :stock_adjustments, [ :adjustable_type, :adjustable_id ], name: 'idx_stock_adj_adjustable'
+    add_index :stock_adjustments, [ :reference_type, :reference_id ], name: 'idx_stock_adj_reference'
     add_index :stock_adjustments, :reason
     add_index :stock_adjustments, :created_at
   end
