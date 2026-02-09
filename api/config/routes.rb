@@ -1,15 +1,15 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      resources :restaurants, param: :slug, only: [:show, :create] do
-        resource :menu, only: [:show], controller: "menus"
-        resources :orders, only: [:create, :show] do
+      resources :restaurants, param: :slug, only: [ :show, :create ] do
+        resource :menu, only: [ :show ], controller: "menus"
+        resources :orders, only: [ :create, :show ] do
           member do
             post :pay
             post :reorder
           end
         end
-        resources :customers, only: [:create] do
+        resources :customers, only: [ :create ] do
           member do
             get :orders
           end
@@ -21,8 +21,8 @@ Rails.application.routes.draw do
 
       # Admin namespace
       namespace :admin do
-        resource :restaurant, only: [:show, :update]
-        resources :orders, only: [:index, :update] do
+        resource :restaurant, only: [ :show, :update ]
+        resources :orders, only: [ :index, :update ] do
           member do
             post :notify_ready
           end
@@ -32,21 +32,21 @@ Rails.application.routes.draw do
         post "stripe/connect", to: "stripe#connect"
         get "stripe/status", to: "stripe#status"
 
-        resources :categories, only: [:index, :create, :update, :destroy] do
+        resources :categories, only: [ :index, :create, :update, :destroy ] do
           collection do
             patch :reorder
           end
         end
-        resources :menu_items, only: [:create, :update, :destroy] do
+        resources :menu_items, only: [ :create, :update, :destroy ] do
           collection do
             patch :reorder
           end
         end
-        resources :modifier_groups, only: [:create, :update, :destroy]
-        resources :modifiers, only: [:create, :update, :destroy]
+        resources :modifier_groups, only: [ :create, :update, :destroy ]
+        resources :modifiers, only: [ :create, :update, :destroy ]
 
         # Promotions
-        resources :promotions, only: [:index, :create, :update, :destroy]
+        resources :promotions, only: [ :index, :create, :update, :destroy ]
 
         # Analytics
         get "analytics/overview", to: "analytics#overview"

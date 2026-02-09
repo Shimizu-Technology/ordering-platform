@@ -87,15 +87,15 @@ espresso = havajava.menu_categories.find_or_create_by!(name: "Espresso Drinks") 
 end
 
 espresso_drinks = [
-  ["Caffè Espresso", "Rich, bold Lavazza espresso shot", 3.10, 3.65],
-  ["Caffè Americano", "Espresso with hot water for a smooth, full-bodied coffee", 3.25, 3.75],
-  ["Red Eye", "Drip coffee with an added shot of espresso for extra kick", 3.75, 4.25],
-  ["Cappuccino", "Equal parts espresso, steamed milk, and velvety foam", 4.90, 5.40],
-  ["Caffè Latte", "Espresso with steamed milk and a light layer of foam", 4.90, 5.40],
-  ["Caffè Mocha", "Espresso with chocolate, steamed milk, and whipped cream", 5.25, 5.75],
-  ["White Chocolate Mocha", "Espresso with white chocolate sauce and steamed milk", 5.95, 6.50],
-  ["Mexican Mocha", "Espresso with chocolate, cinnamon, cayenne, and steamed milk", 5.95, 6.50],
-  ["Carmella", "Espresso with caramel, steamed milk, and caramel drizzle", 5.95, 6.50],
+  [ "Caffè Espresso", "Rich, bold Lavazza espresso shot", 3.10, 3.65 ],
+  [ "Caffè Americano", "Espresso with hot water for a smooth, full-bodied coffee", 3.25, 3.75 ],
+  [ "Red Eye", "Drip coffee with an added shot of espresso for extra kick", 3.75, 4.25 ],
+  [ "Cappuccino", "Equal parts espresso, steamed milk, and velvety foam", 4.90, 5.40 ],
+  [ "Caffè Latte", "Espresso with steamed milk and a light layer of foam", 4.90, 5.40 ],
+  [ "Caffè Mocha", "Espresso with chocolate, steamed milk, and whipped cream", 5.25, 5.75 ],
+  [ "White Chocolate Mocha", "Espresso with white chocolate sauce and steamed milk", 5.95, 6.50 ],
+  [ "Mexican Mocha", "Espresso with chocolate, cinnamon, cayenne, and steamed milk", 5.95, 6.50 ],
+  [ "Carmella", "Espresso with caramel, steamed milk, and caramel drizzle", 5.95, 6.50 ]
 ]
 
 espresso_drinks.each_with_index do |(name, desc, tall, grande), idx|
@@ -116,15 +116,15 @@ ice_blended = havajava.menu_categories.find_or_create_by!(name: "Ice-Blended Dri
 end
 
 blended_drinks = [
-  ["Frozen Mocha Frappé", "Blended espresso with chocolate, milk, and ice", 5.95, 6.50],
-  ["Frozen Coconut Mocha Frappé", "Blended espresso with coconut, chocolate, and ice", 5.95, 6.50],
-  ["Frozen White Chocolate Vanilla Frappé", "Blended espresso with white chocolate, vanilla, and ice", 5.95, 6.50],
-  ["Frozen Coffee Toffee", "Blended espresso with toffee syrup, milk, and ice", 5.95, 6.50],
-  ["Frozen Matcha Green Tea Frappé", "Blended matcha green tea with milk and ice", 5.95, 6.50],
-  ["Frozen Chai Frappé", "Blended chai spice with milk and ice", 5.95, 6.50],
-  ["Frozen Chocolate Frappé", "Blended chocolate with milk and ice — coffee-free", 5.95, 6.50],
-  ["Frozen Real Fruit Smoothie", "Pick 2 real fruits blended with ice", 6.25, 6.75],
-  ["Kids' Favorite Flavor Slush", "Fun fruity slush for kids", 4.25, 4.75],
+  [ "Frozen Mocha Frappé", "Blended espresso with chocolate, milk, and ice", 5.95, 6.50 ],
+  [ "Frozen Coconut Mocha Frappé", "Blended espresso with coconut, chocolate, and ice", 5.95, 6.50 ],
+  [ "Frozen White Chocolate Vanilla Frappé", "Blended espresso with white chocolate, vanilla, and ice", 5.95, 6.50 ],
+  [ "Frozen Coffee Toffee", "Blended espresso with toffee syrup, milk, and ice", 5.95, 6.50 ],
+  [ "Frozen Matcha Green Tea Frappé", "Blended matcha green tea with milk and ice", 5.95, 6.50 ],
+  [ "Frozen Chai Frappé", "Blended chai spice with milk and ice", 5.95, 6.50 ],
+  [ "Frozen Chocolate Frappé", "Blended chocolate with milk and ice — coffee-free", 5.95, 6.50 ],
+  [ "Frozen Real Fruit Smoothie", "Pick 2 real fruits blended with ice", 6.25, 6.75 ],
+  [ "Kids' Favorite Flavor Slush", "Fun fruity slush for kids", 4.25, 4.75 ]
 ]
 
 blended_drinks.each_with_index do |(name, desc, tall, grande), idx|
@@ -178,11 +178,11 @@ iced_tea = havajava.menu_categories.find_or_create_by!(name: "Iced Tea Coolers")
 end
 
 tea_coolers = [
-  ["Peach Melba", "Refreshing peach iced tea cooler", 3.95, 4.45],
-  ["Tropical Breeze", "Tropical fruit iced tea blend", 3.95, 4.45],
-  ["Watermelon", "Sweet watermelon iced tea cooler", 3.95, 4.45],
-  ["Minty Mojito", "Mint-infused iced tea cooler (non-alcoholic)", 3.95, 4.45],
-  ["Calamansi", "Local calamansi citrus iced tea — island favorite", 3.95, 4.45],
+  [ "Peach Melba", "Refreshing peach iced tea cooler", 3.95, 4.45 ],
+  [ "Tropical Breeze", "Tropical fruit iced tea blend", 3.95, 4.45 ],
+  [ "Watermelon", "Sweet watermelon iced tea cooler", 3.95, 4.45 ],
+  [ "Minty Mojito", "Mint-infused iced tea cooler (non-alcoholic)", 3.95, 4.45 ],
+  [ "Calamansi", "Local calamansi citrus iced tea — island favorite", 3.95, 4.45 ]
 ]
 
 tea_coolers.each_with_index do |(name, desc, tall, grande), idx|
@@ -202,11 +202,11 @@ hot_bev = havajava.menu_categories.find_or_create_by!(name: "Hot Beverages") do 
 end
 
 hot_beverages = [
-  ["Hot Java", "Fresh brewed Lavazza drip coffee", 3.25, 3.75],
-  ["Hot Tea", "Selection of premium tea bags", 2.75, 3.25],
-  ["Hot Chai Tea", "Spiced chai tea with steamed milk", 4.50, 5.00],
-  ["Hot Dirty Chai", "Chai tea with a shot of espresso", 5.00, 5.50],
-  ["Hot Chocolate", "Rich hot chocolate with steamed milk", 3.25, 3.75],
+  [ "Hot Java", "Fresh brewed Lavazza drip coffee", 3.25, 3.75 ],
+  [ "Hot Tea", "Selection of premium tea bags", 2.75, 3.25 ],
+  [ "Hot Chai Tea", "Spiced chai tea with steamed milk", 4.50, 5.00 ],
+  [ "Hot Dirty Chai", "Chai tea with a shot of espresso", 5.00, 5.50 ],
+  [ "Hot Chocolate", "Rich hot chocolate with steamed milk", 3.25, 3.75 ]
 ]
 
 hot_beverages.each_with_index do |(name, desc, tall, grande), idx|
@@ -248,9 +248,9 @@ create_item(grab_go, "Bagel", "Fresh bagel with your choice of flavor and toppin
     mg.position = 1
   end
   [
-    ["Butter", 0.85],
-    ["Jam", 0.85],
-    ["Cream Cheese", 0.85],
+    [ "Butter", 0.85 ],
+    [ "Jam", 0.85 ],
+    [ "Cream Cheese", 0.85 ]
   ].each_with_index do |(topping, price), i|
     topping_group.modifiers.find_or_create_by!(name: topping) do |m|
       m.price_adjustment = price
@@ -372,7 +372,7 @@ create_item(sandwiches, "Custom Sandwich", "Build your own sandwich — comes wi
     mg.max_select = 1
     mg.position = 4
   end
-  ["White", "Whole Wheat", "French Baguette", "Italian Sub Roll", "Bagel"].each_with_index do |bread, i|
+  [ "White", "Whole Wheat", "French Baguette", "Italian Sub Roll", "Bagel" ].each_with_index do |bread, i|
     bread_group.modifiers.find_or_create_by!(name: bread) do |m|
       m.price_adjustment = 0
       m.default_selected = false
@@ -405,7 +405,7 @@ create_item(sandwiches, "Custom Sandwich", "Build your own sandwich — comes wi
     mg.max_select = 1
     mg.position = 6
   end
-  ["Iced Coffee", "Iced Tea"].each_with_index do |drink, i|
+  [ "Iced Coffee", "Iced Tea" ].each_with_index do |drink, i|
     drink_group.modifiers.find_or_create_by!(name: drink) do |m|
       m.price_adjustment = 0
       m.default_selected = i == 0
@@ -420,7 +420,7 @@ create_item(sandwiches, "Custom Sandwich", "Build your own sandwich — comes wi
     mg.max_select = 1
     mg.position = 7
   end
-  ["Eat In", "To Go"].each_with_index do |option, i|
+  [ "Eat In", "To Go" ].each_with_index do |option, i|
     dining_group.modifiers.find_or_create_by!(name: option) do |m|
       m.price_adjustment = 0
       m.default_selected = i == 0
@@ -440,15 +440,15 @@ pastries = havajava.menu_categories.find_or_create_by!(name: "Pastries") do |c|
 end
 
 pastry_items = [
-  ["Brownies", "Rich chocolate brownies", 4.55],
-  ["Carrot Cake", "Moist carrot cake with cream cheese frosting", 4.50],
-  ["Almond Filled Croissant", "Flaky croissant filled with almond cream", 4.35],
-  ["Blueberry Muffin", "Fresh blueberry muffin", 3.65],
-  ["Double Chocolate Muffin", "Rich double chocolate muffin", 3.65],
-  ["Blueberry Scone", "Buttery blueberry scone", 4.35],
-  ["Banana Nut Muffin", "Banana nut muffin with walnuts", 3.65],
-  ["Butter Croissant", "Classic buttery croissant", 3.95],
-  ["Chocolate Croissant", "Croissant filled with chocolate", 4.25],
+  [ "Brownies", "Rich chocolate brownies", 4.55 ],
+  [ "Carrot Cake", "Moist carrot cake with cream cheese frosting", 4.50 ],
+  [ "Almond Filled Croissant", "Flaky croissant filled with almond cream", 4.35 ],
+  [ "Blueberry Muffin", "Fresh blueberry muffin", 3.65 ],
+  [ "Double Chocolate Muffin", "Rich double chocolate muffin", 3.65 ],
+  [ "Blueberry Scone", "Buttery blueberry scone", 4.35 ],
+  [ "Banana Nut Muffin", "Banana nut muffin with walnuts", 3.65 ],
+  [ "Butter Croissant", "Classic buttery croissant", 3.95 ],
+  [ "Chocolate Croissant", "Croissant filled with chocolate", 4.25 ]
 ]
 
 pastry_items.each_with_index do |(name, desc, price), idx|
@@ -474,10 +474,10 @@ create_item(retail, "Gift Certificate", "HavaJava 671 gift certificate — great
     mg.position = 0
   end
   [
-    ["$10", -15.00],
-    ["$25", 0],
-    ["$50", 25.00],
-    ["$100", 75.00],
+    [ "$10", -15.00 ],
+    [ "$25", 0 ],
+    [ "$50", 25.00 ],
+    [ "$100", 75.00 ]
   ].each_with_index do |(label, adj), i|
     amount_group.modifiers.find_or_create_by!(name: label) do |m|
       m.price_adjustment = adj

@@ -22,7 +22,7 @@ module Api
           orders = orders.offset((page - 1) * per_page).limit(per_page)
 
           render json: {
-            orders: orders.includes(order_items: [:menu_item, { order_item_modifiers: :modifier }]).map { |o| order_json(o) },
+            orders: orders.includes(order_items: [ :menu_item, { order_item_modifiers: :modifier } ]).map { |o| order_json(o) },
             meta: {
               page: page,
               per_page: per_page,

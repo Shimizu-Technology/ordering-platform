@@ -15,7 +15,7 @@ class CreatePromotions < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :promotions, [:restaurant_id, :active]
+    add_index :promotions, [ :restaurant_id, :active ]
     add_index :promotions, :applies_to
   end
 end

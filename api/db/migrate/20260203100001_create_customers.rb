@@ -9,6 +9,6 @@ class CreateCustomers < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :customers, [:restaurant_id, :email], unique: true
+    add_index :customers, [ :restaurant_id, :email ], unique: true
   end
 end

@@ -31,13 +31,13 @@ module Api
           orders = completed_orders.where(created_at: start_date.beginning_of_day..end_date.end_of_day)
 
           data = case granularity
-                 when "weekly"
+          when "weekly"
                    group_revenue_by(orders, "DATE_TRUNC('week', created_at)::date")
-                 when "monthly"
+          when "monthly"
                    group_revenue_by(orders, "DATE_TRUNC('month', created_at)::date")
-                 else
+          else
                    group_revenue_by(orders, "DATE(created_at)")
-                 end
+          end
 
           render json: {
             start_date: start_date.iso8601,

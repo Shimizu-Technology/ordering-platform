@@ -2,7 +2,7 @@ module Api
   module V1
     module Admin
       class PromotionsController < BaseController
-        before_action :set_promotion, only: [:update, :destroy]
+        before_action :set_promotion, only: [ :update, :destroy ]
 
         def index
           promotions = @restaurant.promotions.order(created_at: :desc)

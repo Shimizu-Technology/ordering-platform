@@ -35,7 +35,7 @@ module Api
       def orders
         customer = @restaurant.customers.find(params[:id])
         orders = customer.orders
-          .includes(order_items: [:menu_item, { order_item_modifiers: :modifier }])
+          .includes(order_items: [ :menu_item, { order_item_modifiers: :modifier } ])
           .order(created_at: :desc)
 
         render json: {

@@ -19,5 +19,13 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Allow setState in effects for initialization patterns
+      'react-hooks/set-state-in-effect': 'off',
+      // Allow non-component exports in same file (for toast utilities, etc.)
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      // Allow unused expressions for zustand store patterns
+      '@typescript-eslint/no-unused-expressions': 'off',
+    },
   },
 ])

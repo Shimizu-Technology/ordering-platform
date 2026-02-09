@@ -38,7 +38,7 @@ class Promotion < ApplicationRecord
     when "percentage_off"
       (base_price * (1 - value / 100.0)).round(2)
     when "fixed_off"
-      [(base_price - value), 0].max.round(2)
+      [ (base_price - value), 0 ].max.round(2)
     when "happy_hour_price"
       value.to_f
     when "bogo"
