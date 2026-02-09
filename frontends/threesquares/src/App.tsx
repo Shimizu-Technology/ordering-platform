@@ -8,6 +8,7 @@ import { OnboardingPage } from './pages/OnboardingPage';
 import { MyOrdersPage } from './pages/MyOrdersPage';
 import { CateringPage } from './pages/CateringPage';
 import { CookieStorePage } from './pages/CookieStorePage';
+import { OrderTrackingPage } from './pages/OrderTrackingPage';
 import { ToastContainer } from './components/ui/Toast';
 import { AdminPage } from './pages/admin/AdminPage';
 
@@ -33,6 +34,8 @@ function App() {
           <Route path="/:slug/catering" element={<RestaurantCatering />} />
           <Route path="/:slug/cookies" element={<RestaurantCookies />} />
           <Route path="/:slug/orders" element={<RestaurantMyOrders />} />
+          <Route path="/:slug/track" element={<RestaurantTracking />} />
+          <Route path="/:slug/track/:orderId" element={<RestaurantTracking />} />
           <Route path="/:slug/confirmation/:orderId" element={<RestaurantConfirmation />} />
 
           {/* Default redirect to Three Squares landing */}
@@ -76,6 +79,11 @@ function RestaurantCatering() {
 function RestaurantCookies() {
   const { slug } = useParams<{ slug: string }>();
   return <CookieStorePage slug={slug!} />;
+}
+
+function RestaurantTracking() {
+  const { slug } = useParams<{ slug: string }>();
+  return <OrderTrackingPage slug={slug!} />;
 }
 
 export default App;
