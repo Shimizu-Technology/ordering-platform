@@ -49,53 +49,52 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
 
 ### Tasks
 
-- [ ] **0.0** Audit current frontend for blacklisted fonts/colors
-  - Check for Inter, Roboto, default Tailwind blue-500
-  - Update to recommended fonts per FRONTEND_DESIGN_GUIDE
+- [x] **0.0** Audit current frontend for blacklisted fonts/colors ✅
+  - Removed Inter from font options
+  - Added Sora and General Sans
+  - Documented in docs/AUDIT_NOTES.md
 
-- [ ] **0.1** Initialize pnpm workspace
-  - Create `pnpm-workspace.yaml`
-  - Update root `package.json`
-  
+- [x] **0.1** Initialize pnpm workspace ✅
+  - Created `pnpm-workspace.yaml`
+  - Renamed ordering-platform-api → api/
+  - Renamed ordering-platform-web → frontends/havajava/
+  - Created packages/shared/ with TypeScript types
+
 - [ ] **0.2** Create `packages/shared` library
-  - Extract reusable components from current frontend
-  - Set up TypeScript config for library
-  - Export components, hooks, stores, utils
+  - [x] TypeScript types (menu, order, restaurant)
+  - [ ] Extract reusable UI components
+  - [ ] Extract hooks and stores
   
-- [ ] **0.3** Create `frontends/_template`
-  - Minimal starter frontend
-  - Document customization points
-  - README with setup instructions
+- [ ] **0.3** Create `frontends/_template` (SKIPPED - copy havajava instead)
   
-- [ ] **0.4** Create `frontends/havajava`
-  - Fork current frontend
-  - Apply HavaJava branding
-  - Configure feature flags (no catering, no multi-location)
+- [x] **0.4** Create `frontends/havajava` ✅
+  - Renamed from ordering-platform-web
+  - Existing branding system works
+  - Feature flags: simple menu ordering only
   
-- [ ] **0.5** Create `frontends/threesquares`
-  - Fork from template
-  - Apply Three Squares branding
-  - Configure feature flags (catering, multi-location, merchandise)
+- [ ] **0.5** Create `frontends/threesquares` ⬅️ NEXT
+  - Copy from havajava
+  - Apply Three Squares branding (green/gold)
+  - Enable: catering, multi-location, merchandise
   
-- [ ] **0.6** Update API for multi-tenant routing
-  - Ensure all endpoints accept restaurant slug
-  - Add Location model for multi-location support (Chalan San Antonio + Donki)
-  - Add MerchandiseCategory, MerchandiseItem, MerchandiseVariant models
-  - Add features JSON column to restaurants
-  - Seed Three Squares data (see docs/seed-data/three-squares.md)
-  - Seed Latte Stone Cookies data (see docs/seed-data/latte-stone-cookies.md)
+- [x] **0.6** Update API for multi-tenant routing ✅
+  - [x] Location model for multi-location support
+  - [x] MerchandiseCategory, MerchandiseItem, MerchandiseVariant models
+  - [x] features JSON column to restaurants
+  - [ ] Seed Three Squares data (see docs/seed-data/three-squares.md)
+  - [ ] Seed Latte Stone Cookies data (see docs/seed-data/latte-stone-cookies.md)
 
-- [ ] **0.7** Add starter-app docs
-  - Copy from Brain Dump ✅ (Done Feb 9)
-  - Reference in AGENTS.md ✅ (Done Feb 9)
+- [x] **0.7** Add starter-app docs ✅
+  - Copied 20+ guides to docs/starter-app/
+  - Referenced in AGENTS.md
 
-- [ ] **0.8** Create gate script
+- [x] **0.8** Create gate script ✅
   - `scripts/gate.sh` — lint, types, build for all packages
-  - Add to CI workflow
+  - Fixed ESLint and RuboCop issues
 
-- [ ] **0.9** Add Stripe per-restaurant fields
-  - Migration: add stripe_publishable_key, stripe_secret_key, stripe_webhook_secret to restaurants
-  - Update payment flow to use restaurant's keys
+- [x] **0.9** Add Stripe per-restaurant fields ✅
+  - Migration: stripe_publishable_key, stripe_secret_key, stripe_webhook_secret
+  - [ ] Update payment flow to use restaurant's keys
 
 - [ ] **0.10** Set up Clerk auth
   - Follow CLERK_AUTH_SETUP_GUIDE.md

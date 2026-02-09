@@ -1,0 +1,113 @@
+/**
+ * Three Squares by B&G Pacific - Brand Theme
+ * 
+ * Colors: Forest green (#1B4332), Gold (#FFD700), Teal (#2D6A4F)
+ * Font: Montserrat (headings), DM Sans (body)
+ * Vibe: Bold, confident, family-friendly comfort food
+ */
+
+:root {
+  /* === Brand Colors === */
+  --brand-primary: #1B4332;     /* Forest green */
+  --brand-secondary: #FFD700;   /* Gold */
+  --brand-accent: #2D6A4F;      /* Teal green */
+  
+  /* === Derived Colors === */
+  --brand-primary-light: #40916C;
+  --brand-primary-dark: #0F2D1F;
+  --brand-primary-hover: #143728;
+  
+  --brand-secondary-light: #FFE44D;
+  --brand-secondary-dark: #D4AF00;
+  
+  --brand-accent-light: #52B788;
+  --brand-accent-dark: #1E4D38;
+  
+  /* === Surface Colors === */
+  --surface-primary: #FAFAFA;
+  --surface-secondary: #F0F4F0;  /* Slight green tint */
+  --surface-elevated: #FFFFFF;
+  --surface-overlay: rgba(27, 67, 50, 0.8);
+  
+  /* === Text Colors === */
+  --text-primary: #1A1A1A;
+  --text-secondary: #4A4A4A;
+  --text-muted: #6B6B6B;
+  --text-on-primary: #FFFFFF;
+  --text-on-secondary: #1A1A1A;
+  
+  /* === Border Colors === */
+  --border-default: #E0E0E0;
+  --border-subtle: #F0F0F0;
+  --border-focus: var(--brand-primary);
+  
+  /* === Typography === */
+  --font-heading: 'Montserrat', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  
+  /* === Spacing (using Tailwind defaults) === */
+  
+  /* === Border Radius === */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+  
+  /* === Shadows === */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  
+  /* === Transitions === */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
+}
+
+/* === Font Loading === */
+/* Fonts are loaded in index.html for better performance */
+
+/* === Base Styles === */
+body {
+  font-family: var(--font-body);
+  background-color: var(--surface-primary);
+  color: var(--text-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+/* === Button Variants === */
+.btn-primary {
+  background-color: var(--brand-primary);
+  color: var(--text-on-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--brand-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--brand-secondary);
+  color: var(--text-on-secondary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--brand-secondary-dark);
+}
+
+/* === Card Styles === */
+.card {
+  background-color: var(--surface-elevated);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* === Focus States === */
+*:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}

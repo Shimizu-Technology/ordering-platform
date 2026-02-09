@@ -1,0 +1,164 @@
+@import "tailwindcss";
+@import "./styles/theme.css";
+@import "./styles/cookies.css";
+
+/* ============================================================================
+   Brand Token System
+   Colors are injected as CSS custom properties from the API response.
+   Defaults are Three Squares' green/gold palette.
+   ============================================================================ */
+:root {
+  --brand-primary: #1B4332;
+  --brand-secondary: #FFD700;
+  --brand-accent: #2D6A4F;
+  --brand-font: 'Montserrat', 'DM Sans', sans-serif;
+
+  /* Derived tokens */
+  --brand-primary-light: color-mix(in srgb, var(--brand-primary) 15%, white);
+  --brand-primary-dark: color-mix(in srgb, var(--brand-primary) 80%, black);
+  --brand-primary-hover: color-mix(in srgb, var(--brand-primary) 90%, black);
+
+  /* Surface colors */
+  --surface-bg: #FDFCFA;
+  --surface-card: #FFFFFF;
+  --surface-elevated: #F8F6F2;
+
+  /* Text */
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --text-muted: #A8A29E;
+
+  /* Borders */
+  --border-default: #E7E5E4;
+  --border-subtle: #F5F5F4;
+
+  /* Feedback */
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-error: #DC2626;
+
+  /* Spacing */
+  --section-padding: 1.5rem;
+  --container-max: 28rem;
+
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+
+  /* Animation */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+}
+
+@theme inline {
+  --color-brand: var(--brand-primary);
+  --color-brand-hover: var(--brand-primary-hover);
+  --color-brand-light: var(--brand-primary-light);
+  --color-brand-dark: var(--brand-primary-dark);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-accent: var(--brand-accent);
+  --color-surface: var(--surface-bg);
+  --color-surface-card: var(--surface-card);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border-default: var(--border-default);
+  --color-border-subtle: var(--border-subtle);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-error: var(--color-error);
+}
+
+/* Global styles */
+body {
+  font-family: var(--brand-font);
+  background-color: var(--surface-bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: none;
+}
+
+/* Utility for minimum touch targets */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Hide scrollbar cross-browser */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+/* Shimmer animation for skeletons */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Toast custom styles */
+.toast-container [data-sonner-toast] {
+  font-family: var(--brand-font);
+}
+
+/* Custom selection color */
+::selection {
+  background-color: color-mix(in srgb, var(--brand-primary) 20%, transparent);
+}
+
+/* ============================================================================
+   Admin Styles
+   ============================================================================ */
+
+/* Admin form inputs */
+.input-field {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  background-color: var(--surface-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 1px var(--brand-primary);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+/* Pulse-once animation for new orders */
+@keyframes pulse-once {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 0 4px oklch(0.8 0.15 80 / 0.3); }
+}
+
+.animate-pulse-once {
+  animation: pulse-once 1s ease-in-out 3;
+}

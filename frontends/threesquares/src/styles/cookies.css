@@ -1,0 +1,122 @@
+/**
+ * Latte Stone Cookies - Sub-Theme
+ * 
+ * Used within the Three Squares app for the cookie merchandise section.
+ * 
+ * Colors: Cookie brown (#8B4513), Wheat (#F5DEB3), Sea green (#2E8B57)
+ * Font: Playfair Display (headings), DM Sans (body)
+ * Vibe: Artisan, premium, gift-worthy, cultural heritage
+ */
+
+.cookie-store {
+  /* === Brand Colors === */
+  --brand-primary: #8B4513;     /* Cookie/saddle brown */
+  --brand-secondary: #F5DEB3;   /* Wheat/tan */
+  --brand-accent: #2E8B57;      /* Sea green (tropical) */
+  
+  /* === Derived Colors === */
+  --brand-primary-light: #A0522D;
+  --brand-primary-dark: #654321;
+  --brand-primary-hover: #7A3B11;
+  
+  --brand-secondary-light: #FFF8DC;  /* Cornsilk */
+  --brand-secondary-dark: #DEB887;   /* Burlywood */
+  
+  --brand-accent-light: #66CDAA;
+  --brand-accent-dark: #228B22;
+  
+  /* === Surface Colors === */
+  --surface-primary: #FFFAF5;    /* Warm cream */
+  --surface-secondary: #F5EBE0;  /* Warm beige */
+  --surface-elevated: #FFFFFF;
+  --surface-overlay: rgba(139, 69, 19, 0.85);
+  
+  /* === Text Colors === */
+  --text-primary: #3D2914;       /* Dark brown */
+  --text-secondary: #6B5344;     /* Muted brown */
+  --text-muted: #8B7355;
+  --text-on-primary: #FFFFFF;
+  --text-on-secondary: #3D2914;
+  
+  /* === Border Colors === */
+  --border-default: #E5DDD3;
+  --border-subtle: #F0E8DE;
+  --border-focus: var(--brand-primary);
+  
+  /* === Typography === */
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+/* === Font Loading for Cookie Store === */
+/* Playfair Display is loaded in index.html */
+
+/* === Cookie Store Specific Styles === */
+.cookie-store h1,
+.cookie-store h2,
+.cookie-store h3 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cookie-store .product-card {
+  background: linear-gradient(to bottom, var(--surface-elevated), var(--surface-secondary));
+  border-radius: var(--radius-lg);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.cookie-store .product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* === Gift Badge === */
+.cookie-store .gift-badge {
+  background-color: var(--brand-accent);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+/* === Collection Navigation === */
+.cookie-store .collection-nav {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.cookie-store .collection-tab {
+  white-space: nowrap;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  background-color: var(--surface-secondary);
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.cookie-store .collection-tab:hover,
+.cookie-store .collection-tab.active {
+  background-color: var(--brand-primary);
+  color: var(--text-on-primary);
+}
+
+/* === Cookie Flavor Chips === */
+.cookie-store .flavor-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--surface-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.cookie-store .flavor-chip.dipped {
+  background-color: #5C4033;
+  color: white;
+}
