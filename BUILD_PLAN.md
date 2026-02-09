@@ -170,28 +170,32 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
 - [ ] Webhook handler for payment confirmation
 - [ ] Handle failed payments gracefully
 
-### 1.10 Refunds System
+### 1.10 Refunds System ✅ (Feb 9, 2026)
 See [docs/REFUNDS_DESIGN.md](./docs/REFUNDS_DESIGN.md) for full spec.
 
-- [ ] Refunds table migration
-- [ ] RefundService (Stripe integration)
-- [ ] Full refund (one-click)
-- [ ] Partial refund (enter amount)
-- [ ] Refund reasons enum
-- [ ] Admin UI for refund processing
-- [ ] Refund history on order detail
+- [x] Refunds table migration
+- [x] RefundService (Stripe integration)
+- [x] Full refund (one-click)
+- [x] Partial refund (enter amount)
+- [x] Refund reasons enum
+- [x] Admin UI for refund processing (RefundModal)
+- [x] Refund history on order detail
+- [ ] Webhook handler for async Stripe refund status
 
-### 1.11 Inventory Tracking
+### 1.11 Inventory Tracking ✅ (Feb 9, 2026)
 See [docs/INVENTORY_DESIGN.md](./docs/INVENTORY_DESIGN.md) for full spec.
 
-- [ ] Add inventory fields to menu_items
-- [ ] Add inventory fields to merchandise_variants
-- [ ] StockAdjustment audit log table
-- [ ] Decrement stock on order
-- [ ] Restore stock on refund
-- [ ] Block ordering when stock = 0
-- [ ] Admin inventory dashboard
-- [ ] Low stock indicators
+- [x] Add inventory fields to menu_items
+- [x] Add inventory fields to merchandise_variants
+- [x] StockAdjustment audit log table
+- [x] TrackableInventory concern with decrement/restore methods
+- [ ] Decrement stock on order (integration pending)
+- [ ] Restore stock on refund (integration pending)
+- [ ] Block ordering when stock = 0 (integration pending)
+- [x] Admin inventory dashboard (InventoryManagement.tsx)
+- [x] Low stock indicators
+- [x] Quick +/- stock adjustment
+- [x] Stock history modal
 
 ### Status: ~90% complete
 
