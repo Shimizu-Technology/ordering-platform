@@ -29,8 +29,25 @@ Rails.application.routes.draw do
         resources :orders, only: [ :index, :update ] do
           member do
             post :notify_ready
+            post :refund
+            get :refunds, to: "refunds#order_refunds"
           end
         end
+
+        # Refunds
+        resources :refunds, only: [ :index ] do
+          collection do
+            get :summary
+          end
+        end
+
+        # Inventory
+        get "inventory", to: "inventory#index"
+        get "inventory/low-stock", to: "inventory#low_stock"
+        get "inventory/out-of-stock", to: "inventory#out_of_stock"
+        get "inventory/audit-log", to: "inventory#audit_log"
+        patch "inventory/menu_items/:id", to: "inventory#update_menu_item"
+        post "inventory/menu_items/:id/adjust", to: "inventory#adjust_menu_item"
 
         # Stripe Connect
         post "stripe/connect", to: "stripe#connect"

@@ -1,4 +1,6 @@
 class MenuItem < ApplicationRecord
+  include TrackableInventory
+
   belongs_to :menu_category
   has_many :modifier_groups, -> { order(:position) }, dependent: :destroy
   has_many :modifiers, through: :modifier_groups

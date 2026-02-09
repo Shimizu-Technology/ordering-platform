@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_041011) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_063849) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,9 +57,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_041011) do
     t.datetime "created_at", null: false
     t.text "description"
     t.string "image_url"
+    t.integer "low_stock_threshold", default: 5
     t.bigint "menu_category_id", null: false
     t.string "name", null: false
     t.integer "position", default: 0, null: false
+    t.integer "stock_quantity"
+    t.boolean "track_inventory", default: false, null: false
     t.datetime "updated_at", null: false
     t.index ["menu_category_id"], name: "index_menu_items_on_menu_category_id"
   end
@@ -91,11 +94,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_041011) do
   create_table "merchandise_variants", force: :cascade do |t|
     t.boolean "available", default: true, null: false
     t.datetime "created_at", null: false
+    t.integer "low_stock_threshold", default: 5
     t.bigint "merchandise_item_id", null: false
     t.string "name", null: false
     t.integer "position", default: 0, null: false
     t.decimal "price", precision: 8, scale: 2, null: false
     t.string "sku"
+    t.integer "stock_quantity", default: 0, null: false
+    t.boolean "track_inventory", default: true, null: false
     t.datetime "updated_at", null: false
     t.index ["merchandise_item_id"], name: "index_merchandise_variants_on_merchandise_item_id"
     t.index ["sku"], name: "index_merchandise_variants_on_sku", unique: true, where: "(sku IS NOT NULL)"
@@ -157,6 +163,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_041011) do
     t.integer "lock_version", default: 0, null: false
     t.string "order_type", default: "pickup", null: false
     t.string "phone"
+    t.string "refund_status"
+    t.decimal "refunded_amount", precision: 10, scale: 2, default: "0.0", null: false
     t.bigint "restaurant_id", null: false
     t.text "special_instructions"
     t.string "status", default: "pending", null: false
@@ -189,6 +197,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_041011) do
     t.index ["restaurant_id"], name: "index_promotions_on_restaurant_id"
   end
 
+  create_table "refunds", force: :cascade do |t|
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.text "error_message"
+    t.text "notes"
+    t.bigint "order_id", null: false
+    t.string "reason", null: false
+    t.string "refund_type", null: false
+    t.boolean "restore_inventory", default: true, null: false
+    t.string "status", default: "pending", null: false
+    t.string "stripe_payment_intent_id"
+    t.string "stripe_refund_id"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["created_at"], name: "index_refunds_on_created_at"
+    t.index ["order_id"], name: "index_refunds_on_order_id"
+    t.index ["status"], name: "index_refunds_on_status"
+    t.index ["stripe_refund_id"], name: "index_refunds_on_stripe_refund_id", unique: true
+    t.index ["user_id"], name: "index_refunds_on_user_id"
+  end
+
   create_table "restaurants", force: :cascade do |t|
     t.string "accent_color"
     t.boolean "active", default: true, null: false
@@ -218,6 +247,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_041011) do
     t.string "webhook_url"
     t.index ["slug"], name: "index_restaurants_on_slug", unique: true
     t.index ["status"], name: "index_restaurants_on_status"
+  end
+
+  create_table "stock_adjustments", force: :cascade do |t|
+    t.bigint "adjustable_id", null: false
+    t.string "adjustable_type", null: false
+    t.integer "adjustment", null: false
+    t.datetime "created_at", null: false
+    t.bigint "location_id"
+    t.text "notes"
+    t.integer "quantity_after", null: false
+    t.integer "quantity_before", null: false
+    t.string "reason", null: false
+    t.bigint "reference_id"
+    t.string "reference_type"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["adjustable_type", "adjustable_id"], name: "idx_stock_adj_adjustable"
+    t.index ["created_at"], name: "index_stock_adjustments_on_created_at"
+    t.index ["location_id"], name: "index_stock_adjustments_on_location_id"
+    t.index ["reason"], name: "index_stock_adjustments_on_reason"
+    t.index ["reference_type", "reference_id"], name: "idx_stock_adj_reference"
+    t.index ["user_id"], name: "index_stock_adjustments_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -252,5 +303,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_041011) do
   add_foreign_key "orders", "locations"
   add_foreign_key "orders", "restaurants"
   add_foreign_key "promotions", "restaurants"
+  add_foreign_key "refunds", "orders"
+  add_foreign_key "refunds", "users"
+  add_foreign_key "stock_adjustments", "locations"
+  add_foreign_key "stock_adjustments", "users"
   add_foreign_key "users", "restaurants"
 end

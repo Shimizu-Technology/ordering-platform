@@ -1,4 +1,6 @@
 class MerchandiseVariant < ApplicationRecord
+  include TrackableInventory
+
   belongs_to :merchandise_item
 
   validates :name, presence: true

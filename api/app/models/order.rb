@@ -6,6 +6,7 @@ class Order < ApplicationRecord
   belongs_to :location, optional: true
   has_many :order_items, dependent: :destroy
   has_many :menu_items, through: :order_items
+  has_many :refunds, dependent: :destroy
 
   STATUSES = %w[pending confirmed preparing ready completed cancelled].freeze
 
@@ -63,6 +64,34 @@ class Order < ApplicationRecord
 
   def can_cancel?
     can_transition_to?("cancelled", allowed_from: %w[pending confirmed preparing])
+  end
+
+  # === Refund Methods ===
+
+  def refundable_amount
+    total - refunded_amount
+  end
+
+  def fully_refunded?
+    refund_status == "full"
+  end
+
+  def partially_refunded?
+    refund_status == "partial"
+  end
+
+  def can_refund?
+    stripe_payment_intent_id.present? && refundable_amount > 0
+  end
+
+  def update_refund_status!
+    if refunded_amount >= total
+      update!(refund_status: "full")
+    elsif refunded_amount > 0
+      update!(refund_status: "partial")
+    else
+      update!(refund_status: nil)
+    end
   end
 
   private

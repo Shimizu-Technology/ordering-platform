@@ -78,7 +78,57 @@ module Api
           render json: { error: "Order not found" }, status: :not_found
         end
 
+        def refund
+          order = @restaurant.orders.find(params[:id])
+
+          unless order.can_refund?
+            return render json: { error: "Order cannot be refunded" }, status: :unprocessable_entity
+          end
+
+          service = RefundService.new(order, current_user)
+
+          refund = if refund_params[:refund_type] == "full"
+            service.full_refund!(
+              reason: refund_params[:reason],
+              notes: refund_params[:notes]
+            )
+          else
+            service.partial_refund!(
+              amount: refund_params[:amount].to_d,
+              reason: refund_params[:reason],
+              notes: refund_params[:notes],
+              restore_inventory: refund_params[:restore_inventory] == true
+            )
+          end
+
+          render json: {
+            refund: refund_json(refund),
+            order: order_json(order.reload)
+          }, status: :created
+        rescue RefundService::RefundError => e
+          render json: { error: e.message }, status: :unprocessable_entity
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: "Order not found" }, status: :not_found
+        end
+
         private
+
+        def refund_params
+          params.require(:refund).permit(:amount, :refund_type, :reason, :notes, :restore_inventory)
+        end
+
+        def refund_json(refund)
+          {
+            id: refund.id,
+            order_id: refund.order_id,
+            amount: refund.amount.to_f,
+            refund_type: refund.refund_type,
+            reason: refund.reason,
+            status: refund.status,
+            stripe_refund_id: refund.stripe_refund_id,
+            created_at: refund.created_at
+          }
+        end
 
         def order_json(order)
           {
@@ -89,6 +139,10 @@ module Api
             order_type: order.order_type,
             status: order.status,
             total: order.total.to_f,
+            refunded_amount: order.refunded_amount.to_f,
+            refundable_amount: order.refundable_amount.to_f,
+            refund_status: order.refund_status,
+            can_refund: order.can_refund?,
             special_instructions: order.special_instructions,
             created_at: order.created_at.iso8601,
             updated_at: order.updated_at.iso8601,
