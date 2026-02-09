@@ -26,8 +26,8 @@ function App() {
           <Route path="/:slug/orders" element={<RestaurantMyOrders />} />
           <Route path="/:slug/confirmation/:orderId" element={<RestaurantConfirmation />} />
 
-          {/* Default redirect to HavaJava */}
-          <Route path="/" element={<Navigate to="/havajava" replace />} />
+          {/* Default redirect to Three Squares */}
+          <Route path="/" element={<Navigate to="/threesquares" replace />} />
         </Routes>
       </AnimatePresence>
     </BrowserRouter>
