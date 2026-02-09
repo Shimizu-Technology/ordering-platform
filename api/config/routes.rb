@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
+      # Webhooks (no auth required)
+      post "webhooks/stripe", to: "webhooks#stripe"
+
       # Current user endpoint
       get "me", to: "me#show"
 
