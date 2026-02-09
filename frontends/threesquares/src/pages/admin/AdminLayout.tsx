@@ -12,11 +12,12 @@ import {
   BarChart3,
   Users,
   Cookie,
+  Monitor,
 } from 'lucide-react';
 import { useAdminStore } from '../../stores/adminStore';
 import type { AdminRestaurant } from '../../types/admin';
 
-type AdminPage = 'orders' | 'catering' | 'merchandise' | 'menu' | 'promotions' | 'analytics' | 'settings';
+type AdminPage = 'orders' | 'catering' | 'merchandise' | 'menu' | 'promotions' | 'analytics' | 'settings' | 'pos';
 
 interface AdminLayoutProps {
   activePage: AdminPage;
@@ -26,6 +27,7 @@ interface AdminLayoutProps {
 }
 
 const navItems: { id: AdminPage; label: string; icon: React.ElementType; requiresFeature?: string }[] = [
+  { id: 'pos', label: 'POS', icon: Monitor },
   { id: 'orders', label: 'Order Queue', icon: ClipboardList },
   { id: 'catering', label: 'Catering', icon: Users, requiresFeature: 'catering' },
   { id: 'merchandise', label: 'Cookies', icon: Cookie, requiresFeature: 'merchandise' },

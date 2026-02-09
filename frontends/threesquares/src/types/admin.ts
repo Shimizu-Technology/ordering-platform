@@ -2,6 +2,8 @@
 // Admin API Types
 // ============================================================================
 
+export type OrderSource = 'online' | 'pos' | 'phone';
+
 export interface AdminOrder {
   id: number;
   customer_name: string;
@@ -9,6 +11,7 @@ export interface AdminOrder {
   email: string | null;
   order_type: string;
   status: OrderStatus;
+  source: OrderSource;
   total: number;
   special_instructions: string | null;
   created_at: string;

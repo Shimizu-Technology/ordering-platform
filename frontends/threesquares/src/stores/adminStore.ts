@@ -10,7 +10,7 @@ interface AdminState {
 
 export const useAdminStore = create<AdminState>((_, get) => ({
   token: localStorage.getItem('admin_token'),
-  restaurantSlug: 'havajava',
+  restaurantSlug: 'threesquares',
 
   isAuthenticated: () => {
     return !!get().token;

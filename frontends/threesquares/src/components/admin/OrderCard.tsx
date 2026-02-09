@@ -11,6 +11,8 @@ import {
   MessageSquare,
   Loader2,
   Check,
+  Monitor,
+  PhoneCall,
 } from 'lucide-react';
 import type { AdminOrder, OrderStatus } from '../../types/admin';
 import { StatusBadge } from './StatusBadge';
@@ -61,6 +63,17 @@ export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, updatin
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-text-primary">#{order.id}</span>
             <StatusBadge status={order.status} />
+            {/* Source badge */}
+            {order.source && order.source !== 'online' && (
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                order.source === 'pos' 
+                  ? 'bg-purple-100 text-purple-700' 
+                  : 'bg-blue-100 text-blue-700'
+              }`}>
+                {order.source === 'pos' ? <Monitor className="w-3 h-3" /> : <PhoneCall className="w-3 h-3" />}
+                {order.source === 'pos' ? 'POS' : 'Phone'}
+              </span>
+            )}
             {isNew && (
               <span className="text-xs font-semibold text-warning uppercase tracking-wider">
                 New
