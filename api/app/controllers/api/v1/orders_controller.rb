@@ -150,7 +150,7 @@ module Api
 
       def order_params
         params.require(:order).permit(
-          :customer_name, :phone, :email, :order_type, :special_instructions, :customer_id,
+          :customer_name, :phone, :email, :order_type, :special_instructions, :customer_id, :location_id,
           items: [ :menu_item_id, :quantity, :special_instructions, modifier_ids: [] ]
         )
       end

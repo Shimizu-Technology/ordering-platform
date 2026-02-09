@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
       resources :restaurants, param: :slug, only: [ :show, :create ] do
         resource :menu, only: [ :show ], controller: "menus"
+        resources :locations, param: :slug, only: [ :index, :show ]
         resources :orders, only: [ :create, :show ] do
           member do
             post :pay

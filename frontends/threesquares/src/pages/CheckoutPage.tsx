@@ -9,6 +9,8 @@ import { Button } from '../components/ui/Button';
 import { useCartStore } from '../stores/cartStore';
 import { useRestaurantStore } from '../stores/restaurantStore';
 import { useCustomerStore } from '../stores/customerStore';
+import { useLocationStore } from '../stores/locationStore';
+import { LocationPicker } from '../components/LocationPicker';
 import { formatPrice, calculateItemTotal } from '../utils/price';
 import { api } from '../api/client';
 import { toast } from '../components/ui/Toast';
@@ -22,8 +24,9 @@ interface CheckoutPageProps {
 export function CheckoutPage({ slug }: CheckoutPageProps) {
   const navigate = useNavigate();
   const { items, cartTotal, clearCart } = useCartStore();
-  const { loadRestaurant } = useRestaurantStore();
+  const { restaurant, loadRestaurant } = useRestaurantStore();
   const { savedInfo, saveEnabled, setSaveEnabled, updateFromCustomer } = useCustomerStore();
+  const { locations, selectedLocation, setLocations, selectLocation } = useLocationStore();
 
   const [name, setName] = useState(savedInfo?.name ?? '');
   const [phone, setPhone] = useState(savedInfo?.phone ?? '');
@@ -34,9 +37,29 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Check if this restaurant has multi-location enabled
+  const hasMultiLocation = restaurant?.features?.multi_location ?? false;
+
   useEffect(() => {
     loadRestaurant(slug);
   }, [slug, loadRestaurant]);
+
+  // Fetch locations for multi-location restaurants
+  useEffect(() => {
+    if (hasMultiLocation) {
+      api.getLocations(slug)
+        .then(({ locations }) => {
+          setLocations(locations);
+          // Auto-select first location if none selected
+          if (locations.length > 0 && !selectedLocation) {
+            selectLocation(locations[0]);
+          }
+        })
+        .catch(() => {
+          // Silently fail - locations are optional enhancement
+        });
+    }
+  }, [slug, hasMultiLocation, setLocations, selectLocation, selectedLocation]);
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -50,6 +73,9 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
     if (!name.trim()) errs.name = 'Name is required';
     if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       errs.email = 'Invalid email address';
+    }
+    if (hasMultiLocation && !selectedLocation) {
+      errs.location = 'Please select a pickup location';
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -92,6 +118,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
         order_type: orderType,
         special_instructions: instructions.trim() || undefined,
         customer_id: customerId,
+        location_id: selectedLocation?.id,
         items: items.map((cartItem) => ({
           menu_item_id: cartItem.menuItem.id,
           quantity: cartItem.quantity,
@@ -162,6 +189,20 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
             ))}
           </div>
         </fieldset>
+
+        {/* Location Picker (for multi-location restaurants) */}
+        {hasMultiLocation && locations.length > 0 && (
+          <div>
+            <LocationPicker
+              locations={locations}
+              selectedLocation={selectedLocation}
+              onSelect={selectLocation}
+            />
+            {errors.location && (
+              <p className="mt-2 text-xs text-error">{errors.location}</p>
+            )}
+          </div>
+        )}
 
         {/* Customer Info */}
         <fieldset className="space-y-3">

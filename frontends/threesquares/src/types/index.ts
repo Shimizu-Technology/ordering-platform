@@ -12,8 +12,17 @@ export interface Restaurant {
   description: string;
   hours: Record<string, { open?: string; close?: string; closed?: boolean }>;
   branding: Branding;
+  features?: RestaurantFeatures;
   active: boolean;
   status?: string;
+}
+
+export interface RestaurantFeatures {
+  pos?: boolean;
+  rewards?: boolean;
+  catering?: boolean;
+  merchandise?: boolean;
+  multi_location?: boolean;
 }
 
 export interface Branding {
@@ -22,6 +31,17 @@ export interface Branding {
   accent_color: string | null;
   font_family: string | null;
   logo_url: string | null;
+}
+
+export interface Location {
+  id: number;
+  name: string;
+  slug: string;
+  address: string | null;
+  phone: string | null;
+  email: string | null;
+  hours: Record<string, { open?: string; close?: string; closed?: boolean }>;
+  active: boolean;
 }
 
 export interface MenuCategory {
@@ -107,6 +127,7 @@ export interface OrderPayload {
   order_type: 'pickup' | 'dine_in';
   special_instructions?: string;
   customer_id?: number;
+  location_id?: number;
   items: OrderItemPayload[];
 }
 

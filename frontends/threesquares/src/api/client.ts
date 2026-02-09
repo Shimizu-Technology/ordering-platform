@@ -1,5 +1,6 @@
 import type {
   Restaurant,
+  Location,
   MenuResponse,
   OrderPayload,
   Order,
@@ -33,6 +34,9 @@ export const api = {
 
   getMenu: (slug: string) =>
     request<MenuResponse>(`/restaurants/${slug}/menu`),
+
+  getLocations: (slug: string) =>
+    request<{ locations: Location[] }>(`/restaurants/${slug}/locations`),
 
   createOrder: (slug: string, order: OrderPayload) =>
     request<Order>(`/restaurants/${slug}/orders`, {
