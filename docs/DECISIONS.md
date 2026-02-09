@@ -147,4 +147,41 @@ features: {
 
 ---
 
+## Race Condition Protection
+
+### 9. Optimistic Locking + Idempotency
+**Decision:** Multi-layer protection against concurrent modifications
+
+**Problem (from Shimizu Order Suite):**
+- Double-charging customers on payment retries
+- Staff overwriting each other's order updates
+- Invalid status jumps (pending→ready skipping steps)
+
+**Solution:**
+
+| Layer | Implementation | Prevents |
+|-------|---------------|----------|
+| Optimistic Locking | `lock_version` column on orders | Concurrent updates |
+| Idempotency Keys | `idempotency_key` column, passed to Stripe | Double-charging |
+| Row-Level Locking | `SELECT FOR UPDATE` during transitions | Race during status change |
+| Transition Validation | `SafeStatusTransitions` concern | Invalid state jumps |
+
+**Status Flow:**
+```
+pending → confirmed → preparing → ready → completed
+    ↓          ↓            ↓
+ cancelled  cancelled   cancelled
+```
+
+**Key Code:**
+- `app/models/concerns/safe_status_transitions.rb`
+- `app/services/payment_service.rb`
+- Order methods: `confirm!`, `start_preparing!`, `mark_ready!`, `complete!`, `cancel!`
+
+**Error Handling:**
+- `ActiveRecord::StaleObjectError` → "Order was modified, please refresh"
+- `InvalidTransitionError` → "Cannot change status from X to Y"
+
+---
+
 *Add new decisions here as they're made.*

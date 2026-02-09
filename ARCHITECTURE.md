@@ -276,6 +276,71 @@ export const config = {
 
 ---
 
+## Concurrency & Data Integrity
+
+Critical protections to prevent race conditions (learned from Shimizu Order Suite):
+
+### Optimistic Locking
+
+Orders have a `lock_version` column. Rails raises `StaleObjectError` if another process updated the record:
+
+```ruby
+# Two staff members try to update same order
+order = Order.find(123)
+# Staff A updates
+order.update!(status: 'confirmed')
+
+# Staff B (with stale data) tries to update
+stale_order.update!(status: 'preparing')
+# => Raises ActiveRecord::StaleObjectError
+```
+
+### Idempotency Keys
+
+Every order gets a unique `idempotency_key` used for Stripe payments:
+
+```ruby
+# Prevents double-charging on retries
+Stripe::PaymentIntent.create(
+  { amount: 2500, currency: 'usd' },
+  { idempotency_key: order.idempotency_key }
+)
+```
+
+### Safe Status Transitions
+
+Status changes use row-level locking and validation:
+
+```ruby
+class Order < ApplicationRecord
+  include SafeStatusTransitions
+  
+  def confirm!
+    transition_status!('confirmed', allowed_from: %w[pending])
+  end
+end
+
+# Usage
+order.confirm!  # Only works if status is 'pending'
+order.cancel!   # Only works if status is 'pending', 'confirmed', or 'preparing'
+```
+
+### Valid Status Flow
+
+```
+pending → confirmed → preparing → ready → completed
+    ↓          ↓            ↓
+ cancelled  cancelled   cancelled
+```
+
+### Key Files
+
+- `app/models/concerns/safe_status_transitions.rb` — Transition logic
+- `app/services/payment_service.rb` — Idempotent Stripe handling
+- `app/models/order.rb` — Status methods (`confirm!`, `cancel!`, etc.)
+
+---
+
 ## Feature System
 
 Features are controlled at two levels:
