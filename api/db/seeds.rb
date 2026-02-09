@@ -496,9 +496,269 @@ total_items = MenuItem.joins(menu_category: :restaurant).where(restaurants: { id
 total_modifier_groups = ModifierGroup.joins(menu_item: { menu_category: :restaurant }).where(restaurants: { id: havajava.id }).count
 total_modifiers = Modifier.joins(modifier_group: { menu_item: { menu_category: :restaurant } }).where(restaurants: { id: havajava.id }).count
 
-puts "\n✅ Seeding complete!"
-puts "   Restaurant: #{havajava.name}"
-puts "   Categories: #{havajava.menu_categories.count}"
-puts "   Menu Items: #{total_items}"
-puts "   Modifier Groups: #{total_modifier_groups}"
-puts "   Modifiers: #{total_modifiers}"
+puts "  HavaJava seeding complete!"
+
+# ============================================================================
+# RESTAURANT: Three Squares by B&G Pacific
+# ============================================================================
+threesquares = Restaurant.find_or_create_by!(slug: "threesquares") do |r|
+  r.name = "Three Squares"
+  r.phone = "671-646-2652"
+  r.email = "sales@bgpacific.com"
+  r.address = "416 Chalan San Antonio, Tamuning, Guam 96913"
+  r.description = "Good Food, Good Mood, Good Service. Local-style comfort food, family platters, and catering."
+  r.hours = {
+    monday:    { closed: true },
+    tuesday:   { open: "08:00", close: "20:00" },
+    wednesday: { open: "08:00", close: "20:00" },
+    thursday:  { open: "08:00", close: "20:00" },
+    friday:    { open: "08:00", close: "20:00" },
+    saturday:  { open: "08:00", close: "20:00" },
+    sunday:    { open: "08:00", close: "17:00" }
+  }
+  r.primary_color = "#1B4332"
+  r.secondary_color = "#FFD700"
+  r.accent_color = "#2D6A4F"
+  r.font_family = "Montserrat"
+  r.features = {
+    catering: true,
+    multi_location: true,
+    merchandise: true,
+    pos: true,
+    rewards: false
+  }
+  r.active = true
+end
+
+puts "  Created restaurant: #{threesquares.name}"
+
+# Create locations for Three Squares
+main_location = threesquares.locations.find_or_create_by!(slug: "chalan-san-antonio") do |l|
+  l.name = "Chalan San Antonio"
+  l.address = "416 Chalan San Antonio, Tamuning, Guam 96913"
+  l.phone = "671-646-2652"
+  l.hours = {
+    monday:    { closed: true },
+    tuesday:   { open: "08:00", close: "20:00" },
+    wednesday: { open: "08:00", close: "20:00" },
+    thursday:  { open: "08:00", close: "20:00" },
+    friday:    { open: "08:00", close: "20:00" },
+    saturday:  { open: "08:00", close: "20:00" },
+    sunday:    { open: "08:00", close: "17:00" }
+  }
+  l.position = 0
+end
+
+donki_location = threesquares.locations.find_or_create_by!(slug: "donki") do |l|
+  l.name = "Three Squares at Donki"
+  l.address = "Inside Don Quijote, Tamuning, Guam"
+  l.hours = {
+    monday:    { open: "10:00", close: "22:00" },
+    tuesday:   { open: "10:00", close: "22:00" },
+    wednesday: { open: "10:00", close: "22:00" },
+    thursday:  { open: "10:00", close: "22:00" },
+    friday:    { open: "10:00", close: "22:00" },
+    saturday:  { open: "10:00", close: "22:00" },
+    sunday:    { open: "10:00", close: "22:00" }
+  }
+  l.position = 1
+end
+
+puts "  Created #{threesquares.locations.count} locations"
+
+# --- Three Squares Menu Categories ---
+
+# Breakfast
+ts_breakfast = threesquares.menu_categories.find_or_create_by!(name: "Breakfast") do |c|
+  c.position = 1
+  c.active = true
+end
+
+[
+  [ "French Toast, Bacon & Eggs", "Classic breakfast combo with thick-cut French toast", 12.95 ],
+  [ "Stack O' Cakes", "Fluffy pancake stack with butter and syrup", 8.95 ],
+  [ "Chicken & Waffles", "Crispy fried chicken on Belgian waffles with maple syrup", 14.95 ],
+  [ "Loco Moco", "Rice, hamburger patty, fried egg, and brown gravy", 13.95 ],
+  [ "Corned Beef Hash", "House-made corned beef hash with eggs", 12.95 ],
+  [ "Breakfast Mini Bento", "Grab-n-go breakfast box", 9.95 ]
+].each_with_index do |(name, desc, price), i|
+  create_item(ts_breakfast, name, desc, price, i)
+end
+
+# Starters
+ts_starters = threesquares.menu_categories.find_or_create_by!(name: "Starters") do |c|
+  c.position = 2
+  c.active = true
+end
+
+[
+  [ "The Local Sampler", "Tinala katne, chicken kelaguen, lumpia, and titiyas", 21.95 ],
+  [ "Tinala Katne Appetizer", "Traditional cured beef served with titiyas", 14.50 ],
+  [ "Tinala Katne Fries", "Loaded fries topped with tinala katne", 8.95 ],
+  [ "Chicken Kelaguen", "Traditional Chamorro citrus chicken salad", 9.95 ],
+  [ "Fried Lumpia", "Filipino-style spring rolls with sweet chili sauce", 4.95 ],
+  [ "Three Squares Nachos", "Loaded nachos with all the fixings", 10.95 ]
+].each_with_index do |(name, desc, price), i|
+  create_item(ts_starters, name, desc, price, i)
+end
+
+# Main Dishes
+ts_mains = threesquares.menu_categories.find_or_create_by!(name: "Main Dishes") do |c|
+  c.position = 3
+  c.active = true
+end
+
+[
+  [ "Famous Fried Chicken", "Our signature crispy fried chicken - a local favorite", 15.95 ],
+  [ "Pot Roast", "Slow-cooked beef with vegetables and gravy", 16.95 ],
+  [ "Meatloaf", "Homestyle meatloaf with brown gravy", 14.95 ],
+  [ "BBQ Kalbi Shortribs", "Korean-style marinated beef shortribs", 18.95 ],
+  [ "Teriyaki Chicken", "Grilled chicken with house teriyaki glaze", 14.95 ],
+  [ "Tinaktak (Beef)", "Chamorro coconut milk beef stew with vegetables", 15.95 ],
+  [ "Estufao", "Chamorro-style braised pork", 15.95 ],
+  [ "Grilled Salmon", "Fresh salmon fillet with lemon butter", 17.95 ],
+  [ "Philly Cheese Steak", "Classic Philly-style steak sandwich", 14.95 ],
+  [ "Bleu Cheese Burger", "Angus beef patty with crumbled bleu cheese", 13.95 ],
+  [ "Cheeseburger", "Classic cheeseburger with all the fixings", 11.95 ]
+].each_with_index do |(name, desc, price), i|
+  item = create_item(ts_mains, name, desc, price, i)
+
+  # Add side choice modifier to main dishes
+  side_group = item.modifier_groups.find_or_create_by!(name: "Side Choice") do |mg|
+    mg.required = true
+    mg.min_select = 1
+    mg.max_select = 1
+    mg.position = 0
+  end
+  [ "Rice", "Mashed Potatoes", "Fries", "Side Salad" ].each_with_index do |side, j|
+    side_group.modifiers.find_or_create_by!(name: side) do |m|
+      m.price_adjustment = 0
+      m.default_selected = j == 0
+      m.position = j
+    end
+  end
+end
+
+# Desserts
+ts_desserts = threesquares.menu_categories.find_or_create_by!(name: "Desserts") do |c|
+  c.position = 4
+  c.active = true
+end
+
+[
+  [ "Bread Pudding Ala Mode", "Warm bread pudding with vanilla ice cream", 7.95 ],
+  [ "Fried Banana with Ice Cream", "Caramelized banana with vanilla ice cream", 6.95 ],
+  [ "Coconut Banana Cake", "Moist coconut cake with banana", 6.95 ],
+  [ "Latiya Cake", "Traditional Chamorro layered custard cake", 7.95 ]
+].each_with_index do |(name, desc, price), i|
+  create_item(ts_desserts, name, desc, price, i)
+end
+
+# Beverages
+ts_beverages = threesquares.menu_categories.find_or_create_by!(name: "Beverages") do |c|
+  c.position = 5
+  c.active = true
+end
+
+[
+  [ "Soft Drink", "Coke, Sprite, or other fountain drinks", 2.95 ],
+  [ "Iced Tea", "Fresh-brewed iced tea", 2.95 ],
+  [ "Calamansi Tea", "Local citrus tea", 3.50 ],
+  [ "Coffee", "Fresh brewed coffee", 2.95 ],
+  [ "Fresh Juice", "Ask about today's selection", 4.95 ]
+].each_with_index do |(name, desc, price), i|
+  create_item(ts_beverages, name, desc, price, i)
+end
+
+puts "  Seeded Three Squares menu: #{threesquares.menu_categories.count} categories"
+
+# ============================================================================
+# LATTE STONE COOKIES (Merchandise for Three Squares)
+# ============================================================================
+
+# Create merchandise categories
+assortments = threesquares.merchandise_categories.find_or_create_by!(name: "Assortment Boxes") do |c|
+  c.description = "Mixed flavor collections - perfect for sharing"
+  c.position = 1
+end
+
+single_flavors = threesquares.merchandise_categories.find_or_create_by!(name: "Single Flavors") do |c|
+  c.description = "Boxes of your favorite flavor"
+  c.position = 2
+end
+
+tin_collection = threesquares.merchandise_categories.find_or_create_by!(name: "Tin Collection") do |c|
+  c.description = "Beautiful keepsake tins - perfect for gifts"
+  c.position = 3
+end
+
+puts "  Created #{threesquares.merchandise_categories.count} merchandise categories"
+
+# Assortment items
+[
+  [ "6pc Chocolate Dipped Assortment", "6 individually wrapped shortbread cookies dipped in chocolate. Vanilla, Chocolate, Coconut, Mango, Pineapple, and Passionfruit.", 11.00 ],
+  [ "12pc Grand Assortment", "12 cookies featuring all 6 flavors - plain and dipped varieties", 20.00 ],
+  [ "30pc Grand Assortment", "30 cookies - the ultimate Latte Stone collection for gatherings", 48.00 ]
+].each_with_index do |(name, desc, price), i|
+  assortments.merchandise_items.find_or_create_by!(name: name) do |mi|
+    mi.description = desc
+    mi.base_price = price
+    mi.position = i
+    mi.available = true
+  end
+end
+
+# Single flavor items (with dipped variants)
+[
+  [ "Vanilla Shortbread 10pc", "10 vanilla shortbread cookies", 16.00 ],
+  [ "Chocolate Shortbread 10pc", "10 chocolate shortbread cookies", 16.00 ],
+  [ "Coconut Shortbread 10pc", "10 coconut shortbread cookies", 16.00 ],
+  [ "Mango Shortbread 10pc", "10 mango shortbread cookies", 16.00 ]
+].each_with_index do |(name, desc, price), i|
+  single_flavors.merchandise_items.find_or_create_by!(name: name) do |mi|
+    mi.description = desc
+    mi.base_price = price
+    mi.position = i
+    mi.available = true
+  end
+end
+
+# Tin collection (with size variants)
+classic_tin = tin_collection.merchandise_items.find_or_create_by!(name: "Classic Assortment Tin") do |mi|
+  mi.description = "Assorted Latte Stone cookies in a beautiful keepsake tin shaped like a latte stone"
+  mi.base_price = nil # Price comes from variants
+  mi.position = 0
+  mi.available = true
+end
+
+# Add variants for tin
+classic_tin.merchandise_variants.find_or_create_by!(name: "9pc Tin") do |v|
+  v.price = 18.00
+  v.position = 0
+end
+classic_tin.merchandise_variants.find_or_create_by!(name: "20pc Tin") do |v|
+  v.price = 35.00
+  v.position = 1
+end
+
+puts "  Seeded Latte Stone Cookies merchandise"
+
+# ============================================================================
+# SUMMARY
+# ============================================================================
+puts "\n" + "=" * 60
+puts "✅ SEEDING COMPLETE!"
+puts "=" * 60
+
+[ havajava, threesquares ].each do |restaurant|
+  total_items = MenuItem.joins(menu_category: :restaurant).where(restaurants: { id: restaurant.id }).count
+  total_merch = MerchandiseItem.joins(merchandise_category: :restaurant).where(restaurants: { id: restaurant.id }).count
+
+  puts "\n📍 #{restaurant.name} (#{restaurant.slug})"
+  puts "   Categories: #{restaurant.menu_categories.count}"
+  puts "   Menu Items: #{total_items}"
+  puts "   Locations: #{restaurant.locations.count}" if restaurant.locations.any?
+  puts "   Merchandise: #{total_merch}" if total_merch > 0
+end
+
+puts "\n" + "=" * 60
