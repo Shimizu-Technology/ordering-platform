@@ -28,11 +28,17 @@ class Order < ApplicationRecord
   scope :active, -> { where.not(status: %w[completed cancelled]) }
   scope :by_status, ->(status) { where(status: status) }
 
-  before_save :calculate_total
+  before_save :calculate_totals
   before_create :generate_idempotency_key
 
+  def calculate_totals
+    self.subtotal = order_items.sum { |item| item.subtotal || 0 }
+    self.total = subtotal + (tip_amount || 0)
+  end
+
+  # Legacy method for compatibility
   def calculate_total
-    self.total = order_items.sum { |item| item.subtotal || 0 }
+    calculate_totals
   end
 
   def recalculate!

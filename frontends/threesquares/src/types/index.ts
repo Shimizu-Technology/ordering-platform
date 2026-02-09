@@ -146,6 +146,9 @@ export interface Order {
   email: string | null;
   order_type: string;
   status: string;
+  subtotal: number;
+  tip_amount: number;
+  tip_percentage: number | null;
   total: number;
   special_instructions: string | null;
   stripe_payment_intent_id: string | null;

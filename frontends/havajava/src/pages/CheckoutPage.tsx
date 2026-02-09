@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { PaymentForm } from '../components/PaymentForm';
+import { TipSelector } from '@shimizu/shared';
 import { useCartStore } from '../stores/cartStore';
 import { useRestaurantStore } from '../stores/restaurantStore';
 import { useCustomerStore } from '../stores/customerStore';
@@ -47,8 +48,28 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
   const [pendingOrder, setPendingOrder] = useState<Order | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
+  // Tip state
+  const [tipAmount, setTipAmount] = useState(0);
+  const [tipPercentage, setTipPercentage] = useState<number | null>(20); // Default 20%
+
   // Check if Stripe is configured
   const stripeEnabled = !!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+
+  // Calculate subtotal and total with tip
+  const subtotal = cartTotal();
+  const orderTotal = subtotal + tipAmount;
+
+  // Initialize tip on subtotal change
+  useEffect(() => {
+    if (tipPercentage !== null) {
+      setTipAmount(Math.round(subtotal * (tipPercentage / 100) * 100) / 100);
+    }
+  }, [subtotal, tipPercentage]);
+
+  const handleTipChange = (amount: number, percentage: number | null) => {
+    setTipAmount(amount);
+    setTipPercentage(percentage);
+  };
 
   useEffect(() => {
     loadRestaurant(slug);
@@ -101,13 +122,15 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
         setSaveEnabled(false);
       }
 
-      const payload: OrderPayload = {
+      const payload: OrderPayload & { tip_amount?: number; tip_percentage?: number | null } = {
         customer_name: name.trim(),
         phone: phone.trim() || undefined,
         email: email.trim() || undefined,
         order_type: orderType,
         special_instructions: instructions.trim() || undefined,
         customer_id: customerId,
+        tip_amount: tipAmount,
+        tip_percentage: tipPercentage,
         items: items.map((cartItem) => ({
           menu_item_id: cartItem.menuItem.id,
           quantity: cartItem.quantity,
@@ -386,13 +409,34 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
             })}
           </div>
 
-          <div className="border-t border-border-default mt-3 pt-3 flex justify-between items-center">
-            <span className="font-bold text-text-primary">Total</span>
-            <span className="font-bold text-text-primary text-lg tabular-nums">
-              {formatPrice(cartTotal())}
-            </span>
+          <div className="border-t border-border-default mt-3 pt-3 space-y-2">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-text-secondary">Subtotal</span>
+              <span className="text-text-primary tabular-nums">{formatPrice(subtotal)}</span>
+            </div>
+            {tipAmount > 0 && (
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-text-secondary">
+                  Tip {tipPercentage ? `(${tipPercentage}%)` : ''}
+                </span>
+                <span className="text-text-primary tabular-nums">{formatPrice(tipAmount)}</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center pt-2 border-t border-border-subtle">
+              <span className="font-bold text-text-primary">Total</span>
+              <span className="font-bold text-text-primary text-lg tabular-nums">
+                {formatPrice(orderTotal)}
+              </span>
+            </div>
           </div>
         </div>
+
+        {/* Tip Selection */}
+        <TipSelector
+          subtotal={subtotal}
+          onTipChange={handleTipChange}
+          defaultPercentage={20}
+        />
 
         {/* Security note */}
         <div className="flex items-center justify-center gap-1.5 text-xs text-text-muted">
@@ -408,7 +452,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
           className="w-full"
           loading={loading}
         >
-          {stripeEnabled ? `Continue to Payment · ${formatPrice(cartTotal())}` : `Place Order · ${formatPrice(cartTotal())}`}
+          {stripeEnabled ? `Continue to Payment · ${formatPrice(orderTotal)}` : `Place Order · ${formatPrice(orderTotal)}`}
         </Button>
       </form>
     </motion.div>

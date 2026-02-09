@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_080625) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_104851) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -199,6 +199,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_080625) do
     t.text "special_instructions"
     t.string "status", default: "pending", null: false
     t.string "stripe_payment_intent_id"
+    t.decimal "subtotal", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "tip_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.integer "tip_percentage"
     t.decimal "total", precision: 10, scale: 2, default: "0.0", null: false
     t.datetime "updated_at", null: false
     t.index ["customer_id"], name: "index_orders_on_customer_id"

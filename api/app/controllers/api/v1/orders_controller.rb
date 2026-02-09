@@ -17,6 +17,8 @@ module Api
           order_type: order_params[:order_type] || "pickup",
           special_instructions: order_params[:special_instructions],
           customer_id: order_params[:customer_id],
+          tip_amount: order_params[:tip_amount] || 0,
+          tip_percentage: order_params[:tip_percentage],
           status: "pending"
         )
 
@@ -151,6 +153,7 @@ module Api
       def order_params
         params.require(:order).permit(
           :customer_name, :phone, :email, :order_type, :special_instructions, :customer_id, :location_id,
+          :tip_amount, :tip_percentage,
           items: [ :menu_item_id, :quantity, :special_instructions, modifier_ids: [] ]
         )
       end
@@ -207,6 +210,9 @@ module Api
           email: order.email,
           order_type: order.order_type,
           status: order.status,
+          subtotal: order.subtotal.to_f,
+          tip_amount: order.tip_amount.to_f,
+          tip_percentage: order.tip_percentage,
           total: order.total.to_f,
           special_instructions: order.special_instructions,
           stripe_payment_intent_id: order.stripe_payment_intent_id,

@@ -29,3 +29,6 @@ export {
   type WeekHours,
   type DayHours,
 } from './utils/hours';
+
+// Components
+export { TipSelector, type TipOption } from './components/TipSelector';

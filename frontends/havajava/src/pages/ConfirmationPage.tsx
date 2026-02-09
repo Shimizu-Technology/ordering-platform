@@ -169,12 +169,28 @@ export function ConfirmationPage({ slug, orderId }: ConfirmationPageProps) {
           ))}
         </div>
 
-        {/* Total */}
-        <div className="border-t border-border-default pt-3 flex justify-between items-center">
-          <span className="font-bold text-text-primary">Total</span>
-          <span className="font-bold text-lg text-text-primary tabular-nums">
-            {formatPrice(order.total)}
-          </span>
+        {/* Totals */}
+        <div className="border-t border-border-default pt-3 space-y-2">
+          {order.tip_amount > 0 && (
+            <>
+              <div className="flex justify-between text-sm">
+                <span className="text-text-secondary">Subtotal</span>
+                <span className="text-text-primary tabular-nums">{formatPrice(order.subtotal)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-text-secondary">
+                  Tip {order.tip_percentage ? `(${order.tip_percentage}%)` : ''}
+                </span>
+                <span className="text-text-primary tabular-nums">{formatPrice(order.tip_amount)}</span>
+              </div>
+            </>
+          )}
+          <div className="flex justify-between items-center">
+            <span className="font-bold text-text-primary">Total</span>
+            <span className="font-bold text-lg text-text-primary tabular-nums">
+              {formatPrice(order.total)}
+            </span>
+          </div>
         </div>
 
         {/* Special Instructions */}
