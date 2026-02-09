@@ -15,6 +15,9 @@ Rails.application.routes.draw do
         post "catering", to: "catering#create"
         get "catering/info", to: "catering#info"
         
+        # Merchandise (Latte Stone Cookies)
+        resources :merchandise, only: [:index, :show]
+        
         resources :orders, only: [ :create, :show ] do
           member do
             post :pay

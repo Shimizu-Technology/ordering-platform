@@ -6,6 +6,7 @@ import { ConfirmationPage } from './pages/ConfirmationPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { MyOrdersPage } from './pages/MyOrdersPage';
 import { CateringPage } from './pages/CateringPage';
+import { CookieStorePage } from './pages/CookieStorePage';
 import { ToastContainer } from './components/ui/Toast';
 import { AdminPage } from './pages/admin/AdminPage';
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/:slug" element={<RestaurantMenu />} />
           <Route path="/:slug/checkout" element={<RestaurantCheckout />} />
           <Route path="/:slug/catering" element={<RestaurantCatering />} />
+          <Route path="/:slug/cookies" element={<RestaurantCookies />} />
           <Route path="/:slug/orders" element={<RestaurantMyOrders />} />
           <Route path="/:slug/confirmation/:orderId" element={<RestaurantConfirmation />} />
 
@@ -59,6 +61,11 @@ function RestaurantConfirmation() {
 function RestaurantCatering() {
   const { slug } = useParams<{ slug: string }>();
   return <CateringPage slug={slug!} />;
+}
+
+function RestaurantCookies() {
+  const { slug } = useParams<{ slug: string }>();
+  return <CookieStorePage slug={slug!} />;
 }
 
 export default App;
