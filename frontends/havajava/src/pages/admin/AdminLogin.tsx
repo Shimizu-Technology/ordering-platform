@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, ArrowRight, AlertCircle } from 'lucide-react';
+import { SignIn, SignedIn, SignedOut, useClerk } from '@clerk/clerk-react';
 import { useAdminStore } from '../../stores/adminStore';
 import { adminApi } from '../../api/adminClient';
 
@@ -100,23 +101,13 @@ function TokenLogin({ onSuccess }: AdminLoginProps) {
   );
 }
 
-// Clerk-based login component (loaded dynamically)
-interface ClerkSignInProps {
-  appearance?: object;
-  redirectUrl?: string;
-}
+// Clerk-based login component
+function ClerkLogin({ onSuccess }: AdminLoginProps) {
+  const { loaded } = useClerk();
+  const login = useAdminStore((s) => s.login);
 
-function ClerkLogin(_props: AdminLoginProps) {
-  const [ClerkSignIn, setClerkSignIn] = useState<React.ComponentType<ClerkSignInProps> | null>(null);
-
-  useEffect(() => {
-    import('@clerk/clerk-react').then((clerk) => {
-      setClerkSignIn(() => clerk.SignIn);
-    });
-  }, []);
-
-  // Show loading while Clerk loads
-  if (!ClerkSignIn) {
+  // Show loading while Clerk initializes
+  if (!loaded) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-brand/30 border-t-brand rounded-full animate-spin" />
@@ -142,16 +133,33 @@ function ClerkLogin(_props: AdminLoginProps) {
           </p>
         </div>
         
-        <ClerkSignIn 
-          appearance={{
-            elements: {
-              rootBox: 'w-full',
-              card: 'shadow-none border border-border-default rounded-xl',
-              formButtonPrimary: 'bg-brand hover:bg-brand-hover',
-            }
-          }}
-          redirectUrl="/admin"
-        />
+        <SignedOut>
+          <SignIn 
+            appearance={{
+              elements: {
+                rootBox: 'w-full',
+                card: 'shadow-none border border-border-default rounded-xl',
+                formButtonPrimary: 'bg-brand hover:bg-brand-hover',
+              }
+            }}
+            fallbackRedirectUrl="/admin"
+          />
+        </SignedOut>
+        
+        <SignedIn>
+          <div className="text-center">
+            <p className="text-text-secondary mb-4">You're signed in!</p>
+            <button
+              onClick={() => {
+                login('clerk');
+                onSuccess();
+              }}
+              className="px-6 py-3 bg-brand text-white rounded-lg font-medium"
+            >
+              Continue to Admin
+            </button>
+          </div>
+        </SignedIn>
       </motion.div>
     </div>
   );

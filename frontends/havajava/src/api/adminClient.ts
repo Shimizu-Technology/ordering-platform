@@ -18,24 +18,24 @@ import type {
   HoursResponse,
 } from '../types/analytics';
 
+import { getGlobalToken } from '../contexts/AuthContext';
+
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 
-function getHeaders(): Record<string, string> {
+async function getHeaders(): Promise<Record<string, string>> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
   
-  // Check for Clerk token first (JWT auth)
-  const clerkToken = localStorage.getItem('clerk_token');
-  if (clerkToken) {
-    headers['Authorization'] = `Bearer ${clerkToken}`;
-    return headers;
-  }
-  
-  // Fall back to admin token
-  const adminToken = localStorage.getItem('admin_token');
-  if (adminToken) {
-    headers['X-Admin-Token'] = adminToken;
+  // Get token from auth context (Clerk JWT or admin token)
+  const token = await getGlobalToken();
+  if (token) {
+    // Clerk JWTs start with "ey", admin tokens are typically shorter
+    if (token.startsWith('ey')) {
+      headers['Authorization'] = `Bearer ${token}`;
+    } else {
+      headers['X-Admin-Token'] = token;
+    }
   }
   
   return headers;
@@ -43,9 +43,10 @@ function getHeaders(): Record<string, string> {
 
 async function adminRequest<T>(path: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE}/admin${path}`;
+  const headers = await getHeaders();
   const res = await fetch(url, {
     headers: {
-      ...getHeaders(),
+      ...headers,
       ...options?.headers,
     },
     ...options,
