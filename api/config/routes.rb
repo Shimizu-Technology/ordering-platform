@@ -10,6 +10,11 @@ Rails.application.routes.draw do
       resources :restaurants, param: :slug, only: [ :show, :create ] do
         resource :menu, only: [ :show ], controller: "menus"
         resources :locations, param: :slug, only: [ :index, :show ]
+        
+        # Catering inquiries (public)
+        post "catering", to: "catering#create"
+        get "catering/info", to: "catering#info"
+        
         resources :orders, only: [ :create, :show ] do
           member do
             post :pay
@@ -35,6 +40,13 @@ Rails.application.routes.draw do
             post :notify_ready
             post :refund
             get :refunds, to: "refunds#order_refunds"
+          end
+        end
+
+        # Catering inquiries (admin)
+        resources :catering, only: [ :index, :show, :update ] do
+          member do
+            post :quote
           end
         end
 

@@ -10,9 +10,39 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_063849) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_080625) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "catering_inquiries", force: :cascade do |t|
+    t.text "admin_notes"
+    t.string "budget_range"
+    t.string "company_name"
+    t.string "contact_email", null: false
+    t.string "contact_name", null: false
+    t.string "contact_phone"
+    t.datetime "created_at", null: false
+    t.text "dietary_restrictions"
+    t.date "event_date", null: false
+    t.string "event_time"
+    t.string "event_type", null: false
+    t.integer "guest_count", null: false
+    t.bigint "location_id"
+    t.text "menu_preferences"
+    t.decimal "quoted_amount", precision: 10, scale: 2
+    t.datetime "quoted_at"
+    t.bigint "responded_by_id"
+    t.bigint "restaurant_id", null: false
+    t.text "special_requests"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.text "venue_address"
+    t.index ["event_date"], name: "index_catering_inquiries_on_event_date"
+    t.index ["location_id"], name: "index_catering_inquiries_on_location_id"
+    t.index ["responded_by_id"], name: "index_catering_inquiries_on_responded_by_id"
+    t.index ["restaurant_id"], name: "index_catering_inquiries_on_restaurant_id"
+    t.index ["status"], name: "index_catering_inquiries_on_status"
+  end
 
   create_table "customers", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -286,6 +316,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_063849) do
     t.index ["restaurant_id"], name: "index_users_on_restaurant_id"
   end
 
+  add_foreign_key "catering_inquiries", "locations"
+  add_foreign_key "catering_inquiries", "restaurants"
+  add_foreign_key "catering_inquiries", "users", column: "responded_by_id"
   add_foreign_key "customers", "restaurants"
   add_foreign_key "locations", "restaurants"
   add_foreign_key "menu_categories", "restaurants"
