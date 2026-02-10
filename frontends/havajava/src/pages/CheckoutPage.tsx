@@ -47,6 +47,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
   const [showPayment, setShowPayment] = useState(false);
   const [pendingOrder, setPendingOrder] = useState<Order | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentSetupError, setPaymentSetupError] = useState<string | null>(null);
 
   // Tip state
   const [tipAmount, setTipAmount] = useState(0);
@@ -100,6 +101,16 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
       return;
     }
 
+    if (pendingOrder && stripeEnabled) {
+      setLoading(true);
+      try {
+        await setupPaymentForOrder(pendingOrder);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -145,16 +156,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
 
       // If Stripe is enabled, get payment intent
       if (stripeEnabled && order.total > 0) {
-        try {
-          const paymentData = await api.payOrder(slug, order.id);
-          setClientSecret(paymentData.client_secret);
-          setShowPayment(true);
-        } catch {
-          // Payment setup failed - order is still created
-          toast.error('Payment setup failed. Please try again or pay at counter.');
-          clearCart();
-          navigate(`/${slug}/confirmation/${order.id}`, { replace: true });
-        }
+        await setupPaymentForOrder(order);
       } else {
         // No payment needed (free order or Stripe not configured)
         clearCart();
@@ -169,6 +171,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
 
   const handlePaymentSuccess = () => {
     if (pendingOrder) {
+      setPaymentSetupError(null);
       clearCart();
       navigate(`/${slug}/confirmation/${pendingOrder.id}`, { replace: true });
     }
@@ -178,10 +181,23 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
     // Cancel the payment flow - order remains pending
     setShowPayment(false);
     setClientSecret(null);
+    setPaymentSetupError(null);
     toast.info('Payment cancelled. You can pay at the counter.');
     if (pendingOrder) {
       clearCart();
       navigate(`/${slug}/confirmation/${pendingOrder.id}`, { replace: true });
+    }
+  };
+
+  const setupPaymentForOrder = async (order: Order) => {
+    try {
+      const paymentData = await api.payOrder(slug, order.id);
+      setClientSecret(paymentData.client_secret);
+      setShowPayment(true);
+      setPaymentSetupError(null);
+    } catch {
+      setPaymentSetupError('Payment setup failed. Retry now or complete at the counter.');
+      toast.error('Payment setup failed. Retry or pay at counter.');
     }
   };
 
@@ -270,7 +286,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
                 onClick={() => setOrderType(value)}
                 className={`
                   flex items-center justify-center gap-2 py-3 px-4 text-sm font-medium
-                  rounded-[var(--radius-md)] border-2 transition-all duration-[var(--duration-fast)]
+                  rounded-md border-2 transition-all duration-(--duration-fast)
                   touch-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40
                   ${orderType === value
                     ? 'bg-brand text-white border-brand shadow-sm shadow-brand/15'
@@ -303,7 +319,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
                 required
                 aria-invalid={!!errors.name}
                 aria-describedby={errors.name ? 'name-error' : undefined}
-                className={`w-full pl-10 pr-3 py-3 text-sm border rounded-[var(--radius-md)] bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors ${
+                className={`w-full pl-10 pr-3 py-3 text-sm border rounded-md bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors ${
                   errors.name ? 'border-error' : 'border-border-default'
                 }`}
               />
@@ -320,7 +336,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="Phone (for order updates)"
-              className="w-full pl-10 pr-3 py-3 text-sm border border-border-default rounded-[var(--radius-md)] bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="w-full pl-10 pr-3 py-3 text-sm border border-border-default rounded-md bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
             />
           </div>
 
@@ -334,7 +350,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
                 placeholder="Email (for receipt)"
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? 'email-error' : undefined}
-                className={`w-full pl-10 pr-3 py-3 text-sm border rounded-[var(--radius-md)] bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors ${
+                className={`w-full pl-10 pr-3 py-3 text-sm border rounded-md bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors ${
                   errors.email ? 'border-error' : 'border-border-default'
                 }`}
               />
@@ -347,12 +363,12 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
 
         {/* Save Info Checkbox */}
         {email.trim() && (
-          <label className="flex items-center gap-3 px-4 py-3 bg-surface-elevated rounded-[var(--radius-md)] cursor-pointer touch-target">
+          <label className="flex items-center gap-3 px-4 py-3 bg-surface-elevated rounded-md cursor-pointer touch-target">
             <input
               type="checkbox"
               checked={saveInfo}
               onChange={(e) => setSaveInfo(e.target.checked)}
-              className="w-5 h-5 rounded border-border-default text-brand focus:ring-brand/30 accent-[var(--brand-primary)]"
+              className="w-5 h-5 rounded border-border-default text-brand focus:ring-brand/30 accent-brand"
             />
             <div className="flex items-center gap-2 text-sm text-text-secondary">
               <Bookmark className="w-4 h-4" />
@@ -374,13 +390,13 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
               onChange={(e) => setInstructions(e.target.value)}
               placeholder="Any special requests for the restaurant..."
               rows={2}
-              className="w-full pl-10 pr-3 py-3 text-sm border border-border-default rounded-[var(--radius-md)] bg-surface-card resize-none focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="w-full pl-10 pr-3 py-3 text-sm border border-border-default rounded-md bg-surface-card resize-none focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
             />
           </div>
         </div>
 
         {/* Order Summary */}
-        <div className="bg-surface-elevated rounded-[var(--radius-lg)] p-4">
+        <div className="bg-surface-elevated rounded-lg p-4">
           <h3 className="text-sm font-bold text-text-primary mb-3">Order Summary</h3>
           <div className="space-y-2.5">
             {items.map((cartItem) => {
@@ -443,6 +459,36 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
           <ShieldCheck className="w-3.5 h-3.5" />
           <span>{stripeEnabled ? 'Payments secured by Stripe' : 'Your information is secure'}</span>
         </div>
+
+        {paymentSetupError && pendingOrder && (
+          <div className="space-y-2 rounded-md border border-warning/30 bg-warning/10 p-3">
+            <p className="text-xs text-text-secondary">{paymentSetupError}</p>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="flex-1"
+                onClick={() => setupPaymentForOrder(pendingOrder)}
+              >
+                Retry Payment
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                className="flex-1"
+                onClick={() => {
+                  setPaymentSetupError(null);
+                  clearCart();
+                  navigate(`/${slug}/confirmation/${pendingOrder.id}`, { replace: true });
+                }}
+              >
+                Pay at Counter
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Submit */}
         <Button

@@ -229,7 +229,7 @@ export function ItemDetailSheet({ item, onClose }: ItemDetailSheetProps) {
                   onChange={(e) => setSpecialInstructions(e.target.value)}
                   placeholder="Any special requests..."
                   rows={2}
-                  className="w-full px-3 py-2.5 text-sm border border-border-default rounded-[var(--radius-md)] bg-surface resize-none focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                  className="w-full px-3 py-2.5 text-sm border border-border-default rounded-md bg-surface resize-none focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
                 />
               </div>
             </div>
@@ -253,10 +253,10 @@ export function ItemDetailSheet({ item, onClose }: ItemDetailSheetProps) {
 
               <div className="flex items-center gap-3">
                 {/* Quantity */}
-                <div className="flex items-center gap-2 bg-surface-elevated rounded-[var(--radius-lg)] p-1">
+                <div className="flex items-center gap-2 bg-surface-elevated rounded-lg p-1">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-2 rounded-[var(--radius-md)] hover:bg-surface-card transition-colors touch-target"
+                    className="p-2 rounded-md hover:bg-surface-card transition-colors touch-target"
                     aria-label="Decrease quantity"
                   >
                     <Minus className="w-4 h-4" />
@@ -266,7 +266,7 @@ export function ItemDetailSheet({ item, onClose }: ItemDetailSheetProps) {
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-2 rounded-[var(--radius-md)] hover:bg-surface-card transition-colors touch-target"
+                    className="p-2 rounded-md hover:bg-surface-card transition-colors touch-target"
                     aria-label="Increase quantity"
                   >
                     <Plus className="w-4 h-4" />
@@ -373,8 +373,8 @@ function ModifierGroupSection({ group, selections, onToggle, index }: ModifierGr
                     key={modifier.id}
                     onClick={() => onToggle(modifier)}
                     className={`
-                      w-full flex items-center gap-3 px-3 py-3 rounded-[var(--radius-md)]
-                      transition-all duration-[var(--duration-fast)] touch-target text-left
+                      w-full flex items-center gap-3 px-3 py-3 rounded-md
+                      transition-all duration-(--duration-fast) touch-target text-left
                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30
                       ${isSelected
                         ? 'bg-brand/5 border border-brand/20'

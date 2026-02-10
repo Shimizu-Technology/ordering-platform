@@ -9,17 +9,20 @@ module Api
         # GET /admin/refunds
         # List all refunds for the restaurant
         def index
-          refunds = Refund
+          refunds_scope = Refund
             .joins(:order)
             .where(orders: { restaurant_id: @restaurant.id })
             .includes(:order, :user)
             .recent
-            .page(params[:page])
-            .per(params[:per_page] || 20)
+
+          page = (params[:page] || 1).to_i
+          per_page = (params[:per_page] || 20).to_i.clamp(1, 100)
+          total_count = refunds_scope.count
+          refunds = refunds_scope.offset((page - 1) * per_page).limit(per_page)
 
           render json: {
             refunds: refunds.map { |r| refund_json(r) },
-            pagination: pagination_meta(refunds)
+            pagination: pagination_meta(page: page, per_page: per_page, total_count: total_count)
           }
         end
 
@@ -136,11 +139,12 @@ module Api
           }
         end
 
-        def pagination_meta(collection)
+        def pagination_meta(page:, per_page:, total_count:)
           {
-            current_page: collection.current_page,
-            total_pages: collection.total_pages,
-            total_count: collection.total_count
+            current_page: page,
+            per_page: per_page,
+            total_pages: (total_count.to_f / per_page).ceil,
+            total_count: total_count
           }
         end
       end

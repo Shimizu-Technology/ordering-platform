@@ -10,14 +10,14 @@ Rails.application.routes.draw do
       resources :restaurants, param: :slug, only: [ :show, :create ] do
         resource :menu, only: [ :show ], controller: "menus"
         resources :locations, param: :slug, only: [ :index, :show ]
-        
+
         # Catering inquiries (public)
         post "catering", to: "catering#create"
         get "catering/info", to: "catering#info"
-        
+
         # Merchandise (Latte Stone Cookies)
-        resources :merchandise, only: [:index, :show]
-        
+        resources :merchandise, only: [ :index, :show ]
+
         resources :orders, only: [ :create, :show ] do
           member do
             post :pay

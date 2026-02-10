@@ -118,23 +118,31 @@ module Api
 
       # Handle successful payment (update order status)
       def handle_payment_succeeded(payment_intent)
-        order = Order.find_by(stripe_payment_intent_id: payment_intent.id)
+        order = find_order_for_payment_intent(payment_intent)
         return unless order
 
-        if order.payment_status != "paid"
-          order.update!(payment_status: "paid")
-          Rails.logger.info "[Stripe Webhook] Order ##{order.id} payment confirmed"
-        end
+        PaymentService.new(order).confirm_payment(payment_intent.id)
+        Rails.logger.info "[Stripe Webhook] Order ##{order.id} payment confirmed"
       end
 
       # Handle failed payment
       def handle_payment_failed(payment_intent)
-        order = Order.find_by(stripe_payment_intent_id: payment_intent.id)
+        order = find_order_for_payment_intent(payment_intent)
         return unless order
 
         error_message = payment_intent.last_payment_error&.message || "Payment failed"
-        order.update!(payment_status: "failed")
+        PaymentService.new(order).handle_failure(payment_intent.id, error_message)
         Rails.logger.warn "[Stripe Webhook] Order ##{order.id} payment failed: #{error_message}"
+      end
+
+      def find_order_for_payment_intent(payment_intent)
+        if payment_intent.id.present?
+          order = Order.find_by(stripe_payment_intent_id: payment_intent.id)
+          return order if order
+        end
+
+        order_id = payment_intent.metadata&.[]("order_id")
+        Order.find_by(id: order_id) if order_id.present?
       end
     end
   end

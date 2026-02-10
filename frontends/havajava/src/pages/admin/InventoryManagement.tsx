@@ -148,7 +148,7 @@ export function InventoryManagement() {
         </div>
         <button
           onClick={fetchInventory}
-          className="p-2 text-text-secondary hover:text-text-primary bg-surface-elevated rounded-[var(--radius-md)] transition-colors touch-target"
+          className="p-2 text-text-secondary hover:text-text-primary bg-surface-elevated rounded-md transition-colors touch-target"
           aria-label="Refresh"
         >
           <RefreshCw className="w-5 h-5" />
@@ -157,19 +157,19 @@ export function InventoryManagement() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-surface-card border border-border-default rounded-[var(--radius-md)] p-3">
+        <div className="bg-surface-card border border-border-default rounded-md p-3">
           <p className="text-xs text-text-muted uppercase tracking-wider">Total Items</p>
           <p className="text-2xl font-bold text-text-primary mt-1">{stats.total}</p>
         </div>
-        <div className="bg-surface-card border border-border-default rounded-[var(--radius-md)] p-3">
+        <div className="bg-surface-card border border-border-default rounded-md p-3">
           <p className="text-xs text-text-muted uppercase tracking-wider">Tracked</p>
           <p className="text-2xl font-bold text-text-primary mt-1">{stats.tracked}</p>
         </div>
-        <div className="bg-surface-card border border-warning/30 rounded-[var(--radius-md)] p-3">
+        <div className="bg-surface-card border border-warning/30 rounded-md p-3">
           <p className="text-xs text-warning uppercase tracking-wider">Low Stock</p>
           <p className="text-2xl font-bold text-warning mt-1">{stats.low_stock}</p>
         </div>
-        <div className="bg-surface-card border border-error/30 rounded-[var(--radius-md)] p-3">
+        <div className="bg-surface-card border border-error/30 rounded-md p-3">
           <p className="text-xs text-error uppercase tracking-wider">Sold Out</p>
           <p className="text-2xl font-bold text-error mt-1">{stats.sold_out}</p>
         </div>
@@ -184,14 +184,14 @@ export function InventoryManagement() {
             placeholder="Search items..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-surface-elevated border border-border-default rounded-[var(--radius-md)] text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 bg-surface-elevated border border-border-default rounded-md text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-colors"
           />
         </div>
         <div className="flex gap-2">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-            className="px-3 py-2.5 bg-surface-elevated border border-border-default rounded-[var(--radius-md)] text-sm text-text-primary focus:outline-none focus:border-brand"
+            className="px-3 py-2.5 bg-surface-elevated border border-border-default rounded-md text-sm text-text-primary focus:outline-none focus:border-brand"
           >
             <option value="all">All Status</option>
             <option value="in_stock">In Stock</option>
@@ -201,7 +201,7 @@ export function InventoryManagement() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as TypeFilter)}
-            className="px-3 py-2.5 bg-surface-elevated border border-border-default rounded-[var(--radius-md)] text-sm text-text-primary focus:outline-none focus:border-brand"
+            className="px-3 py-2.5 bg-surface-elevated border border-border-default rounded-md text-sm text-text-primary focus:outline-none focus:border-brand"
           >
             <option value="all">All Types</option>
             <option value="MenuItem">Menu Items</option>
@@ -214,7 +214,7 @@ export function InventoryManagement() {
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="p-4 space-y-3 rounded-[var(--radius-lg)] border border-border-default">
+            <div key={i} className="p-4 space-y-3 rounded-lg border border-border-default">
               <div className="flex justify-between">
                 <Skeleton className="h-5 w-40" />
                 <Skeleton className="h-5 w-16" />
@@ -236,7 +236,7 @@ export function InventoryManagement() {
           {items.map((item) => (
             <div
               key={`${item.type}-${item.id}`}
-              className={`bg-surface-card rounded-[var(--radius-lg)] border p-4 transition-colors ${
+              className={`bg-surface-card rounded-lg border p-4 transition-colors ${
                 item.stock_status === 'sold_out'
                   ? 'border-error/30'
                   : item.stock_status === 'low_stock'
@@ -270,19 +270,19 @@ export function InventoryManagement() {
                     <button
                       onClick={() => handleQuickAdjust(item, -1)}
                       disabled={(item.stock_quantity || 0) <= 0}
-                      className="p-2 text-text-secondary hover:text-error bg-surface-elevated rounded-[var(--radius-sm)] transition-colors disabled:opacity-30 touch-target"
+                      className="p-2 text-text-secondary hover:text-error bg-surface-elevated rounded-sm transition-colors disabled:opacity-30 touch-target"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setAdjustingItem(item)}
-                      className="min-w-[3rem] px-3 py-1.5 text-lg font-semibold text-text-primary bg-surface-elevated rounded-[var(--radius-sm)] hover:bg-surface-card transition-colors"
+                      className="min-w-[3rem] px-3 py-1.5 text-lg font-semibold text-text-primary bg-surface-elevated rounded-sm hover:bg-surface-card transition-colors"
                     >
                       {item.stock_quantity ?? 0}
                     </button>
                     <button
                       onClick={() => handleQuickAdjust(item, 1)}
-                      className="p-2 text-text-secondary hover:text-success bg-surface-elevated rounded-[var(--radius-sm)] transition-colors touch-target"
+                      className="p-2 text-text-secondary hover:text-success bg-surface-elevated rounded-sm transition-colors touch-target"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -297,7 +297,7 @@ export function InventoryManagement() {
                 ) : (
                   <button
                     onClick={() => toggleTracking(item)}
-                    className="px-3 py-1.5 text-sm font-medium text-brand bg-brand/10 rounded-[var(--radius-md)] hover:bg-brand/20 transition-colors"
+                    className="px-3 py-1.5 text-sm font-medium text-brand bg-brand/10 rounded-md hover:bg-brand/20 transition-colors"
                   >
                     Enable Tracking
                   </button>
@@ -330,7 +330,7 @@ export function InventoryManagement() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-md bg-surface-card rounded-[var(--radius-lg)] shadow-xl z-50 flex flex-col max-h-[90vh]"
+              className="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-md bg-surface-card rounded-lg shadow-xl z-50 flex flex-col max-h-[90vh]"
             >
               <div className="flex items-center justify-between p-4 border-b border-border-default">
                 <h3 className="font-semibold text-text-primary">Adjust Stock</h3>
@@ -357,7 +357,7 @@ export function InventoryManagement() {
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setAdjustmentValue((v) => v - 1)}
-                      className="p-3 bg-surface-elevated rounded-[var(--radius-md)] hover:bg-error/10 hover:text-error transition-colors touch-target"
+                      className="p-3 bg-surface-elevated rounded-md hover:bg-error/10 hover:text-error transition-colors touch-target"
                     >
                       <Minus className="w-5 h-5" />
                     </button>
@@ -365,11 +365,11 @@ export function InventoryManagement() {
                       type="number"
                       value={adjustmentValue}
                       onChange={(e) => setAdjustmentValue(parseInt(e.target.value) || 0)}
-                      className="flex-1 px-4 py-3 text-center text-xl font-semibold bg-surface-elevated border border-border-default rounded-[var(--radius-md)] focus:outline-none focus:border-brand"
+                      className="flex-1 px-4 py-3 text-center text-xl font-semibold bg-surface-elevated border border-border-default rounded-md focus:outline-none focus:border-brand"
                     />
                     <button
                       onClick={() => setAdjustmentValue((v) => v + 1)}
-                      className="p-3 bg-surface-elevated rounded-[var(--radius-md)] hover:bg-success/10 hover:text-success transition-colors touch-target"
+                      className="p-3 bg-surface-elevated rounded-md hover:bg-success/10 hover:text-success transition-colors touch-target"
                     >
                       <Plus className="w-5 h-5" />
                     </button>
@@ -386,7 +386,7 @@ export function InventoryManagement() {
                   <select
                     value={adjustmentReason}
                     onChange={(e) => setAdjustmentReason(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-surface-elevated border border-border-default rounded-[var(--radius-md)] text-sm focus:outline-none focus:border-brand"
+                    className="w-full px-3 py-2.5 bg-surface-elevated border border-border-default rounded-md text-sm focus:outline-none focus:border-brand"
                   >
                     {ADJUSTMENT_REASONS.map((r) => (
                       <option key={r.value} value={r.value}>{r.label}</option>
@@ -403,7 +403,7 @@ export function InventoryManagement() {
                     onChange={(e) => setAdjustmentNotes(e.target.value)}
                     placeholder="Add any notes..."
                     rows={2}
-                    className="w-full px-3 py-2.5 bg-surface-elevated border border-border-default rounded-[var(--radius-md)] text-sm placeholder:text-text-muted focus:outline-none focus:border-brand resize-none"
+                    className="w-full px-3 py-2.5 bg-surface-elevated border border-border-default rounded-md text-sm placeholder:text-text-muted focus:outline-none focus:border-brand resize-none"
                   />
                 </div>
               </div>
@@ -411,14 +411,14 @@ export function InventoryManagement() {
               <div className="p-4 border-t border-border-default flex gap-3">
                 <button
                   onClick={() => setAdjustingItem(null)}
-                  className="flex-1 px-4 py-2.5 text-text-secondary bg-surface-elevated rounded-[var(--radius-md)] font-medium text-sm hover:bg-surface-card transition-colors"
+                  className="flex-1 px-4 py-2.5 text-text-secondary bg-surface-elevated rounded-md font-medium text-sm hover:bg-surface-card transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSubmitAdjustment}
                   disabled={adjustmentValue === 0 || submitting}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white rounded-[var(--radius-md)] font-medium text-sm hover:opacity-90 disabled:opacity-50 transition-all"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white rounded-md font-medium text-sm hover:opacity-90 disabled:opacity-50 transition-all"
                 >
                   {submitting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -450,7 +450,7 @@ export function InventoryManagement() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg bg-surface-card rounded-[var(--radius-lg)] shadow-xl z-50 flex flex-col max-h-[80vh]"
+              className="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg bg-surface-card rounded-lg shadow-xl z-50 flex flex-col max-h-[80vh]"
             >
               <div className="flex items-center justify-between p-4 border-b border-border-default">
                 <div>
@@ -482,7 +482,7 @@ export function InventoryManagement() {
                     {history.map((adj) => (
                       <div
                         key={adj.id}
-                        className="flex items-start gap-3 p-3 bg-surface-elevated rounded-[var(--radius-md)]"
+                        className="flex items-start gap-3 p-3 bg-surface-elevated rounded-md"
                       >
                         <div className={`p-2 rounded-full ${
                           adj.adjustment > 0 ? 'bg-success/10 text-success' : 'bg-error/10 text-error'

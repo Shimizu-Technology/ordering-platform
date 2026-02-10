@@ -1,8 +1,8 @@
 # Build Plan — Ordering Platform
 
 **Version:** 2.0
-**Last Updated:** February 9, 2026
-**Status:** Restructuring to Monorepo
+**Last Updated:** February 10, 2026
+**Status:** Stabilization in progress
 
 ---
 
@@ -34,7 +34,26 @@ This document tracks the development phases for the Ordering Platform monorepo. 
 
 ---
 
-## Phase 0: Monorepo Restructure ⬅️ CURRENT
+## Current Snapshot (Feb 10, 2026)
+
+- Monorepo restructure completed and operational.
+- P0/P1 stabilization items are actively tracked in `STABILIZATION_CHECKLIST.md`.
+- Gate is passing across shared + both frontends + API checks.
+- Security hardening completed for:
+  - payment webhook/intent reliability and idempotency path
+  - onboarding/auth boundary tightening
+  - admin tenant scoping and safer analytics/user handling
+- Three Squares:
+  - online Stripe checkout enabled for restaurant ordering
+  - merchandise checkout uses Shopify handoff (current source-of-truth)
+- Remaining near-term focus:
+  - docs/runbooks completion
+  - production deployment and monitoring setup
+  - test coverage expansion
+
+---
+
+## Phase 0: Monorepo Restructure
 
 **Goal:** Convert the existing single-frontend structure to a monorepo with shared components.
 
@@ -94,9 +113,9 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
 
 - [x] **0.9** Add Stripe per-restaurant fields ✅
   - Migration: stripe_publishable_key, stripe_secret_key, stripe_webhook_secret
-  - [ ] Update payment flow to use restaurant's keys
+  - [x] Update payment flow to use restaurant's keys
 
-- [ ] **0.10** Set up Clerk auth
+- [x] **0.10** Set up Clerk auth ✅
   - Follow CLERK_AUTH_SETUP_GUIDE.md
   - Admin/staff roles per restaurant
 
@@ -183,13 +202,13 @@ See [docs/DECISIONS.md](./docs/DECISIONS.md) for full details.
 - [x] Auto-create first user as super_admin
 - [x] Admin dashboard protected by auth
 
-### 1.9 Stripe Payments ⬅️ IN PROGRESS (Feb 9, 2026)
+### 1.9 Stripe Payments ✅ (Updated Feb 10, 2026)
 - [x] PaymentForm component with Stripe Elements
 - [x] Payment modal in checkout flow
 - [x] PaymentIntent creation via API
 - [x] Real Stripe test keys configured
-- [ ] Webhook handler for payment confirmation
-- [ ] Handle failed payments gracefully
+- [x] Webhook handler for payment confirmation
+- [x] Handle failed payments gracefully (retry/fallback UX in checkout)
 
 ### 1.10 Refunds System ✅ (Feb 9, 2026)
 See [docs/REFUNDS_DESIGN.md](./docs/REFUNDS_DESIGN.md) for full spec.
@@ -266,7 +285,7 @@ Based on actual Shopify store research — they have 6 flavors, dipped versions,
 
 **POC Scope:**
 - [x] Seed real Latte Stone Cookies products ✅ (Feb 9, 2026)
-- [x] Local pickup only
+- [x] Shopify handoff checkout enabled in app cart (Feb 10, 2026)
 - [ ] Simple inquiry link for corporate/bulk orders
 
 **Future (Post-POC):**
@@ -358,9 +377,9 @@ Based on actual Shopify store research — they have 6 flavors, dipped versions,
 - [ ] Rewards redemption
 
 ### 5.2 Inventory Tracking
-- [ ] Stock quantities per item
-- [ ] Low stock alerts
-- [ ] Auto-disable when out of stock
+- [ ] Advanced inventory forecasting/automation
+- [ ] Purchase order workflows
+- [ ] Vendor/restock lead-time planning
 
 ### 5.3 POS Integration
 - [ ] Clover API integration
@@ -464,6 +483,7 @@ Based on actual Shopify store research — they have 6 flavors, dipped versions,
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — Monorepo structure & technical decisions
 - [PRD.md](./PRD.md) — Product requirements & feature details
+- [STABILIZATION_CHECKLIST.md](./STABILIZATION_CHECKLIST.md) — Active stabilization execution plan
 - [docs/starter-app/](./docs/starter-app/) — Shimizu Technology development standards
 
 ---

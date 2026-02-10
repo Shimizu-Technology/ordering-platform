@@ -1,5 +1,10 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
+    localhost_origin_patterns = [
+      %r{\Ahttp://localhost:\d+\z},
+      %r{\Ahttp://127\.0\.0\.1:\d+\z}
+    ]
+
     origins(
       "http://localhost:5173",    # Vite dev server (HavaJava)
       "http://localhost:5174",    # Vite dev server (Three Squares)
@@ -10,6 +15,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       "http://127.0.0.1:5174",
       "http://127.0.0.1:4173",
       "http://127.0.0.1:4174",
+      *localhost_origin_patterns,
       *ENV.fetch("ALLOWED_ORIGINS", "").split(",").map(&:strip)
     )
 

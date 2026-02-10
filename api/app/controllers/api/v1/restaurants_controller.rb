@@ -1,6 +1,10 @@
 module Api
   module V1
     class RestaurantsController < ApplicationController
+      include ClerkAuthenticatable
+
+      before_action :authorize_restaurant_setup!, only: [ :create, :setup ]
+
       def show
         restaurant = Restaurant.active.find_by!(slug: params[:slug])
         render json: restaurant_json(restaurant)
@@ -42,6 +46,25 @@ module Api
       end
 
       private
+
+      def authorize_restaurant_setup!
+        # Prefer a dedicated internal token for onboarding automation/scripts.
+        setup_token = ENV["RESTAURANT_SETUP_TOKEN"]
+        request_token = request.headers["X-Restaurant-Setup-Token"] || request.headers["X-Setup-Token"]
+
+        if setup_token.present?
+          return if request_token.present? && ActiveSupport::SecurityUtils.secure_compare(request_token, setup_token)
+        elsif Rails.env.development?
+          # Development convenience when the setup token is not configured.
+          return
+        end
+
+        # Fallback: allow authenticated super admins to perform setup actions.
+        authenticate_user_optional
+        return if current_user&.super_admin?
+
+        render json: { error: "Unauthorized" }, status: :unauthorized
+      end
 
       def create_params
         params.require(:restaurant).permit(:name, :phone, :email, :address, :description)

@@ -41,23 +41,21 @@ module Api
 
         def update
           order = @restaurant.orders.find(params[:id])
-          valid_transitions = {
-            "pending" => %w[confirmed preparing cancelled],
-            "confirmed" => %w[preparing cancelled],
-            "preparing" => %w[ready cancelled],
-            "ready" => %w[completed],
-            "completed" => [],
-            "cancelled" => []
-          }
-
           new_status = params[:status]
-          unless valid_transitions[order.status]&.include?(new_status)
-            return render json: {
-              error: "Cannot transition from '#{order.status}' to '#{new_status}'"
-            }, status: :unprocessable_entity
+          status_transition_actions = {
+            "confirmed" => :confirm!,
+            "preparing" => :start_preparing!,
+            "ready" => :mark_ready!,
+            "completed" => :complete!,
+            "cancelled" => :cancel!
+          }
+          transition_action = status_transition_actions[new_status]
+
+          unless transition_action
+            return render json: { error: "Unsupported status '#{new_status}'" }, status: :unprocessable_entity
           end
 
-          order.update!(status: new_status)
+          order.public_send(transition_action)
 
           # Restore inventory if order is cancelled
           if new_status == "cancelled"
@@ -65,6 +63,8 @@ module Api
           end
 
           render json: order_json(order)
+        rescue SafeStatusTransitions::InvalidTransitionError, SafeStatusTransitions::ConcurrentModificationError => e
+          render json: { error: e.message }, status: :unprocessable_entity
         rescue ActiveRecord::RecordNotFound
           render json: { error: "Order not found" }, status: :not_found
         end
@@ -90,9 +90,9 @@ module Api
           end
 
           # Send email if customer has email (primary notification method)
-          if order.email.present?
+          if order.email.present? && EmailService.configured?
             begin
-              OrderMailer.order_ready(order).deliver_later
+              OrderEmailJob.perform_later(order.id, "order_ready")
               notifications_sent << "Email"
             rescue StandardError => e
               errors << "Email: #{e.message}"

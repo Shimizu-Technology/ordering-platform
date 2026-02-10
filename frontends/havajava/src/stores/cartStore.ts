@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { CartItem, MenuItem, SelectedModifier } from '../types';
 import { calculateItemTotal } from '../utils/price';
 
@@ -16,51 +17,59 @@ function generateId(): string {
   return Math.random().toString(36).substring(2, 11);
 }
 
-export const useCartStore = create<CartState>((set, get) => ({
-  items: [],
+export const useCartStore = create<CartState>()(
+  persist(
+    (set, get) => ({
+      items: [],
 
-  addItem: (menuItem, modifiers, quantity = 1, specialInstructions = '') => {
-    const newItem: CartItem = {
-      id: generateId(),
-      menuItem,
-      quantity,
-      selectedModifiers: modifiers,
-      specialInstructions,
-    };
-    set((state) => ({ items: [...state.items, newItem] }));
-  },
+      addItem: (menuItem, modifiers, quantity = 1, specialInstructions = '') => {
+        const newItem: CartItem = {
+          id: generateId(),
+          menuItem,
+          quantity,
+          selectedModifiers: modifiers,
+          specialInstructions,
+        };
+        set((state) => ({ items: [...state.items, newItem] }));
+      },
 
-  removeItem: (cartItemId) => {
-    set((state) => ({
-      items: state.items.filter((item) => item.id !== cartItemId),
-    }));
-  },
+      removeItem: (cartItemId) => {
+        set((state) => ({
+          items: state.items.filter((item) => item.id !== cartItemId),
+        }));
+      },
 
-  updateQuantity: (cartItemId, quantity) => {
-    if (quantity <= 0) {
-      get().removeItem(cartItemId);
-      return;
-    }
-    set((state) => ({
-      items: state.items.map((item) =>
-        item.id === cartItemId ? { ...item, quantity } : item
-      ),
-    }));
-  },
+      updateQuantity: (cartItemId, quantity) => {
+        if (quantity <= 0) {
+          get().removeItem(cartItemId);
+          return;
+        }
+        set((state) => ({
+          items: state.items.map((item) =>
+            item.id === cartItemId ? { ...item, quantity } : item
+          ),
+        }));
+      },
 
-  clearCart: () => set({ items: [] }),
+      clearCart: () => set({ items: [] }),
 
-  itemCount: () => get().items.reduce((sum, item) => sum + item.quantity, 0),
+      itemCount: () => get().items.reduce((sum, item) => sum + item.quantity, 0),
 
-  cartTotal: () =>
-    get().items.reduce(
-      (sum, item) =>
-        sum +
-        calculateItemTotal(
-          item.menuItem.base_price,
-          item.selectedModifiers.map((sm) => sm.modifier),
-          item.quantity
+      cartTotal: () =>
+        get().items.reduce(
+          (sum, item) =>
+            sum +
+            calculateItemTotal(
+              item.menuItem.base_price,
+              item.selectedModifiers.map((sm) => sm.modifier),
+              item.quantity
+            ),
+          0
         ),
-      0
-    ),
-}));
+    }),
+    {
+      name: 'ordering_cart_havajava',
+      partialize: (state) => ({ items: state.items }),
+    }
+  )
+);

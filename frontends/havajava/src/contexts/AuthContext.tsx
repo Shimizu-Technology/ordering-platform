@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useCallback, type ReactNode } from 'react';
 import { useAuth as useClerkAuth, useUser } from '@clerk/clerk-react';
 

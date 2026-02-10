@@ -37,7 +37,7 @@ const navItems: { id: AdminPage; label: string; icon: React.ElementType; require
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-export function AdminLayout({ activePage, onNavigate, children, restaurant: _restaurant }: AdminLayoutProps) {
+export function AdminLayout({ activePage, onNavigate, children }: AdminLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const logout = useAdminStore((s) => s.logout);
 
@@ -81,7 +81,7 @@ export function AdminLayout({ activePage, onNavigate, children, restaurant: _res
                 <button
                   key={item.id}
                   onClick={() => handleNav(item.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-[var(--radius-md)] text-sm font-medium transition-colors touch-target ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors touch-target ${
                     isActive
                       ? 'bg-brand/10 text-brand'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-elevated'
@@ -130,7 +130,7 @@ export function AdminLayout({ activePage, onNavigate, children, restaurant: _res
                     <button
                       key={item.id}
                       onClick={() => handleNav(item.id)}
-                      className={`w-full flex items-center justify-between px-4 py-3 rounded-[var(--radius-md)] text-sm font-medium transition-colors touch-target ${
+                      className={`w-full flex items-center justify-between px-4 py-3 rounded-md text-sm font-medium transition-colors touch-target ${
                         isActive
                           ? 'bg-brand/10 text-brand'
                           : 'text-text-secondary hover:text-text-primary hover:bg-surface-elevated'

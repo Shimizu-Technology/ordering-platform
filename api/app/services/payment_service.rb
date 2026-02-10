@@ -20,25 +20,27 @@ class PaymentService
   def create_payment_intent
     validate_can_process!
 
-    Stripe::PaymentIntent.create(
-      {
-        amount: amount_in_cents,
-        currency: "usd",
-        metadata: {
-          order_id: @order.id,
-          restaurant_id: @restaurant.id,
-          restaurant_slug: @restaurant.slug
-        },
-        # Capture payment immediately (not just authorize)
-        capture_method: "automatic"
+    intent_params = {
+      amount: amount_in_cents,
+      currency: "usd",
+      metadata: {
+        order_id: @order.id,
+        restaurant_id: @restaurant.id,
+        restaurant_slug: @restaurant.slug
       },
-      {
-        # Idempotency key ensures this exact charge isn't duplicated
-        idempotency_key: @order.idempotency_key,
-        # Use restaurant's Stripe keys if available, otherwise platform keys
-        api_key: stripe_secret_key
-      }
-    )
+      # Capture payment immediately (not just authorize)
+      capture_method: "automatic"
+    }
+
+    # If a connected account is configured, route funds through Connect.
+    if @restaurant.stripe_account_id.present? && @restaurant.stripe_onboarding_complete
+      fee_percent = StripeConnectService.platform_fee_percent
+      application_fee = (amount_in_cents * (fee_percent / 100.0)).round
+      intent_params[:application_fee_amount] = application_fee
+      intent_params[:transfer_data] = { destination: @restaurant.stripe_account_id }
+    end
+
+    Stripe::PaymentIntent.create(intent_params, stripe_request_options)
   end
 
   # Confirm payment was successful and update order
@@ -88,5 +90,14 @@ class PaymentService
   def stripe_secret_key
     # Use restaurant's own Stripe key if configured, otherwise fall back to platform
     @restaurant.stripe_secret_key.presence || Rails.application.credentials.dig(:stripe, :secret_key)
+  end
+
+  def stripe_request_options
+    {
+      # Idempotency key ensures this exact charge isn't duplicated
+      idempotency_key: @order.idempotency_key,
+      # Use restaurant's Stripe keys if available, otherwise platform keys
+      api_key: stripe_secret_key
+    }
   end
 end

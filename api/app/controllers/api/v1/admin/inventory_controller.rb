@@ -140,16 +140,19 @@ module Api
             .where(menu_categories: { restaurant_id: @restaurant.id })
             .pluck(:id)
 
-          adjustments = StockAdjustment
+          adjustments_scope = StockAdjustment
             .where(adjustable_type: "MenuItem", adjustable_id: menu_item_ids)
             .includes(:adjustable, :user)
             .recent
-            .page(params[:page])
-            .per(params[:per_page] || 50)
+
+          page = (params[:page] || 1).to_i
+          per_page = (params[:per_page] || 50).to_i.clamp(1, 100)
+          total_count = adjustments_scope.count
+          adjustments = adjustments_scope.offset((page - 1) * per_page).limit(per_page)
 
           render json: {
             adjustments: adjustments.map { |adj| adjustment_json(adj) },
-            pagination: pagination_meta(adjustments)
+            pagination: pagination_meta(page: page, per_page: per_page, total_count: total_count)
           }
         end
 
@@ -197,11 +200,12 @@ module Api
           }
         end
 
-        def pagination_meta(collection)
+        def pagination_meta(page:, per_page:, total_count:)
           {
-            current_page: collection.current_page,
-            total_pages: collection.total_pages,
-            total_count: collection.total_count
+            current_page: page,
+            per_page: per_page,
+            total_pages: (total_count.to_f / per_page).ceil,
+            total_count: total_count
           }
         end
       end

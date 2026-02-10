@@ -188,7 +188,7 @@ export function PromotionsManagement() {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-24 rounded-[var(--radius-lg)] bg-surface-elevated animate-pulse" />
+          <div key={i} className="h-24 rounded-lg bg-surface-elevated animate-pulse" />
         ))}
       </div>
     );
@@ -206,7 +206,7 @@ export function PromotionsManagement() {
         </div>
         <button
           onClick={openCreateForm}
-          className="flex items-center gap-2 px-4 py-2.5 bg-brand text-white text-sm font-medium rounded-[var(--radius-md)] hover:bg-brand-hover transition-colors touch-target"
+          className="flex items-center gap-2 px-4 py-2.5 bg-brand text-white text-sm font-medium rounded-md hover:bg-brand-hover transition-colors touch-target"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Add Promotion</span>
@@ -214,7 +214,7 @@ export function PromotionsManagement() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 px-4 py-3 bg-error/10 text-error text-sm rounded-[var(--radius-md)]">
+        <div className="flex items-center gap-2 px-4 py-3 bg-error/10 text-error text-sm rounded-md">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -222,7 +222,7 @@ export function PromotionsManagement() {
 
       {/* Weekly Schedule Overview */}
       {promotions.length > 0 && (
-        <div className="bg-surface-card rounded-[var(--radius-lg)] border border-border-default p-4">
+        <div className="bg-surface-card rounded-lg border border-border-default p-4">
           <h3 className="text-sm font-semibold text-text-primary mb-3">Weekly Schedule</h3>
           <div className="grid grid-cols-7 gap-1">
             {DAYS.map((day) => {
@@ -257,7 +257,7 @@ export function PromotionsManagement() {
 
       {/* Promotions List */}
       {promotions.length === 0 ? (
-        <div className="text-center py-12 bg-surface-card rounded-[var(--radius-lg)] border border-border-default">
+        <div className="text-center py-12 bg-surface-card rounded-lg border border-border-default">
           <Zap className="w-10 h-10 text-text-muted mx-auto mb-3" />
           <p className="text-text-secondary font-medium">No promotions yet</p>
           <p className="text-sm text-text-muted mt-1">
@@ -278,10 +278,10 @@ export function PromotionsManagement() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -16 }}
-                  className="bg-surface-card rounded-[var(--radius-lg)] border border-border-default overflow-hidden"
+                  className="bg-surface-card rounded-lg border border-border-default overflow-hidden"
                 >
                   <div className="flex items-center gap-3 p-4">
-                    <div className={`w-10 h-10 rounded-[var(--radius-md)] flex items-center justify-center shrink-0 ${
+                    <div className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 ${
                       promo.currently_active
                         ? 'bg-success/10 text-success'
                         : promo.active
@@ -364,14 +364,14 @@ export function PromotionsManagement() {
                           <div className="flex gap-2">
                             <button
                               onClick={() => openEditForm(promo)}
-                              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary hover:text-text-primary bg-surface-elevated rounded-[var(--radius-md)] transition-colors touch-target"
+                              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary hover:text-text-primary bg-surface-elevated rounded-md transition-colors touch-target"
                             >
                               <Pencil className="w-3.5 h-3.5" />
                               Edit
                             </button>
                             <button
                               onClick={() => handleDelete(promo.id)}
-                              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-error hover:bg-error/10 rounded-[var(--radius-md)] transition-colors touch-target"
+                              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-error hover:bg-error/10 rounded-md transition-colors touch-target"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                               Delete
@@ -450,7 +450,7 @@ export function PromotionsManagement() {
                           key={type}
                           type="button"
                           onClick={() => setForm((f) => ({ ...f, promotion_type: type as PromotionTypeValue }))}
-                          className={`flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-[var(--radius-md)] border transition-colors touch-target ${
+                          className={`flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-md border transition-colors touch-target ${
                             isSelected
                               ? 'bg-brand/10 border-brand text-brand'
                               : 'bg-surface-elevated border-border-default text-text-secondary hover:border-brand/30'
@@ -518,7 +518,7 @@ export function PromotionsManagement() {
                           key={day}
                           type="button"
                           onClick={() => toggleDay(day)}
-                          className={`px-3 py-2 text-sm font-medium rounded-[var(--radius-md)] transition-colors touch-target ${
+                          className={`px-3 py-2 text-sm font-medium rounded-md transition-colors touch-target ${
                             isSelected
                               ? 'bg-brand text-white'
                               : 'bg-surface-elevated text-text-secondary hover:bg-surface-elevated/80'
@@ -582,14 +582,14 @@ export function PromotionsManagement() {
               <div className="flex items-center gap-3 px-5 py-4 border-t border-border-default shrink-0">
                 <button
                   onClick={closeForm}
-                  className="flex-1 px-4 py-2.5 text-sm font-medium text-text-secondary bg-surface-elevated rounded-[var(--radius-md)] hover:bg-border-default transition-colors touch-target"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-text-secondary bg-surface-elevated rounded-md hover:bg-border-default transition-colors touch-target"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={saving || !form.name || !form.value || form.days_of_week.length === 0}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-brand rounded-[var(--radius-md)] hover:bg-brand-hover transition-colors touch-target disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-brand rounded-md hover:bg-brand-hover transition-colors touch-target disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Check className="w-4 h-4" />
                   {saving ? 'Saving...' : editingId ? 'Update' : 'Create'}

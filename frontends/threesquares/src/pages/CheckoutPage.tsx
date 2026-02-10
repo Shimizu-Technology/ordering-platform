@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import {
   ArrowLeft, User, Phone, Mail, MessageSquare,
-  Store, UtensilsCrossed, CreditCard, ShieldCheck, Bookmark,
+  Store, UtensilsCrossed, ShieldCheck, Bookmark,
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { PaymentForm } from '../components/PaymentForm';
 import { TipSelector } from '@shimizu/shared';
 import { useCartStore } from '../stores/cartStore';
 import { useRestaurantStore } from '../stores/restaurantStore';
@@ -16,7 +19,11 @@ import { formatPrice, calculateItemTotal } from '../utils/price';
 import { api } from '../api/client';
 import { toast } from '../components/ui/Toast';
 import { pageTransition, pageTransitionConfig } from '../utils/motion';
-import type { OrderPayload } from '../types';
+import type { OrderPayload, Order } from '../types';
+
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 interface CheckoutPageProps {
   slug: string;
@@ -37,6 +44,10 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
   const [instructions, setInstructions] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showPayment, setShowPayment] = useState(false);
+  const [pendingOrder, setPendingOrder] = useState<Order | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentSetupError, setPaymentSetupError] = useState<string | null>(null);
 
   // Tip state
   const [tipAmount, setTipAmount] = useState(0);
@@ -60,6 +71,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
 
   // Check if this restaurant has multi-location enabled
   const hasMultiLocation = restaurant?.features?.multi_location ?? false;
+  const stripeEnabled = !!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
   useEffect(() => {
     loadRestaurant(slug);
@@ -84,10 +96,10 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
 
   // Redirect if cart is empty
   useEffect(() => {
-    if (items.length === 0) {
+    if (items.length === 0 && !pendingOrder) {
       navigate(`/${slug}`, { replace: true });
     }
-  }, [items.length, navigate, slug]);
+  }, [items.length, navigate, slug, pendingOrder]);
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
@@ -107,6 +119,16 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
     if (!validate()) return;
     if (items.length === 0) {
       toast.error('Your cart is empty');
+      return;
+    }
+
+    if (pendingOrder && stripeEnabled) {
+      setLoading(true);
+      try {
+        await setupPaymentForOrder(pendingOrder);
+      } finally {
+        setLoading(false);
+      }
       return;
     }
 
@@ -151,8 +173,14 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
       };
 
       const order = await api.createOrder(slug, payload);
-      clearCart();
-      navigate(`/${slug}/confirmation/${order.id}`, { replace: true });
+      setPendingOrder(order);
+
+      if (stripeEnabled && order.total > 0) {
+        await setupPaymentForOrder(order);
+      } else {
+        clearCart();
+        navigate(`/${slug}/confirmation/${order.id}`, { replace: true });
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to place order. Please try again.');
     } finally {
@@ -160,12 +188,89 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
     }
   };
 
+  const handlePaymentSuccess = () => {
+    if (pendingOrder) {
+      setPaymentSetupError(null);
+      clearCart();
+      navigate(`/${slug}/confirmation/${pendingOrder.id}`, { replace: true });
+    }
+  };
+
+  const handlePaymentCancel = () => {
+    setShowPayment(false);
+    setClientSecret(null);
+    setPaymentSetupError(null);
+    toast.info('Payment cancelled. You can pay at the counter.');
+    if (pendingOrder) {
+      clearCart();
+      navigate(`/${slug}/confirmation/${pendingOrder.id}`, { replace: true });
+    }
+  };
+
+  const setupPaymentForOrder = async (order: Order) => {
+    try {
+      const paymentData = await api.payOrder(slug, order.id);
+      setClientSecret(paymentData.client_secret);
+      setShowPayment(true);
+      setPaymentSetupError(null);
+    } catch {
+      setPaymentSetupError('Payment setup failed. Retry now or complete at the counter.');
+      toast.error('Payment setup failed. Retry or pay at counter.');
+    }
+  };
+
+  const stripeAppearance = useMemo(() => ({
+    theme: 'stripe' as const,
+    variables: {
+      colorPrimary: 'var(--brand-primary)',
+      colorBackground: 'var(--surface-card)',
+      colorText: 'var(--text-primary)',
+      colorDanger: 'var(--error)',
+      fontFamily: 'system-ui, sans-serif',
+      borderRadius: '8px',
+    },
+  }), []);
+
   return (
     <motion.div
       className="min-h-screen bg-surface"
       {...pageTransition}
       transition={pageTransitionConfig}
     >
+      <AnimatePresence>
+        {showPayment && clientSecret && pendingOrder && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            onClick={(e) => e.target === e.currentTarget && handlePaymentCancel()}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="w-full max-w-md"
+            >
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  clientSecret,
+                  appearance: stripeAppearance,
+                }}
+              >
+                <PaymentForm
+                  amount={pendingOrder.total}
+                  orderId={pendingOrder.id}
+                  onSuccess={handlePaymentSuccess}
+                  onCancel={handlePaymentCancel}
+                />
+              </Elements>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <div className="sticky top-0 z-20 bg-surface/95 backdrop-blur-sm border-b border-border-default">
         <div className="flex items-center gap-3 px-4 py-3">
@@ -197,7 +302,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
                 onClick={() => setOrderType(value)}
                 className={`
                   flex items-center justify-center gap-2 py-3 px-4 text-sm font-medium
-                  rounded-[var(--radius-md)] border-2 transition-all duration-[var(--duration-fast)]
+                  rounded-md border-2 transition-all duration-(--duration-fast)
                   touch-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40
                   ${orderType === value
                     ? 'bg-brand text-white border-brand shadow-sm shadow-brand/15'
@@ -244,7 +349,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
                 required
                 aria-invalid={!!errors.name}
                 aria-describedby={errors.name ? 'name-error' : undefined}
-                className={`w-full pl-10 pr-3 py-3 text-sm border rounded-[var(--radius-md)] bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors ${
+                className={`w-full pl-10 pr-3 py-3 text-sm border rounded-md bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors ${
                   errors.name ? 'border-error' : 'border-border-default'
                 }`}
               />
@@ -261,7 +366,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="Phone (for order updates)"
-              className="w-full pl-10 pr-3 py-3 text-sm border border-border-default rounded-[var(--radius-md)] bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="w-full pl-10 pr-3 py-3 text-sm border border-border-default rounded-md bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
             />
           </div>
 
@@ -275,7 +380,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
                 placeholder="Email (for receipt)"
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? 'email-error' : undefined}
-                className={`w-full pl-10 pr-3 py-3 text-sm border rounded-[var(--radius-md)] bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors ${
+                className={`w-full pl-10 pr-3 py-3 text-sm border rounded-md bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors ${
                   errors.email ? 'border-error' : 'border-border-default'
                 }`}
               />
@@ -288,12 +393,12 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
 
         {/* Save Info Checkbox */}
         {email.trim() && (
-          <label className="flex items-center gap-3 px-4 py-3 bg-surface-elevated rounded-[var(--radius-md)] cursor-pointer touch-target">
+          <label className="flex items-center gap-3 px-4 py-3 bg-surface-elevated rounded-md cursor-pointer touch-target">
             <input
               type="checkbox"
               checked={saveInfo}
               onChange={(e) => setSaveInfo(e.target.checked)}
-              className="w-5 h-5 rounded border-border-default text-brand focus:ring-brand/30 accent-[var(--brand-primary)]"
+              className="w-5 h-5 rounded border-border-default text-brand focus:ring-brand/30 accent-brand"
             />
             <div className="flex items-center gap-2 text-sm text-text-secondary">
               <Bookmark className="w-4 h-4" />
@@ -315,13 +420,13 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
               onChange={(e) => setInstructions(e.target.value)}
               placeholder="Any special requests for the restaurant..."
               rows={2}
-              className="w-full pl-10 pr-3 py-3 text-sm border border-border-default rounded-[var(--radius-md)] bg-surface-card resize-none focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="w-full pl-10 pr-3 py-3 text-sm border border-border-default rounded-md bg-surface-card resize-none focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
             />
           </div>
         </div>
 
         {/* Order Summary */}
-        <div className="bg-surface-elevated rounded-[var(--radius-lg)] p-4">
+        <div className="bg-surface-elevated rounded-lg p-4">
           <h3 className="text-sm font-bold text-text-primary mb-3">Order Summary</h3>
           <div className="space-y-2.5">
             {items.map((cartItem) => {
@@ -379,19 +484,41 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
           defaultPercentage={20}
         />
 
-        {/* Payment info */}
-        <div className="flex items-start gap-2.5 p-3 bg-brand/5 rounded-[var(--radius-md)] border border-brand/10">
-          <CreditCard className="w-4 h-4 text-brand shrink-0 mt-0.5" />
-          <p className="text-xs text-text-secondary leading-relaxed">
-            Payment will be collected at the counter. Online payment coming soon.
-          </p>
-        </div>
-
         {/* Security note */}
         <div className="flex items-center justify-center gap-1.5 text-xs text-text-muted">
           <ShieldCheck className="w-3.5 h-3.5" />
-          <span>Your information is secure</span>
+          <span>{stripeEnabled ? 'Payments secured by Stripe' : 'Your information is secure'}</span>
         </div>
+
+        {paymentSetupError && pendingOrder && (
+          <div className="space-y-2 rounded-md border border-warning/30 bg-warning/10 p-3">
+            <p className="text-xs text-text-secondary">{paymentSetupError}</p>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="flex-1"
+                onClick={() => setupPaymentForOrder(pendingOrder)}
+              >
+                Retry Payment
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                className="flex-1"
+                onClick={() => {
+                  setPaymentSetupError(null);
+                  clearCart();
+                  navigate(`/${slug}/confirmation/${pendingOrder.id}`, { replace: true });
+                }}
+              >
+                Pay at Counter
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Submit */}
         <Button
@@ -401,7 +528,7 @@ export function CheckoutPage({ slug }: CheckoutPageProps) {
           className="w-full"
           loading={loading}
         >
-          Place Order · {formatPrice(orderTotal)}
+          {stripeEnabled ? `Continue to Payment · ${formatPrice(orderTotal)}` : `Place Order · ${formatPrice(orderTotal)}`}
         </Button>
       </form>
     </motion.div>

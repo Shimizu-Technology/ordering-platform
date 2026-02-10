@@ -96,7 +96,7 @@ export function RefundModal({ order, onClose, onRefundComplete }: RefundModalPro
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-md bg-surface-card rounded-[var(--radius-lg)] shadow-xl z-50 flex flex-col max-h-[90vh]"
+        className="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-md bg-surface-card rounded-lg shadow-xl z-50 flex flex-col max-h-[90vh]"
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border-default">
@@ -115,7 +115,7 @@ export function RefundModal({ order, onClose, onRefundComplete }: RefundModalPro
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* Order Summary */}
-          <div className="bg-surface-elevated rounded-[var(--radius-md)] p-3">
+          <div className="bg-surface-elevated rounded-md p-3">
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">Order #{order.id}</span>
               <span className="font-medium text-text-primary">{formatPrice(order.total)}</span>
@@ -133,7 +133,7 @@ export function RefundModal({ order, onClose, onRefundComplete }: RefundModalPro
           </div>
 
           {!canRefund ? (
-            <div className="bg-warning/10 rounded-[var(--radius-md)] p-4 flex items-start gap-3">
+            <div className="bg-warning/10 rounded-md p-4 flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-warning shrink-0 mt-0.5" />
               <div>
                 <p className="font-medium text-warning">Cannot Process Refund</p>
@@ -154,7 +154,7 @@ export function RefundModal({ order, onClose, onRefundComplete }: RefundModalPro
                 <div className="flex gap-2">
                   <button
                     onClick={() => setRefundType('full')}
-                    className={`flex-1 px-4 py-3 rounded-[var(--radius-md)] font-medium text-sm transition-colors ${
+                    className={`flex-1 px-4 py-3 rounded-md font-medium text-sm transition-colors ${
                       refundType === 'full'
                         ? 'bg-brand text-white'
                         : 'bg-surface-elevated text-text-secondary hover:text-text-primary'
@@ -164,7 +164,7 @@ export function RefundModal({ order, onClose, onRefundComplete }: RefundModalPro
                   </button>
                   <button
                     onClick={() => setRefundType('partial')}
-                    className={`flex-1 px-4 py-3 rounded-[var(--radius-md)] font-medium text-sm transition-colors ${
+                    className={`flex-1 px-4 py-3 rounded-md font-medium text-sm transition-colors ${
                       refundType === 'partial'
                         ? 'bg-brand text-white'
                         : 'bg-surface-elevated text-text-secondary hover:text-text-primary'
@@ -191,7 +191,7 @@ export function RefundModal({ order, onClose, onRefundComplete }: RefundModalPro
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       placeholder="0.00"
-                      className="w-full pl-8 pr-4 py-2.5 bg-surface-elevated border border-border-default rounded-[var(--radius-md)] text-sm focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+                      className="w-full pl-8 pr-4 py-2.5 bg-surface-elevated border border-border-default rounded-md text-sm focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand"
                     />
                   </div>
                   {parseFloat(amount) > remainingAmount && (
@@ -210,7 +210,7 @@ export function RefundModal({ order, onClose, onRefundComplete }: RefundModalPro
                 <select
                   value={reason}
                   onChange={(e) => setReason(e.target.value as RefundReason)}
-                  className="w-full px-3 py-2.5 bg-surface-elevated border border-border-default rounded-[var(--radius-md)] text-sm focus:outline-none focus:border-brand"
+                  className="w-full px-3 py-2.5 bg-surface-elevated border border-border-default rounded-md text-sm focus:outline-none focus:border-brand"
                 >
                   {REFUND_REASONS.map((r) => (
                     <option key={r.value} value={r.value}>{r.label}</option>
@@ -228,12 +228,12 @@ export function RefundModal({ order, onClose, onRefundComplete }: RefundModalPro
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add any details about this refund..."
                   rows={2}
-                  className="w-full px-3 py-2.5 bg-surface-elevated border border-border-default rounded-[var(--radius-md)] text-sm placeholder:text-text-muted focus:outline-none focus:border-brand resize-none"
+                  className="w-full px-3 py-2.5 bg-surface-elevated border border-border-default rounded-md text-sm placeholder:text-text-muted focus:outline-none focus:border-brand resize-none"
                 />
               </div>
 
               {/* Restore Inventory Toggle */}
-              <label className="flex items-center gap-3 p-3 bg-surface-elevated rounded-[var(--radius-md)] cursor-pointer">
+              <label className="flex items-center gap-3 p-3 bg-surface-elevated rounded-md cursor-pointer">
                 <input
                   type="checkbox"
                   checked={restoreInventory}
@@ -248,7 +248,7 @@ export function RefundModal({ order, onClose, onRefundComplete }: RefundModalPro
 
               {/* Error */}
               {error && (
-                <div className="bg-error/10 text-error text-sm p-3 rounded-[var(--radius-md)] flex items-start gap-2">
+                <div className="bg-error/10 text-error text-sm p-3 rounded-md flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                   {error}
                 </div>
@@ -261,7 +261,7 @@ export function RefundModal({ order, onClose, onRefundComplete }: RefundModalPro
         <div className="p-4 border-t border-border-default flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 text-text-secondary bg-surface-elevated rounded-[var(--radius-md)] font-medium text-sm hover:bg-surface-card transition-colors"
+            className="flex-1 px-4 py-2.5 text-text-secondary bg-surface-elevated rounded-md font-medium text-sm hover:bg-surface-card transition-colors"
           >
             Cancel
           </button>
@@ -269,7 +269,7 @@ export function RefundModal({ order, onClose, onRefundComplete }: RefundModalPro
             <button
               onClick={handleSubmit}
               disabled={!isValidAmount || submitting}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-error text-white rounded-[var(--radius-md)] font-medium text-sm hover:opacity-90 disabled:opacity-50 transition-all"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-error text-white rounded-md font-medium text-sm hover:opacity-90 disabled:opacity-50 transition-all"
             >
               {submitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

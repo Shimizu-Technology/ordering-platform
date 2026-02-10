@@ -49,7 +49,9 @@ module Api
             stripe_onboarding_complete: restaurant.stripe_onboarding_complete,
             active: restaurant.active,
             sms_configured: SmsService.configured?,
-            smtp_configured: ENV["SMTP_HOST"].present?
+            email_configured: EmailService.configured?,
+            # Backward-compatibility key for existing clients.
+            smtp_configured: EmailService.configured?
           }
         end
       end

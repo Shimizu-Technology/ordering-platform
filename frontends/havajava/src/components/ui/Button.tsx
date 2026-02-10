@@ -19,9 +19,9 @@ const variantStyles = {
 };
 
 const sizeStyles = {
-  sm: 'px-3 py-1.5 text-sm rounded-[var(--radius-sm)] gap-1.5',
-  md: 'px-4 py-2.5 text-sm rounded-[var(--radius-md)] touch-target gap-2',
-  lg: 'px-6 py-3.5 text-base rounded-[var(--radius-lg)] touch-target gap-2 font-semibold',
+  sm: 'px-3 py-1.5 text-sm rounded-sm gap-1.5',
+  md: 'px-4 py-2.5 text-sm rounded-md touch-target gap-2',
+  lg: 'px-6 py-3.5 text-base rounded-lg touch-target gap-2 font-semibold',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -32,7 +32,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         className={`
           inline-flex items-center justify-center font-medium
-          transition-all duration-[var(--duration-fast)]
+          transition-all duration-(--duration-fast)
           disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2
           ${variantStyles[variant]} ${sizeStyles[size]} ${className}
