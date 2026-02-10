@@ -69,6 +69,33 @@ else
   FAILED=1
 fi
 
+# Type check threesquares
+echo "  → Type checking frontends/threesquares..."
+if pnpm --filter @shimizu/threesquares exec tsc --noEmit 2>/dev/null; then
+  echo -e "    ${GREEN}✓ threesquares types${NC}"
+else
+  echo -e "    ${RED}✗ threesquares types failed${NC}"
+  FAILED=1
+fi
+
+# Lint threesquares
+echo "  → Linting frontends/threesquares..."
+if pnpm --filter @shimizu/threesquares run lint $FIX_FLAG 2>/dev/null; then
+  echo -e "    ${GREEN}✓ threesquares lint${NC}"
+else
+  echo -e "    ${RED}✗ threesquares lint failed${NC}"
+  FAILED=1
+fi
+
+# Build threesquares
+echo "  → Building frontends/threesquares..."
+if pnpm --filter @shimizu/threesquares run build 2>/dev/null; then
+  echo -e "    ${GREEN}✓ threesquares build${NC}"
+else
+  echo -e "    ${RED}✗ threesquares build failed${NC}"
+  FAILED=1
+fi
+
 echo ""
 
 # ─────────────────────────────────────────────────────────────────────────────

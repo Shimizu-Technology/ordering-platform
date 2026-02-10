@@ -184,7 +184,7 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
       <div className="space-y-6">
         <Skeleton className="h-7 w-48" />
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="space-y-2 p-4 border border-border-default rounded-[var(--radius-lg)]">
+          <div key={i} className="space-y-2 p-4 border border-border-default rounded-lg">
             <Skeleton className="h-5 w-32" />
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
@@ -202,7 +202,7 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
         <div className="flex items-center gap-2">
           <button
             onClick={handleReset}
-            className="flex items-center gap-2 px-4 py-2.5 text-text-secondary bg-surface-elevated rounded-[var(--radius-md)] text-sm font-medium hover:text-text-primary transition-colors touch-target"
+            className="flex items-center gap-2 px-4 py-2.5 text-text-secondary bg-surface-elevated rounded-md text-sm font-medium hover:text-text-primary transition-colors touch-target"
           >
             <RotateCcw className="w-4 h-4" />
             Reset
@@ -210,7 +210,7 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2.5 bg-brand text-white rounded-[var(--radius-md)] font-medium text-sm transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 touch-target"
+            className="flex items-center gap-2 px-4 py-2.5 bg-brand text-white rounded-md font-medium text-sm transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 touch-target"
           >
             {saving ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -286,7 +286,7 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
                     type="checkbox"
                     checked={isClosed}
                     onChange={(e) => updateDayHours(key, 'closed', e.target.checked)}
-                    className="accent-[var(--brand-primary)]"
+                    className="accent-brand"
                   />
                   <span className="text-xs text-text-muted">Closed</span>
                 </label>
@@ -296,14 +296,14 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
                       type="time"
                       value={dayHours.open || '06:00'}
                       onChange={(e) => updateDayHours(key, 'open', e.target.value)}
-                      className="px-2 py-1.5 bg-surface-elevated border border-border-default rounded-[var(--radius-sm)] text-sm focus:outline-none focus:border-brand"
+                      className="px-2 py-1.5 bg-surface-elevated border border-border-default rounded-sm text-sm focus:outline-none focus:border-brand"
                     />
                     <span className="text-text-muted">to</span>
                     <input
                       type="time"
                       value={dayHours.close || '18:00'}
                       onChange={(e) => updateDayHours(key, 'close', e.target.value)}
-                      className="px-2 py-1.5 bg-surface-elevated border border-border-default rounded-[var(--radius-sm)] text-sm focus:outline-none focus:border-brand"
+                      className="px-2 py-1.5 bg-surface-elevated border border-border-default rounded-sm text-sm focus:outline-none focus:border-brand"
                     />
                   </>
                 )}
@@ -349,29 +349,29 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
               >
                 <div className="space-y-4 pt-2">
                   {/* Email status */}
-                  <div className="flex items-start gap-3 p-3 rounded-[var(--radius-md)] bg-surface-elevated">
+                  <div className="flex items-start gap-3 p-3 rounded-md bg-surface-elevated">
                     <Mail className="w-4 h-4 text-text-muted mt-0.5 shrink-0" />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-text-primary">Email Confirmations</p>
                       <p className="text-xs text-text-muted mt-0.5">
                         Customers receive an order confirmation email when they place an order.
                       </p>
-                      {restaurant?.smtp_configured ? (
+                      {(restaurant?.email_configured ?? restaurant?.smtp_configured) ? (
                         <p className="flex items-center gap-1 text-xs text-success mt-1.5">
                           <CheckCircle className="w-3.5 h-3.5" />
-                          SMTP configured
+                          Resend configured
                         </p>
                       ) : (
                         <p className="flex items-center gap-1 text-xs text-warning mt-1.5">
                           <AlertCircle className="w-3.5 h-3.5" />
-                          SMTP not configured (set SMTP_HOST env var)
+                          Resend not configured (set RESEND_API_KEY and MAILER_FROM_EMAIL)
                         </p>
                       )}
                     </div>
                   </div>
 
                   {/* SMS status */}
-                  <div className="flex items-start gap-3 p-3 rounded-[var(--radius-md)] bg-surface-elevated">
+                  <div className="flex items-start gap-3 p-3 rounded-md bg-surface-elevated">
                     <MessageSquare className="w-4 h-4 text-text-muted mt-0.5 shrink-0" />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-text-primary">SMS Notifications</p>
@@ -420,7 +420,7 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
             <Skeleton className="h-10 w-full" />
           </div>
         ) : !stripeStatus?.configured ? (
-          <div className="flex items-start gap-3 p-4 rounded-[var(--radius-md)] bg-surface-elevated">
+          <div className="flex items-start gap-3 p-4 rounded-md bg-surface-elevated">
             <AlertCircle className="w-5 h-5 text-text-muted shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-text-primary">Payment processing not configured</p>
@@ -431,7 +431,7 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
           </div>
         ) : stripeStatus.onboarding_complete ? (
           <div className="space-y-3">
-            <div className="flex items-start gap-3 p-4 rounded-[var(--radius-md)] bg-success/10">
+            <div className="flex items-start gap-3 p-4 rounded-md bg-success/10">
               <CheckCircle className="w-5 h-5 text-success shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm font-medium text-text-primary">Stripe Connected</p>
@@ -463,7 +463,7 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
           </div>
         ) : stripeStatus.connected ? (
           <div className="space-y-3">
-            <div className="flex items-start gap-3 p-4 rounded-[var(--radius-md)] bg-warning/10">
+            <div className="flex items-start gap-3 p-4 rounded-md bg-warning/10">
               <AlertCircle className="w-5 h-5 text-warning shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm font-medium text-text-primary">Onboarding Incomplete</p>
@@ -475,7 +475,7 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
             <button
               onClick={handleStripeConnect}
               disabled={stripeConnecting}
-              className="flex items-center gap-2 px-4 py-2.5 bg-brand text-white rounded-[var(--radius-md)] font-medium text-sm transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 touch-target"
+              className="flex items-center gap-2 px-4 py-2.5 bg-brand text-white rounded-md font-medium text-sm transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 touch-target"
             >
               {stripeConnecting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -493,7 +493,7 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
             <button
               onClick={handleStripeConnect}
               disabled={stripeConnecting}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#635BFF] text-white rounded-[var(--radius-md)] font-medium text-sm transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 touch-target"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#635BFF] text-white rounded-md font-medium text-sm transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 touch-target"
             >
               {stripeConnecting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -540,14 +540,14 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
         </FormField>
 
         {/* Live Preview */}
-        <div className="mt-4 p-4 rounded-[var(--radius-lg)] border border-border-default">
+        <div className="mt-4 p-4 rounded-lg border border-border-default">
           <p className="text-xs text-text-muted mb-3 uppercase tracking-wider font-semibold">
             Live Preview
           </p>
           <div className="space-y-3">
             {/* Header preview */}
             <div
-              className="rounded-[var(--radius-md)] p-4"
+              className="rounded-md p-4"
               style={{ backgroundColor: primaryColor, color: '#fff' }}
             >
               <div className="flex items-center gap-3">
@@ -566,21 +566,21 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
             <div className="flex gap-2">
               <motion.button
                 whileTap={{ scale: 0.97 }}
-                className="px-4 py-2 rounded-[var(--radius-md)] text-white text-sm font-medium"
+                className="px-4 py-2 rounded-md text-white text-sm font-medium"
                 style={{ backgroundColor: primaryColor }}
               >
                 Primary Button
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.97 }}
-                className="px-4 py-2 rounded-[var(--radius-md)] text-sm font-medium"
+                className="px-4 py-2 rounded-md text-sm font-medium"
                 style={{ backgroundColor: secondaryColor, color: primaryColor }}
               >
                 Secondary
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.97 }}
-                className="px-4 py-2 rounded-[var(--radius-md)] text-white text-sm font-medium"
+                className="px-4 py-2 rounded-md text-white text-sm font-medium"
                 style={{ backgroundColor: accentColor }}
               >
                 Accent
@@ -602,7 +602,7 @@ function Section({ title, icon, children }: { title: string; icon?: React.ReactN
     <motion.section
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="border border-border-default rounded-[var(--radius-lg)] p-4 space-y-4"
+      className="border border-border-default rounded-lg p-4 space-y-4"
     >
       <h3 className="flex items-center gap-2 font-semibold text-text-primary">
         {icon}
@@ -634,13 +634,13 @@ function ColorField({ label, value, onChange }: { label: string; value: string; 
           type="color"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-10 h-10 rounded-[var(--radius-sm)] border border-border-default cursor-pointer bg-transparent p-0.5"
+          className="w-10 h-10 rounded-sm border border-border-default cursor-pointer bg-transparent p-0.5"
         />
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 px-3 py-2 text-sm bg-surface-elevated border border-border-default rounded-[var(--radius-md)] font-mono focus:outline-none focus:border-brand"
+          className="flex-1 px-3 py-2 text-sm bg-surface-elevated border border-border-default rounded-md font-mono focus:outline-none focus:border-brand"
         />
       </div>
     </div>

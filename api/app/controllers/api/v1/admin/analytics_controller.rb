@@ -32,11 +32,11 @@ module Api
 
           data = case granularity
           when "weekly"
-                   group_revenue_by(orders, "DATE_TRUNC('week', created_at)::date")
+                   group_revenue_by(orders, :weekly)
           when "monthly"
-                   group_revenue_by(orders, "DATE_TRUNC('month', created_at)::date")
+                   group_revenue_by(orders, :monthly)
           else
-                   group_revenue_by(orders, "DATE(created_at)")
+                   group_revenue_by(orders, :daily)
           end
 
           render json: {
@@ -125,11 +125,20 @@ module Api
           @restaurant.orders.where.not(status: "cancelled")
         end
 
-        def group_revenue_by(orders, date_expr)
+        def group_revenue_by(orders, granularity)
+          period_expr = case granularity
+          when :weekly
+            "DATE_TRUNC('week', created_at)::date"
+          when :monthly
+            "DATE_TRUNC('month', created_at)::date"
+          else
+            "DATE(created_at)"
+          end
+
           rows = orders
-            .group(Arel.sql(date_expr))
-            .order(Arel.sql(date_expr))
-            .pluck(Arel.sql("#{date_expr} AS period, SUM(total) AS revenue, COUNT(*) AS order_count"))
+            .group(Arel.sql(period_expr))
+            .order(Arel.sql(period_expr))
+            .pluck(Arel.sql(period_expr), Arel.sql("SUM(total)"), Arel.sql("COUNT(*)"))
 
           rows.map do |date, rev, count|
             {

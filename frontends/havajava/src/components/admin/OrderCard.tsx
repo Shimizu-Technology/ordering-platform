@@ -81,7 +81,7 @@ export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, onOrder
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`bg-surface-card rounded-[var(--radius-lg)] border transition-colors ${
+      className={`bg-surface-card rounded-lg border transition-colors ${
         isNew
           ? 'border-warning shadow-md shadow-warning/10 animate-pulse-once'
           : 'border-border-default'
@@ -190,7 +190,7 @@ export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, onOrder
 
               {/* Special instructions */}
               {order.special_instructions && (
-                <div className="bg-warning/10 rounded-[var(--radius-sm)] p-3 text-sm text-warning flex items-start gap-2">
+                <div className="bg-warning/10 rounded-sm p-3 text-sm text-warning flex items-start gap-2">
                   <FileText className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{order.special_instructions}</span>
                 </div>
@@ -198,7 +198,7 @@ export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, onOrder
 
               {/* Refund info */}
               {refundedAmount > 0 && (
-                <div className="bg-error/5 border border-error/20 rounded-[var(--radius-sm)] p-3 text-sm">
+                <div className="bg-error/5 border border-error/20 rounded-sm p-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-text-secondary">Refunded</span>
                     <span className="font-medium text-error">-{formatPrice(refundedAmount)}</span>
@@ -219,7 +219,7 @@ export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, onOrder
                     <button
                       onClick={() => onStatusUpdate(order.id, next.status)}
                       disabled={updating}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white rounded-[var(--radius-md)] font-medium text-sm transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 touch-target"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white rounded-md font-medium text-sm transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 touch-target"
                     >
                       {updating ? (
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -249,7 +249,7 @@ export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, onOrder
                           }
                         }}
                         disabled={(!order.email && !order.phone) || notifying || notified}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 text-blue-600 rounded-[var(--radius-md)] font-medium text-sm transition-all hover:bg-blue-500/20 active:bg-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
+                        className="flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 text-blue-600 rounded-md font-medium text-sm transition-all hover:bg-blue-500/20 active:bg-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
                       >
                         {notifying ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -273,7 +273,7 @@ export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, onOrder
                     <button
                       onClick={openRefundModal}
                       disabled={loadingRefundData}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-orange-500/10 text-orange-600 rounded-[var(--radius-md)] font-medium text-sm transition-all hover:bg-orange-500/20 active:bg-orange-500/30 disabled:opacity-50 touch-target"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-orange-500/10 text-orange-600 rounded-md font-medium text-sm transition-all hover:bg-orange-500/20 active:bg-orange-500/30 disabled:opacity-50 touch-target"
                     >
                       {loadingRefundData ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -287,7 +287,7 @@ export function OrderCard({ order, isNew, onStatusUpdate, onNotifyReady, onOrder
                     <button
                       onClick={() => onStatusUpdate(order.id, 'cancelled')}
                       disabled={updating}
-                      className="px-4 py-2.5 text-error bg-error/10 rounded-[var(--radius-md)] font-medium text-sm transition-all hover:bg-error/20 active:bg-error/30 disabled:opacity-50 touch-target"
+                      className="px-4 py-2.5 text-error bg-error/10 rounded-md font-medium text-sm transition-all hover:bg-error/20 active:bg-error/30 disabled:opacity-50 touch-target"
                     >
                       Cancel
                     </button>

@@ -11,7 +11,12 @@ module Api
         private
 
         def set_restaurant
-          slug = params[:restaurant_slug] || Restaurant.active.first&.slug
+          slug = params[:restaurant_slug]
+          if slug.blank?
+            render json: { error: "restaurant_slug is required" }, status: :bad_request
+            return
+          end
+
           @restaurant = Restaurant.active.find_by!(slug: slug)
         rescue ActiveRecord::RecordNotFound
           render json: { error: "Restaurant not found" }, status: :not_found

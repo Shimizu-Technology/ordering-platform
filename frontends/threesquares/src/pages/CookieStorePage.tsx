@@ -13,6 +13,7 @@ import { pageTransition, pageTransitionConfig } from '../utils/motion';
 import { SectionNav } from '../components/SectionNav';
 
 const IMGIX_DOMAIN = import.meta.env.VITE_IMGIX_DOMAIN;
+const SHOPIFY_STORE_URL = 'https://latte-stone-cookies.myshopify.com/collections/all';
 
 interface CookieStorePageProps {
   slug: string;
@@ -129,6 +130,33 @@ export function CookieStorePage({ slug }: CookieStorePageProps) {
   const cartTotal = cart.reduce((sum, item) => sum + item.variant.price * item.quantity, 0);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const handleShopifyCheckout = async () => {
+    if (cart.length === 0) return;
+
+    const cartSummary = cart
+      .map((item) => `${item.quantity}x ${item.item.name} (${item.variant.name})`)
+      .join('\n');
+
+    const notes = [
+      'Latte Stone Cookies Selection:',
+      cartSummary,
+      '',
+      `Estimated Total: ${formatPrice(cartTotal)}`,
+      '',
+      'Note: Shopify checkout is currently the source of truth for merchandise orders.',
+    ].join('\n');
+
+    try {
+      await navigator.clipboard.writeText(notes);
+      toast.success('Selection copied. Continue checkout on Shopify.');
+    } catch {
+      toast.info('Continue checkout on Shopify.');
+    }
+
+    window.open(SHOPIFY_STORE_URL, '_blank', 'noopener,noreferrer');
+    setShowCart(false);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-amber-50 flex items-center justify-center">
@@ -139,7 +167,7 @@ export function CookieStorePage({ slug }: CookieStorePageProps) {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50"
+      className="min-h-screen bg-linear-to-b from-amber-50 to-orange-50"
       {...pageTransition}
       transition={pageTransitionConfig}
     >
@@ -227,7 +255,7 @@ export function CookieStorePage({ slug }: CookieStorePageProps) {
                       />
                     </div>
                   ) : (
-                    <div className="aspect-square bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg mb-3 flex items-center justify-center">
+                    <div className="aspect-square bg-linear-to-br from-amber-100 to-orange-100 rounded-lg mb-3 flex items-center justify-center">
                       <Cookie className="w-10 h-10 text-amber-400" />
                     </div>
                   )}
@@ -406,19 +434,16 @@ export function CookieStorePage({ slug }: CookieStorePageProps) {
                     <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-lg mb-4">
                       <MapPin className="w-4 h-4 text-amber-600 mt-0.5" />
                       <p className="text-xs text-amber-700">
-                        <strong>Pickup only</strong> at Three Squares locations. 
-                        Online ordering coming soon!
+                        <strong>Pickup or shipping</strong> is handled on the Latte Stone Shopify checkout.
+                        Your selection will be copied so you can quickly re-add items there.
                       </p>
                     </div>
 
                     <Button
-                      onClick={() => {
-                        toast.info('Cookie checkout coming soon! For now, please call to order.');
-                        setShowCart(false);
-                      }}
+                      onClick={handleShopifyCheckout}
                       className="w-full bg-amber-700 hover:bg-amber-800 text-white"
                     >
-                      Checkout · {formatPrice(cartTotal)}
+                      Checkout on Shopify · {formatPrice(cartTotal)}
                     </Button>
                   </div>
                 </>

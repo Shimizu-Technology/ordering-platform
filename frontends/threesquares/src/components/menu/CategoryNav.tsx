@@ -89,7 +89,7 @@ export function CategoryNav({ categories, activeCategory, onSelect }: CategoryNa
                   aria-controls={`category-${cat.id}`}
                   className={`
                     relative px-3.5 py-2 text-sm font-medium whitespace-nowrap
-                    rounded-[var(--radius-md)] transition-colors duration-[var(--duration-fast)]
+                    rounded-md transition-colors duration-(--duration-fast)
                     touch-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40
                     ${isActive
                       ? 'text-brand'

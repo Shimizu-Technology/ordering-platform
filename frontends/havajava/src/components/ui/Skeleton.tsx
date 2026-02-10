@@ -4,7 +4,7 @@ interface SkeletonProps {
 
 export function Skeleton({ className = '' }: SkeletonProps) {
   return (
-    <div className={`relative overflow-hidden bg-surface-elevated rounded-[var(--radius-md)] ${className}`}>
+    <div className={`relative overflow-hidden bg-surface-elevated rounded-md ${className}`}>
       <div
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
         style={{ animation: 'shimmer 1.8s infinite' }}
@@ -22,7 +22,7 @@ export function MenuItemSkeleton() {
         <Skeleton className="h-3.5 w-2/3" />
         <Skeleton className="h-4 w-16 mt-1" />
       </div>
-      <Skeleton className="w-20 h-20 rounded-[var(--radius-lg)] shrink-0" />
+      <Skeleton className="w-20 h-20 rounded-lg shrink-0" />
     </div>
   );
 }
@@ -66,14 +66,14 @@ export function HeaderSkeleton() {
 export function CheckoutSkeleton() {
   return (
     <div className="space-y-6 p-4" role="status" aria-label="Loading checkout">
-      <Skeleton className="h-12 w-full rounded-[var(--radius-md)]" />
+      <Skeleton className="h-12 w-full rounded-md" />
       <div className="space-y-3">
-        <Skeleton className="h-12 w-full rounded-[var(--radius-md)]" />
-        <Skeleton className="h-12 w-full rounded-[var(--radius-md)]" />
-        <Skeleton className="h-12 w-full rounded-[var(--radius-md)]" />
+        <Skeleton className="h-12 w-full rounded-md" />
+        <Skeleton className="h-12 w-full rounded-md" />
+        <Skeleton className="h-12 w-full rounded-md" />
       </div>
-      <Skeleton className="h-40 w-full rounded-[var(--radius-lg)]" />
-      <Skeleton className="h-14 w-full rounded-[var(--radius-lg)]" />
+      <Skeleton className="h-40 w-full rounded-lg" />
+      <Skeleton className="h-14 w-full rounded-lg" />
     </div>
   );
 }

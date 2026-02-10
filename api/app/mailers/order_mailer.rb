@@ -17,7 +17,7 @@ class OrderMailer < ApplicationMailer
 
     mail(
       to: order.email,
-      subject: "🎉 Your Order ##{order.id} is Ready! — #{@restaurant.name}"
+      subject: "Your Order ##{order.id} is Ready — #{@restaurant.name}"
     )
   end
 end

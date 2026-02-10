@@ -67,7 +67,7 @@ export function AdminLayout({ activePage, onNavigate, children }: AdminLayoutPro
                 <button
                   key={item.id}
                   onClick={() => handleNav(item.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-[var(--radius-md)] text-sm font-medium transition-colors touch-target ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors touch-target ${
                     isActive
                       ? 'bg-brand/10 text-brand'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-elevated'
@@ -116,7 +116,7 @@ export function AdminLayout({ activePage, onNavigate, children }: AdminLayoutPro
                     <button
                       key={item.id}
                       onClick={() => handleNav(item.id)}
-                      className={`w-full flex items-center justify-between px-4 py-3 rounded-[var(--radius-md)] text-sm font-medium transition-colors touch-target ${
+                      className={`w-full flex items-center justify-between px-4 py-3 rounded-md text-sm font-medium transition-colors touch-target ${
                         isActive
                           ? 'bg-brand/10 text-brand'
                           : 'text-text-secondary hover:text-text-primary hover:bg-surface-elevated'

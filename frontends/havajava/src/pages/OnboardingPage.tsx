@@ -244,7 +244,7 @@ export function OnboardingPage() {
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 px-4 py-3 mb-4 bg-error/10 text-error text-sm rounded-[var(--radius-md)]"
+              className="flex items-center gap-2 px-4 py-3 mb-4 bg-error/10 text-error text-sm rounded-md"
             >
               <AlertCircle className="w-4 h-4 shrink-0" />
               {error}
@@ -312,7 +312,7 @@ export function OnboardingPage() {
           <button
             onClick={goBack}
             disabled={currentStep === 1}
-            className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-text-secondary bg-surface-elevated rounded-[var(--radius-md)] hover:bg-border-default transition-colors touch-target disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-text-secondary bg-surface-elevated rounded-md hover:bg-border-default transition-colors touch-target disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="w-4 h-4" />
             Back
@@ -322,7 +322,7 @@ export function OnboardingPage() {
             <button
               onClick={goNext}
               disabled={!canProceed()}
-              className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-brand rounded-[var(--radius-md)] hover:bg-brand-hover transition-colors touch-target disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-brand rounded-md hover:bg-brand-hover transition-colors touch-target disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Continue
               <ChevronRight className="w-4 h-4" />
@@ -331,7 +331,7 @@ export function OnboardingPage() {
             <button
               onClick={handleLaunch}
               disabled={saving}
-              className="flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-white bg-success rounded-[var(--radius-md)] hover:bg-success/90 transition-colors touch-target disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-white bg-success rounded-md hover:bg-success/90 transition-colors touch-target disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Rocket className="w-4 h-4" />
               {saving ? 'Launching...' : 'Launch Restaurant'}
@@ -536,10 +536,10 @@ function Step2HoursBranding({
         </div>
 
         {/* Preview swatch */}
-        <div className="mt-4 p-4 rounded-[var(--radius-lg)] border border-border-default"
+        <div className="mt-4 p-4 rounded-lg border border-border-default"
           style={{ backgroundColor: secondaryColor }}>
-          <div className="h-8 rounded-[var(--radius-md)] mb-2" style={{ backgroundColor: primaryColor }} />
-          <div className="h-4 w-2/3 rounded-[var(--radius-sm)]" style={{ backgroundColor: accentColor }} />
+          <div className="h-8 rounded-md mb-2" style={{ backgroundColor: primaryColor }} />
+          <div className="h-4 w-2/3 rounded-sm" style={{ backgroundColor: accentColor }} />
         </div>
       </div>
     </div>
@@ -555,7 +555,7 @@ function ColorPicker({ label, value, onChange }: { label: string; value: string;
           type="color"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-10 h-10 rounded-[var(--radius-md)] border border-border-default cursor-pointer touch-target"
+          className="w-10 h-10 rounded-md border border-border-default cursor-pointer touch-target"
           style={{ padding: 0 }}
         />
         <input
@@ -617,7 +617,7 @@ function Step3Menu({
             <button
               key={t.id}
               onClick={() => setTemplate(t.id)}
-              className={`w-full text-left p-4 rounded-[var(--radius-lg)] border-2 transition-all touch-target ${
+              className={`w-full text-left p-4 rounded-lg border-2 transition-all touch-target ${
                 isSelected
                   ? 'border-brand bg-brand/5'
                   : 'border-border-default bg-surface-card hover:border-brand/30'
@@ -707,7 +707,7 @@ function Step4Review({
         {/* Mock menu */}
         <div className="p-5 space-y-3" style={{ backgroundColor: secondaryColor }}>
           {['Featured Item', 'Popular Choice', 'Chef Special'].map((item, i) => (
-            <div key={i} className="flex items-center justify-between p-3 bg-white rounded-[var(--radius-md)]">
+            <div key={i} className="flex items-center justify-between p-3 bg-white rounded-md">
               <div>
                 <div className="font-medium text-sm" style={{ color: primaryColor }}>{item}</div>
                 <div className="text-xs text-text-muted mt-0.5">Delicious description here</div>
@@ -722,7 +722,7 @@ function Step4Review({
 
       {/* Summary */}
       <div className="space-y-3">
-        <div className="bg-surface-card rounded-[var(--radius-lg)] border border-border-default p-4 space-y-2">
+        <div className="bg-surface-card rounded-lg border border-border-default p-4 space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-text-secondary">URL</span>
             <span className="font-mono text-brand text-sm">/{slug}</span>

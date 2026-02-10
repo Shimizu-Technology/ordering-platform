@@ -119,7 +119,10 @@ export function OrderQueue({ restaurant }: OrderQueueProps) {
 
   // Notifications are available if SMS is configured OR customer has email
   // Backend sends email as primary notification method
-  const notificationsConfigured = (restaurant?.sms_configured ?? false) || (restaurant?.smtp_configured ?? false) || true;
+  const notificationsConfigured =
+    (restaurant?.sms_configured ?? false) ||
+    (restaurant?.email_configured ?? restaurant?.smtp_configured ?? false) ||
+    true;
 
   const activeCount = orders.filter((o) => !['completed', 'cancelled'].includes(o.status)).length;
 
@@ -136,7 +139,7 @@ export function OrderQueue({ restaurant }: OrderQueueProps) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`p-2 rounded-[var(--radius-md)] transition-colors touch-target ${
+            className={`p-2 rounded-md transition-colors touch-target ${
               soundEnabled
                 ? 'text-brand bg-brand/10'
                 : 'text-text-muted bg-surface-elevated'
@@ -147,7 +150,7 @@ export function OrderQueue({ restaurant }: OrderQueueProps) {
           </button>
           <button
             onClick={fetchOrders}
-            className="p-2 text-text-secondary hover:text-text-primary bg-surface-elevated rounded-[var(--radius-md)] transition-colors touch-target"
+            className="p-2 text-text-secondary hover:text-text-primary bg-surface-elevated rounded-md transition-colors touch-target"
             aria-label="Refresh"
           >
             <RefreshCw className="w-5 h-5" />
@@ -163,7 +166,7 @@ export function OrderQueue({ restaurant }: OrderQueueProps) {
           placeholder="Search by customer name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 bg-surface-elevated border border-border-default rounded-[var(--radius-md)] text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-colors"
+          className="w-full pl-10 pr-4 py-2.5 bg-surface-elevated border border-border-default rounded-md text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-colors"
         />
       </div>
 
@@ -188,7 +191,7 @@ export function OrderQueue({ restaurant }: OrderQueueProps) {
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="p-4 space-y-3 rounded-[var(--radius-lg)] border border-border-default">
+            <div key={i} className="p-4 space-y-3 rounded-lg border border-border-default">
               <div className="flex justify-between">
                 <div className="space-y-2">
                   <Skeleton className="h-5 w-24" />

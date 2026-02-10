@@ -147,10 +147,10 @@ export function CartSheet({ open, onClose, onCheckout }: CartSheetProps) {
 
                           {/* Quantity controls */}
                           <div className="flex items-center justify-between mt-3">
-                            <div className="flex items-center gap-1 bg-surface-elevated rounded-[var(--radius-md)] p-0.5">
+                            <div className="flex items-center gap-1 bg-surface-elevated rounded-md p-0.5">
                               <button
                                 onClick={() => updateQuantity(cartItem.id, cartItem.quantity - 1)}
-                                className="p-2 rounded-[var(--radius-sm)] hover:bg-surface-card transition-colors touch-target"
+                                className="p-2 rounded-sm hover:bg-surface-card transition-colors touch-target"
                                 aria-label={cartItem.quantity === 1 ? 'Remove item' : 'Decrease quantity'}
                               >
                                 {cartItem.quantity === 1 ? (
@@ -164,7 +164,7 @@ export function CartSheet({ open, onClose, onCheckout }: CartSheetProps) {
                               </span>
                               <button
                                 onClick={() => updateQuantity(cartItem.id, cartItem.quantity + 1)}
-                                className="p-2 rounded-[var(--radius-sm)] hover:bg-surface-card transition-colors touch-target"
+                                className="p-2 rounded-sm hover:bg-surface-card transition-colors touch-target"
                                 aria-label="Increase quantity"
                               >
                                 <Plus className="w-3.5 h-3.5 text-text-secondary" />

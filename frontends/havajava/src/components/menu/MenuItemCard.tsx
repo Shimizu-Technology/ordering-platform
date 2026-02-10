@@ -20,7 +20,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
     <motion.button
       onClick={() => !isSoldOut && onSelect(item)}
       disabled={isSoldOut}
-      className={`w-full flex gap-3 p-4 text-left rounded-[var(--radius-lg)] transition-colors duration-[var(--duration-fast)] touch-target group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:ring-inset ${
+      className={`w-full flex gap-3 p-4 text-left rounded-lg transition-colors duration-(--duration-fast) touch-target group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:ring-inset ${
         isSoldOut 
           ? 'opacity-60 cursor-not-allowed' 
           : 'hover:bg-surface-elevated/80'
@@ -76,7 +76,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
       </div>
 
       {item.image_url ? (
-        <div className="w-20 h-20 rounded-[var(--radius-md)] overflow-hidden shrink-0 bg-surface-elevated shadow-sm">
+        <div className="w-20 h-20 rounded-md overflow-hidden shrink-0 bg-surface-elevated shadow-sm">
           <OptimizedImage
             src={item.image_url}
             alt=""

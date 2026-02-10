@@ -18,7 +18,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
   return (
     <motion.button
       onClick={() => onSelect(item)}
-      className="w-full flex gap-3 p-4 text-left rounded-[var(--radius-lg)] hover:bg-surface-elevated/80 transition-colors duration-[var(--duration-fast)] touch-target group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:ring-inset"
+      className="w-full flex gap-3 p-4 text-left rounded-lg hover:bg-surface-elevated/80 transition-colors duration-(--duration-fast) touch-target group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:ring-inset"
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.1 }}
       aria-label={`${item.name}, ${hasPromo ? formatPrice(item.discounted_price!) : formatPrice(item.base_price)}${hasModifiers ? ', customizable' : ''}`}
@@ -63,7 +63,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
       </div>
 
       {item.image_url ? (
-        <div className="w-20 h-20 rounded-[var(--radius-md)] overflow-hidden shrink-0 bg-surface-elevated shadow-sm">
+        <div className="w-20 h-20 rounded-md overflow-hidden shrink-0 bg-surface-elevated shadow-sm">
           <OptimizedImage
             src={item.image_url}
             alt=""

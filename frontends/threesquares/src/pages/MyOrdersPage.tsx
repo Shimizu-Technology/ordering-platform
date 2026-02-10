@@ -99,12 +99,12 @@ function OrderCard({
   return (
     <motion.div
       variants={staggerItem}
-      className="bg-surface-card border border-border-default rounded-[var(--radius-lg)] overflow-hidden"
+      className="bg-surface-card border border-border-default rounded-lg overflow-hidden"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border-subtle">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-surface-elevated rounded-[var(--radius-md)]">
+          <div className="p-2 bg-surface-elevated rounded-md">
             <ShoppingBag className="w-4 h-4 text-text-secondary" />
           </div>
           <div>
@@ -154,7 +154,7 @@ function OrderCard({
         {(order.status === 'completed' || order.status === 'cancelled') && (
           <button
             onClick={() => onReorder(order.id)}
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-brand hover:bg-brand/10 rounded-[var(--radius-md)] transition-colors touch-target"
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-brand hover:bg-brand/10 rounded-md transition-colors touch-target"
           >
             <RotateCcw className="w-4 h-4" />
             Reorder
@@ -270,7 +270,7 @@ export function MyOrdersPage({ slug }: MyOrdersPageProps) {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
-                className="w-full pl-10 pr-3 py-3 text-sm border border-border-default rounded-[var(--radius-md)] bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                className="w-full pl-10 pr-3 py-3 text-sm border border-border-default rounded-md bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
               />
             </div>
             <Button type="submit" loading={loading} className="shrink-0">
@@ -341,7 +341,7 @@ export function MyOrdersPage({ slug }: MyOrdersPageProps) {
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center"
             >
-              <div className="bg-surface-card rounded-[var(--radius-lg)] p-6 flex flex-col items-center gap-3 shadow-xl">
+              <div className="bg-surface-card rounded-lg p-6 flex flex-col items-center gap-3 shadow-xl">
                 <Loader2 className="w-8 h-8 text-brand animate-spin" />
                 <p className="text-sm font-medium text-text-primary">Placing your order...</p>
               </div>

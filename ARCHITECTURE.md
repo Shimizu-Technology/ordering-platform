@@ -1,825 +1,162 @@
 # Ordering Platform — Architecture
 
-**Version:** 2.0
-**Last Updated:** February 9, 2026
-**Status:** Planned (restructure in progress)
+**Version:** 2.1  
+**Last Updated:** February 10, 2026  
+**Status:** Active Development (stabilization in progress)
 
 ---
 
 ## Overview
 
-A multi-tenant restaurant ordering platform built as a **monorepo**. Each restaurant gets their own customized frontend while sharing a common backend API and component library.
+Ordering Platform is a multi-tenant restaurant ordering system built as a monorepo.
 
-### Design Principles
+- Shared Rails API for all tenants.
+- Tenant-specific React frontends in `frontends/`.
+- Shared frontend package in `packages/shared` (currently partial/in-progress extraction).
 
-1. **One Repo, Full Context** — Everything lives in one monorepo so code review tools (CodeRabbit, Greptile) have complete visibility.
-2. **Shared Core, Custom Shell** — Common functionality in a shared library; each client gets a unique frontend.
-3. **Feature Flexibility** — Clients only use (and pay for) the features they need.
-4. **Custom Domains** — Each client gets their own domain (order.havajava.com, not havajava.shimizu.tech).
-5. **Augment, Don't Replace** — Works alongside existing POS systems (KwickPOS, Revel, Clover).
+Current tenants:
+
+- `havajava` — coffee shop ordering
+- `threesquares` — restaurant + multi-location + catering + Latte Stone Cookies module
 
 ---
 
-## Repository Structure
+## Repository Structure (Current)
 
-```
+```text
 ordering-platform/
-│
-├── api/                              # Rails 7 API (multi-tenant)
-│   ├── app/
-│   │   ├── controllers/
-│   │   │   └── api/v1/
-│   │   │       ├── restaurants/      # Scoped by restaurant
-│   │   │       │   ├── menu_controller.rb
-│   │   │       │   ├── orders_controller.rb
-│   │   │       │   ├── catering_controller.rb
-│   │   │       │   └── ...
-│   │   │       └── admin/            # Restaurant admin endpoints
-│   │   ├── models/
-│   │   │   ├── restaurant.rb         # Tenant model
-│   │   │   ├── menu_category.rb
-│   │   │   ├── menu_item.rb
-│   │   │   ├── modifier_group.rb
-│   │   │   ├── modifier.rb
-│   │   │   ├── order.rb
-│   │   │   ├── location.rb           # Multi-location support
-│   │   │   ├── catering_inquiry.rb   # Catering quotes
-│   │   │   └── ...
-│   │   └── services/
-│   │       ├── order_notification_service.rb
-│   │       └── ...
-│   ├── db/
-│   │   ├── migrate/
-│   │   └── seeds/
-│   │       ├── havajava.rb           # HavaJava menu seed
-│   │       ├── threesquares.rb       # Three Squares menu seed
-│   │       └── ...
-│   ├── config/
-│   └── Gemfile
-│
-├── packages/                         # Shared code
-│   │
-│   └── shared/                       # @shimizu/shared npm package
-│       ├── package.json
-│       ├── tsconfig.json
-│       ├── src/
-│       │   ├── index.ts              # Public exports
-│       │   │
-│       │   ├── components/           # Reusable UI components
-│       │   │   ├── menu/
-│       │   │   │   ├── MenuGrid.tsx
-│       │   │   │   ├── MenuItemCard.tsx
-│       │   │   │   ├── MenuItemDetail.tsx
-│       │   │   │   ├── ModifierSelector.tsx
-│       │   │   │   └── CategoryNav.tsx
-│       │   │   ├── cart/
-│       │   │   │   ├── CartDrawer.tsx
-│       │   │   │   ├── CartItem.tsx
-│       │   │   │   └── CartSummary.tsx
-│       │   │   ├── checkout/
-│       │   │   │   ├── CheckoutForm.tsx
-│       │   │   │   ├── PaymentForm.tsx
-│       │   │   │   └── OrderConfirmation.tsx
-│       │   │   ├── orders/
-│       │   │   │   ├── OrderStatus.tsx
-│       │   │   │   └── OrderHistory.tsx
-│       │   │   ├── admin/
-│       │   │   │   ├── OrderQueue.tsx
-│       │   │   │   ├── OrderCard.tsx
-│       │   │   │   ├── MenuManager.tsx
-│       │   │   │   └── SettingsPanel.tsx
-│       │   │   ├── catering/
-│       │   │   │   ├── CateringForm.tsx
-│       │   │   │   ├── PlattersBuilder.tsx
-│       │   │   │   └── QuoteRequest.tsx
-│       │   │   ├── merchandise/          # For Latte Stone Cookies store
-│       │   │   │   ├── MerchandiseGrid.tsx
-│       │   │   │   ├── MerchandiseCard.tsx
-│       │   │   │   ├── MerchandiseDetail.tsx
-│       │   │   │   ├── VariantSelector.tsx
-│       │   │   │   └── CollectionNav.tsx
-│       │   │   ├── locations/
-│       │   │   │   └── LocationPicker.tsx
-│       │   │   ├── pos/
-│       │   │   │   ├── POSOrderBuilder.tsx
-│       │   │   │   └── QuickAdd.tsx
-│       │   │   └── ui/
-│       │   │       ├── Button.tsx
-│       │   │       ├── Input.tsx
-│       │   │       ├── Modal.tsx
-│       │   │       └── ...
-│       │   │
-│       │   ├── hooks/
-│       │   │   ├── useCart.ts
-│       │   │   ├── useMenu.ts
-│       │   │   ├── useOrders.ts
-│       │   │   ├── useRestaurant.ts
-│       │   │   └── useAuth.ts
-│       │   │
-│       │   ├── stores/
-│       │   │   ├── cartStore.ts      # Zustand store
-│       │   │   ├── orderStore.ts
-│       │   │   └── authStore.ts
-│       │   │
-│       │   ├── services/
-│       │   │   ├── api.ts            # API client
-│       │   │   ├── menuService.ts
-│       │   │   ├── orderService.ts
-│       │   │   └── paymentService.ts
-│       │   │
-│       │   ├── types/
-│       │   │   ├── menu.ts
-│       │   │   ├── order.ts
-│       │   │   ├── restaurant.ts
-│       │   │   └── ...
-│       │   │
-│       │   └── utils/
-│       │       ├── formatters.ts
-│       │       ├── validators.ts
-│       │       └── constants.ts
-│       │
-│       └── styles/
-│           └── base.css              # Base styles (can be overridden)
-│
-├── frontends/                        # Client-specific frontends
-│   │
-│   ├── _template/                    # Starter template for new clients
-│   │   ├── package.json
-│   │   ├── vite.config.ts
-│   │   ├── tsconfig.json
-│   │   ├── index.html
-│   │   ├── netlify.toml
-│   │   ├── public/
-│   │   │   └── favicon.ico
-│   │   ├── src/
-│   │   │   ├── main.tsx
-│   │   │   ├── App.tsx
-│   │   │   ├── config.ts             # Feature flags, API config
-│   │   │   ├── theme.css             # Brand colors, fonts
-│   │   │   ├── global.css
-│   │   │   ├── assets/
-│   │   │   │   └── logo.svg
-│   │   │   └── pages/
-│   │   │       ├── HomePage.tsx
-│   │   │       ├── MenuPage.tsx
-│   │   │       ├── CheckoutPage.tsx
-│   │   │       ├── OrderStatusPage.tsx
-│   │   │       └── admin/
-│   │   │           └── DashboardPage.tsx
-│   │   └── README.md
-│   │
-│   ├── havajava/                     # HavaJava Café
-│   │   ├── package.json
-│   │   ├── vite.config.ts
-│   │   ├── netlify.toml              # Deploy config for order.havajava.com
-│   │   ├── src/
-│   │   │   ├── config.ts             # { catering: false, multiLocation: false }
-│   │   │   ├── theme.css             # HavaJava brand colors
-│   │   │   ├── assets/
-│   │   │   │   ├── logo.svg
-│   │   │   │   └── hero.jpg
-│   │   │   └── pages/
-│   │   │       ├── HomePage.tsx      # Custom landing page
-│   │   │       ├── MenuPage.tsx
-│   │   │       └── ...
-│   │   └── README.md
-│   │
-│   └── threesquares/                 # Three Squares / B&G Pacific
-│       ├── package.json
-│       ├── vite.config.ts
-│       ├── netlify.toml              # Deploy config for order.threesquares.com
-│       ├── src/
-│       │   ├── config.ts             # { catering: true, multiLocation: true, merchandise: true }
-│       │   ├── theme.css             # Three Squares brand colors
-│       │   ├── cookie-theme.css      # Latte Stone Cookies branding (separate look)
-│       │   ├── assets/
-│       │   │   ├── logo.svg          # Three Squares logo
-│       │   │   └── cookie-logo.svg   # Latte Stone Cookies logo
-│       │   └── pages/
-│       │       ├── HomePage.tsx
-│       │       ├── MenuPage.tsx
-│       │       ├── CateringPage.tsx      # Catering inquiry form
-│       │       ├── CookieStorePage.tsx   # Latte Stone Cookies store
-│       │       ├── CookieProductPage.tsx # Individual cookie product
-│       │       └── ...
-│       └── README.md
-│
-├── .github/
-│   └── workflows/
-│       ├── api-deploy.yml            # Deploy API to Render
-│       ├── frontend-deploy.yml       # Deploy frontends to Netlify
-│       └── pr-checks.yml             # Lint, test, CodeRabbit
-│
-├── pnpm-workspace.yaml               # Monorepo workspace config
-├── package.json                      # Root package.json
-├── turbo.json                        # Turborepo config (optional)
-├── ARCHITECTURE.md                   # This document
-├── AGENTS.md                         # AI assistant context
-└── README.md                         # Getting started
+├── api/                              # Rails API (multi-tenant)
+├── frontends/
+│   ├── havajava/
+│   └── threesquares/
+├── packages/
+│   └── shared/
+├── docs/
+├── .github/workflows/
+│   └── pr-checks.yml
+├── ARCHITECTURE.md
+├── BUILD_PLAN.md
+├── PRD.md
+└── STABILIZATION_CHECKLIST.md
 ```
+
+Notes:
+
+- `frontends/_template` is not currently present.
+- `packages/shared` includes shared types/utilities and selected components; not all frontend UI has been extracted yet.
 
 ---
 
 ## Multi-Tenancy Model
 
-### Backend (Rails API)
+### API scoping
 
-Every request is scoped to a restaurant:
+Public APIs are scoped by restaurant slug:
 
-```ruby
-# All API routes are prefixed with restaurant slug
-# GET /api/v1/restaurants/:slug/menu
-# POST /api/v1/restaurants/:slug/orders
+- `GET /api/v1/restaurants/:slug/menu`
+- `POST /api/v1/restaurants/:slug/orders`
+- `GET /api/v1/restaurants/:slug/merchandise`
 
-class Api::V1::Restaurants::MenuController < ApplicationController
-  before_action :set_restaurant
-  
-  def index
-    @categories = @restaurant.menu_categories
-                             .includes(menu_items: :modifier_groups)
-                             .where(active: true)
-    render json: @categories
-  end
-  
-  private
-  
-  def set_restaurant
-    @restaurant = Restaurant.find_by!(slug: params[:restaurant_slug])
-  end
-end
-```
+Admin APIs require explicit `restaurant_slug` context and auth.
 
-### Frontend
+### Tenant data boundaries
 
-Each frontend is configured with its restaurant slug:
+- `Restaurant` is the tenant root model.
+- Domain models are scoped via `restaurant_id` (directly or through ownership chains).
+- Admin access checks enforce restaurant-level permissions.
 
-```typescript
-// frontends/havajava/src/config.ts
-export const config = {
-  restaurantSlug: 'havajava',
-  apiUrl: 'https://api.shimizu-order.com',
-  
-  features: {
-    catering: false,
-    multiLocation: false,
-    merchandise: false,
-    rewards: false,
-    pos: true,
-  },
-  
-  branding: {
-    name: 'HavaJava Café',
-    tagline: "Guam's Oldest Specialty Coffee Shop",
-  },
-};
+---
+
+## Data Integrity and Concurrency
+
+The platform uses layered safeguards:
+
+- **Optimistic locking** via `lock_version` on orders.
+- **Safe status transitions** through model transition methods (`confirm!`, `start_preparing!`, `mark_ready!`, `complete!`, `cancel!`).
+- **Stripe idempotency** via `idempotency_key` for payment-intent creation.
+- **Inventory locking** through stock adjustment methods and audit logging.
+
+Canonical status flow:
+
+```text
+pending -> confirmed -> preparing -> ready -> completed
+   \         \            \
+    \-------> cancelled    \-------> cancelled
 ```
 
 ---
 
-## Concurrency & Data Integrity
+## Feature Delivery Model
 
-Critical protections to prevent race conditions (learned from Shimizu Order Suite):
+Features are controlled by:
 
-### Optimistic Locking
+1. Restaurant feature flags (`restaurants.features` JSON).
+2. Tenant-specific frontend routes/pages.
 
-Orders have a `lock_version` column. Rails raises `StaleObjectError` if another process updated the record:
+Examples:
 
-```ruby
-# Two staff members try to update same order
-order = Order.find(123)
-# Staff A updates
-order.update!(status: 'confirmed')
-
-# Staff B (with stale data) tries to update
-stale_order.update!(status: 'preparing')
-# => Raises ActiveRecord::StaleObjectError
-```
-
-### Idempotency Keys
-
-Every order gets a unique `idempotency_key` used for Stripe payments:
-
-```ruby
-# Prevents double-charging on retries
-Stripe::PaymentIntent.create(
-  { amount: 2500, currency: 'usd' },
-  { idempotency_key: order.idempotency_key }
-)
-```
-
-### Safe Status Transitions
-
-Status changes use row-level locking and validation:
-
-```ruby
-class Order < ApplicationRecord
-  include SafeStatusTransitions
-  
-  def confirm!
-    transition_status!('confirmed', allowed_from: %w[pending])
-  end
-end
-
-# Usage
-order.confirm!  # Only works if status is 'pending'
-order.cancel!   # Only works if status is 'pending', 'confirmed', or 'preparing'
-```
-
-### Valid Status Flow
-
-```
-pending → confirmed → preparing → ready → completed
-    ↓          ↓            ↓
- cancelled  cancelled   cancelled
-```
-
-### Key Files
-
-- `app/models/concerns/safe_status_transitions.rb` — Transition logic
-- `app/services/payment_service.rb` — Idempotent Stripe handling
-- `app/models/order.rb` — Status methods (`confirm!`, `cancel!`, etc.)
+- HavaJava: core ordering-first experience.
+- Three Squares: multi-location + catering + cookies module.
 
 ---
 
-## Feature System
+## Checkout and Payments
 
-Features are controlled at two levels:
-
-### 1. Backend (Restaurant model)
-
-```ruby
-# db/schema.rb
-create_table "restaurants" do |t|
-  t.string "name"
-  t.string "slug"
-  t.jsonb "features", default: {}
-  # features: { catering: true, multi_location: true, merchandise: true }
-end
-```
-
-### 2. Frontend (config.ts)
-
-Each frontend only includes pages/components for enabled features:
-
-```typescript
-// frontends/threesquares/src/App.tsx
-import { config } from './config';
-import { MenuPage, CheckoutPage } from '@shimizu/shared';
-import { CateringPage } from './pages/CateringPage';
-import { CookieStorePage } from './pages/CookieStorePage';
-
-function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/menu" element={<MenuPage />} />
-      <Route path="/checkout" element={<CheckoutPage />} />
-      
-      {config.features.catering && (
-        <Route path="/catering" element={<CateringPage />} />
-      )}
-      {config.features.merchandise && (
-        <Route path="/cookies" element={<CookieStorePage />} />
-      )}
-    </Routes>
-  );
-}
-```
+- Both tenant checkouts support Stripe payment flow.
+- Payment-intent creation is routed through `PaymentService`.
+- Webhook handling updates order states via the payment service (idempotent path).
+- On payment setup failure, checkout provides retry/counter-payment fallback without immediately losing cart context.
 
 ---
 
-## Available Features
+## Merchandise Strategy (Current)
 
-| Feature | Description | HavaJava | Three Squares |
-|---------|-------------|:--------:|:-------------:|
-| **Core Ordering** | Menu browsing, cart, checkout | ✅ | ✅ |
-| **Order Management** | Staff dashboard, status updates | ✅ | ✅ |
-| **Notifications** | Email/SMS confirmations | ✅ | ✅ |
-| **Stripe Payments** | Online payment processing | ✅ | ✅ |
-| **Guest Checkout** | Order without account | ✅ | ✅ |
-| **Promotions** | Happy hour, discounts | ✅ | ✅ |
-| **Multi-Location** | Choose pickup location | ❌ | ✅ |
-| **Catering** | Quote requests, party platters | ❌ | ✅ |
-| **Merchandise** | Separate product store | ❌ | ✅ |
-| **Bulk/Corporate** | Corporate account inquiries | ❌ | ✅ |
-| **Simple POS** | Staff order creation | ✅ | ✅ |
-| **Rewards** | Loyalty points (Phase 2) | 🟡 | 🟡 |
-| **Inventory** | Stock tracking (Phase 2) | 🟡 | 🟡 |
+Latte Stone Cookies currently uses a **Shopify handoff** checkout pattern:
+
+- Native product browsing/cart selection inside the Three Squares app.
+- Checkout handoff opens Shopify for final merchandise transaction.
+- This avoids duplicating merchandise order processing logic in the platform for current scope.
+
+Future option: native merchandise checkout with dedicated order-item support.
 
 ---
 
-## Custom Domains
+## Deployment Architecture (Canonical)
 
-Each frontend deploys to its own custom domain:
+- **API:** Render
+- **Frontends:** Netlify (one site per tenant)
+- **Database:** Neon PostgreSQL
 
-| Frontend | Domain | Netlify Site |
-|----------|--------|--------------|
-| havajava | order.havajava.com | shimizu-havajava |
-| threesquares | order.threesquares.com | shimizu-threesquares |
-
-### DNS Setup (Client does this)
-
-```
-# Client's DNS
-order.havajava.com  CNAME  shimizu-havajava.netlify.app
-```
-
-### Netlify Config
-
-```toml
-# frontends/havajava/netlify.toml
-[build]
-  command = "pnpm build"
-  publish = "dist"
-  base = "frontends/havajava"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-```
+See `docs/DEPLOYMENT_STACK.md` for environment details and deployment notes.
 
 ---
 
-## Styling & Theming
+## CI and Quality Gates
 
-Each frontend has complete control over its appearance:
+- Root CI workflow: `.github/workflows/pr-checks.yml`
+- Local/CI gate script: `./scripts/gate.sh`
 
-### Theme Variables (CSS Custom Properties)
+Gate includes:
 
-```css
-/* frontends/havajava/src/theme.css */
-:root {
-  /* Brand Colors */
-  --color-primary: #4A2C2A;       /* Coffee brown */
-  --color-secondary: #D4A574;     /* Cream */
-  --color-accent: #8B4513;        /* Saddle brown */
-  
-  /* Typography */
-  --font-heading: 'Playfair Display', serif;
-  --font-body: 'Open Sans', sans-serif;
-  
-  /* Layout */
-  --header-height: 72px;
-  --max-width: 1200px;
-  
-  /* Spacing */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-}
-```
-
-```css
-/* frontends/threesquares/src/theme.css */
-:root {
-  --color-primary: #1B4332;       /* Forest green */
-  --color-secondary: #FFD700;     /* Gold */
-  --color-accent: #2D6A4F;        /* Teal green */
-  
-  --font-heading: 'Montserrat', sans-serif;
-  --font-body: 'Roboto', sans-serif;
-  
-  /* Different layout */
-  --header-height: 80px;
-  --max-width: 1400px;
-}
-```
-
-### Component Styling
-
-Shared components use CSS variables, so they automatically adapt:
-
-```tsx
-// packages/shared/src/components/ui/Button.tsx
-export function Button({ children, variant = 'primary' }) {
-  return (
-    <button className={`btn btn-${variant}`}>
-      {children}
-    </button>
-  );
-}
-```
-
-```css
-/* packages/shared/styles/base.css */
-.btn-primary {
-  background: var(--color-primary);
-  color: white;
-}
-```
-
-When HavaJava uses `<Button>`, it's brown. When Three Squares uses it, it's green.
+- shared package type checks
+- both frontends typecheck/lint/build
+- API RuboCop, Brakeman, bundle-audit, tests
 
 ---
 
-## Adding a New Client
+## Known Gaps / In-Progress Areas
 
-### Step-by-Step Process
+- Shared frontend extraction is still partial; some duplicate tenant UI remains.
+- Automated test coverage is still thin (currently mostly lint/build/security gates).
+- Production runbook and staff docs need finalization.
 
-1. **Copy the template:**
-   ```bash
-   cp -r frontends/_template frontends/newclient
-   ```
-
-2. **Update config:**
-   ```typescript
-   // frontends/newclient/src/config.ts
-   export const config = {
-     restaurantSlug: 'newclient',
-     features: { ... },
-     branding: { ... },
-   };
-   ```
-
-3. **Customize theme:**
-   ```css
-   /* frontends/newclient/src/theme.css */
-   :root {
-     --color-primary: #...;
-   }
-   ```
-
-4. **Add custom pages** (if needed)
-
-5. **Seed backend data:**
-   ```ruby
-   # api/db/seeds/newclient.rb
-   restaurant = Restaurant.create!(
-     name: 'New Client',
-     slug: 'newclient',
-     features: { catering: false }
-   )
-   # Add menu items...
-   ```
-
-6. **Create Netlify site** and configure domain
-
-7. **Deploy!**
-
-**Target: New client live in 48 hours or less.**
-
----
-
-## Deployment
-
-### API (Render)
-
-Single Rails app serving all tenants:
-
-```yaml
-# render.yaml
-services:
-  - type: web
-    name: ordering-platform-api
-    env: ruby
-    buildCommand: bundle install && rails db:migrate
-    startCommand: rails server
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: ordering-platform-db
-```
-
-### Frontends (Netlify)
-
-Each frontend is a separate Netlify site:
-
-```yaml
-# .github/workflows/frontend-deploy.yml
-name: Deploy Frontends
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'frontends/**'
-      - 'packages/shared/**'
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        frontend: [havajava, threesquares]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-      - run: pnpm install
-      - run: pnpm --filter @shimizu/${{ matrix.frontend }} build
-      - uses: netlify/actions/cli@master
-        with:
-          args: deploy --prod --dir=frontends/${{ matrix.frontend }}/dist
-        env:
-          NETLIFY_SITE_ID: ${{ secrets[format('NETLIFY_SITE_{0}', matrix.frontend)] }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-```
-
----
-
-## Development Workflow
-
-### Local Setup
-
-```bash
-# Clone repo
-git clone https://github.com/Shimizu-Technology/ordering-platform.git
-cd ordering-platform
-
-# Install dependencies
-pnpm install
-
-# Start API
-cd api && rails db:setup && rails server
-
-# Start a frontend (in another terminal)
-cd frontends/havajava && pnpm dev
-```
-
-### Working on Shared Components
-
-```bash
-# Changes to packages/shared are automatically picked up
-# by frontends in dev mode (pnpm workspace linking)
-
-# To test in a specific frontend:
-cd frontends/havajava
-pnpm dev
-```
-
-### Creating a PR
-
-1. Create feature branch
-2. Make changes (API, shared, or specific frontend)
-3. Push and create PR
-4. CodeRabbit/Greptile review with full repo context
-5. Merge to main → auto-deploy
-
----
-
-## POS Integration Strategy
-
-Both HavaJava (KwickPOS) and Three Squares (Revel/Clover) have existing POS systems.
-
-### Phase 1: Separate Systems (Now)
-- Online orders go to our platform
-- In-person orders stay in their POS
-- Staff checks two systems
-- Manual end-of-day reconciliation
-
-### Phase 2: Basic Integration (Future)
-- Push completed online orders to their POS via API
-- Unified end-of-day reporting
-- Requires POS API access (Clover API, Revel API)
-
-### Phase 3: Deep Integration (Future)
-- Real-time inventory sync
-- Unified menu management
-- Single source of truth
-
----
-
-## Pricing Model
-
-| Tier | Monthly | Features |
-|------|---------|----------|
-| **Starter** | $99/mo | Core ordering, notifications, basic dashboard |
-| **Pro** | $149/mo | + Analytics, promotions, SMS notifications |
-| **Business** | $249/mo | + Multi-location, catering, merchandise store |
-| **Enterprise** | Custom | + POS integration, custom features, SLA |
-
-- Setup fee: $0-500 (waived for first customers)
-- Stripe fees: Passed through to restaurant
-- Platform fee: Optional 1-2% per transaction (via Stripe Connect)
-
----
-
-## Current Tenants
-
-| Tenant | Slug | Status | Features |
-|--------|------|--------|----------|
-| HavaJava Café | `havajava` | POC | Core ordering, promotions |
-| Three Squares | `threesquares` | POC | Core + catering + multi-location + cookies |
-
----
-
-## Roadmap
-
-### Week 1 (Current)
-- [ ] Restructure repo to monorepo
-- [ ] Extract shared components
-- [ ] Create HavaJava frontend
-- [ ] Create Three Squares frontend
-- [ ] Deploy both POCs
-
-### Week 2
-- [ ] Catering quote system
-- [ ] Multi-location picker
-- [ ] Cookie/merchandise store
-- [ ] Simple POS mode
-
-### Week 3
-- [ ] Polish and bug fixes
-- [ ] Production deploy
-- [ ] Client handoff
-
-### Future
-- [ ] Rewards/loyalty system
-- [ ] POS integrations
-- [ ] Mobile apps
-
----
-
-## Inventory System
-
-Stock tracking for menu items and merchandise variants.
-
-### Database Models
-
-```ruby
-# Menu items (simple tracking)
-class MenuItem
-  # track_inventory: boolean - enable/disable per item
-  # stock_quantity: integer - current count
-  # low_stock_threshold: integer - alert threshold
-end
-
-# Merchandise variants (variant-level tracking)
-class MerchandiseVariant
-  # Blue/Large t-shirt has separate stock from Red/Medium
-  # track_inventory: boolean (default true for merch)
-  # stock_quantity: integer
-  # low_stock_threshold: integer
-end
-
-# Audit log for all stock changes
-class StockAdjustment
-  # adjustable: polymorphic (MenuItem or MerchandiseVariant)
-  # location_id: for multi-location stock
-  # quantity_before, quantity_after, adjustment
-  # reason: 'order', 'refund', 'manual', 'import'
-  # reference: polymorphic (Order, Refund, etc.)
-  # user_id: who made the change
-end
-```
-
-### Stock Flow
-
-```
-Order Placed → Decrement Stock → Audit Log Entry
-     ↓
-Payment Failed? → Restore Stock
-     ↓
-Refunded? → Restore Stock (if enabled)
-```
-
-See [docs/INVENTORY_DESIGN.md](./docs/INVENTORY_DESIGN.md) for full specification.
-
----
-
-## Refunds System
-
-Full and partial refunds via Stripe with inventory restoration.
-
-### Database Models
-
-```ruby
-class Refund
-  # order_id: which order
-  # user_id: admin who processed
-  # amount: refund amount
-  # refund_type: 'full' or 'partial'
-  # stripe_refund_id: Stripe's refund ID
-  # reason: enum (customer_request, quality_issue, etc.)
-  # restore_inventory: boolean
-  # status: pending, completed, failed
-end
-
-class Order
-  # refunded_amount: cumulative refunds
-  # refund_status: nil, 'partial', 'full'
-end
-```
-
-### Refund Types
-
-| Type | Behavior |
-|------|----------|
-| Full | Refund remaining balance, restore all inventory |
-| Partial | Refund specified amount, optionally restore inventory |
-
-See [docs/REFUNDS_DESIGN.md](./docs/REFUNDS_DESIGN.md) for full specification.
+These are tracked in `STABILIZATION_CHECKLIST.md` and `BUILD_PLAN.md`.
 
 ---
 
 ## Related Documents
 
-- [PRD.md](./PRD.md) — Product requirements
-- [BUILD_PLAN.md](./BUILD_PLAN.md) — Development phases
-- [AGENTS.md](./AGENTS.md) — AI assistant context
-
----
-
-*Document maintained by Jerry | Last reviewed: February 9, 2026*
+- `PRD.md` — product scope and feature matrix
+- `BUILD_PLAN.md` — phased roadmap and status
+- `STABILIZATION_CHECKLIST.md` — active stabilization execution
+- `docs/DEPLOYMENT_STACK.md` — canonical deployment path

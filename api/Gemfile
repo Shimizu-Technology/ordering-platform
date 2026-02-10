@@ -35,6 +35,9 @@ gem "rack-cors"
 # Stripe payment processing
 gem "stripe", "~> 13.0"
 
+# Resend transactional email API
+gem "resend", "~> 0.3"
+
 # Twilio for SMS notifications
 gem "twilio-ruby", "~> 7.0"
 

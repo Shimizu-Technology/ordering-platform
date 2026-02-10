@@ -85,11 +85,11 @@ function KpiCard({
   return (
     <motion.div
       variants={staggerItem}
-      className="bg-surface-card border border-border-default rounded-[var(--radius-lg)] p-5"
+      className="bg-surface-card border border-border-default rounded-lg p-5"
     >
       <div className="flex items-start justify-between mb-3">
         <span className="text-sm font-medium text-text-secondary">{title}</span>
-        <div className="p-2 bg-brand/10 rounded-[var(--radius-md)]">
+        <div className="p-2 bg-brand/10 rounded-md">
           <Icon className="w-4 h-4 text-brand" />
         </div>
       </div>
@@ -117,7 +117,7 @@ function ChartTooltip({ active, payload, label }: {
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-surface-card border border-border-default rounded-[var(--radius-md)] p-3 shadow-lg text-sm">
+    <div className="bg-surface-card border border-border-default rounded-md p-3 shadow-lg text-sm">
       <p className="font-medium text-text-primary mb-1">{label}</p>
       {payload.map((entry, i) => (
         <p key={i} className="text-text-secondary">
@@ -172,10 +172,10 @@ export function AnalyticsDashboard() {
       <div className="space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-surface-card border border-border-default rounded-[var(--radius-lg)] p-5 h-28 animate-pulse" />
+            <div key={i} className="bg-surface-card border border-border-default rounded-lg p-5 h-28 animate-pulse" />
           ))}
         </div>
-        <div className="bg-surface-card border border-border-default rounded-[var(--radius-lg)] h-80 animate-pulse" />
+        <div className="bg-surface-card border border-border-default rounded-lg h-80 animate-pulse" />
       </div>
     );
   }
@@ -196,7 +196,7 @@ export function AnalyticsDashboard() {
         <button
           onClick={fetchAll}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-text-secondary hover:text-text-primary bg-surface-card border border-border-default rounded-[var(--radius-md)] transition-colors touch-target"
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-text-secondary hover:text-text-primary bg-surface-card border border-border-default rounded-md transition-colors touch-target"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Refresh
@@ -240,7 +240,7 @@ export function AnalyticsDashboard() {
       </motion.div>
 
       {/* Date Range + Granularity */}
-      <div className="flex flex-wrap items-end gap-3 p-4 bg-surface-card border border-border-default rounded-[var(--radius-lg)]">
+      <div className="flex flex-wrap items-end gap-3 p-4 bg-surface-card border border-border-default rounded-lg">
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-text-muted" />
           <label className="text-sm font-medium text-text-secondary">From</label>
@@ -260,7 +260,7 @@ export function AnalyticsDashboard() {
             className="input-field !w-auto"
           />
         </div>
-        <div className="flex rounded-[var(--radius-md)] border border-border-default overflow-hidden">
+        <div className="flex rounded-md border border-border-default overflow-hidden">
           {(['daily', 'weekly', 'monthly'] as Granularity[]).map((g) => (
             <button
               key={g}
@@ -282,7 +282,7 @@ export function AnalyticsDashboard() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.4 }}
-        className="bg-surface-card border border-border-default rounded-[var(--radius-lg)] p-5"
+        className="bg-surface-card border border-border-default rounded-lg p-5"
       >
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="w-5 h-5 text-brand" />
@@ -335,7 +335,7 @@ export function AnalyticsDashboard() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
-          className="bg-surface-card border border-border-default rounded-[var(--radius-lg)] p-5"
+          className="bg-surface-card border border-border-default rounded-lg p-5"
         >
           <div className="flex items-center gap-2 mb-4">
             <BarChart3 className="w-5 h-5 text-brand" />
@@ -357,7 +357,7 @@ export function AnalyticsDashboard() {
                     if (!active || !payload?.length) return null;
                     const d = payload[0].payload as { item_name: string; total_quantity: number; total_revenue: number };
                     return (
-                      <div className="bg-surface-card border border-border-default rounded-[var(--radius-md)] p-3 shadow-lg text-sm">
+                      <div className="bg-surface-card border border-border-default rounded-md p-3 shadow-lg text-sm">
                         <p className="font-medium text-text-primary">{d.item_name}</p>
                         <p className="text-text-secondary">{d.total_quantity} sold</p>
                         <p className="text-text-secondary">{formatCurrency(d.total_revenue)} revenue</p>
@@ -376,7 +376,7 @@ export function AnalyticsDashboard() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.4 }}
-          className="bg-surface-card border border-border-default rounded-[var(--radius-lg)] p-5"
+          className="bg-surface-card border border-border-default rounded-lg p-5"
         >
           <div className="flex items-center gap-2 mb-4">
             <Clock className="w-5 h-5 text-brand" />
@@ -397,7 +397,7 @@ export function AnalyticsDashboard() {
                     if (!active || !payload?.length) return null;
                     const d = payload[0].payload as { label: string; order_count: number; revenue: number };
                     return (
-                      <div className="bg-surface-card border border-border-default rounded-[var(--radius-md)] p-3 shadow-lg text-sm">
+                      <div className="bg-surface-card border border-border-default rounded-md p-3 shadow-lg text-sm">
                         <p className="font-medium text-text-primary">{d.label}</p>
                         <p className="text-text-secondary">{d.order_count} orders</p>
                         <p className="text-text-secondary">{formatCurrency(d.revenue)} revenue</p>

@@ -17,6 +17,8 @@ frontends/*/.env
 **/dist/
 api/tmp/
 api/log/
+playwright-report/
+test-results/
 
 # IDE
 .idea/

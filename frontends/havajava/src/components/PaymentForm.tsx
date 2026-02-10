@@ -62,7 +62,7 @@ export function PaymentForm({ amount, orderId, onSuccess, onCancel }: PaymentFor
   };
 
   return (
-    <div className="bg-surface-card rounded-[var(--radius-lg)] border border-border-default overflow-hidden">
+    <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
       {/* Header */}
       <div className="bg-brand/5 border-b border-brand/10 px-4 py-3 flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center">
@@ -87,7 +87,7 @@ export function PaymentForm({ amount, orderId, onSuccess, onCancel }: PaymentFor
         />
 
         {error && (
-          <div className="flex items-start gap-2 p-3 bg-error/10 border border-error/20 rounded-[var(--radius-md)]">
+          <div className="flex items-start gap-2 p-3 bg-error/10 border border-error/20 rounded-md">
             <AlertCircle className="w-4 h-4 text-error shrink-0 mt-0.5" />
             <p className="text-sm text-error">{error}</p>
           </div>

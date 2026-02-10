@@ -228,7 +228,7 @@ export function MenuManagement() {
           <Skeleton className="h-10 w-32" />
         </div>
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="p-4 rounded-[var(--radius-lg)] border border-border-default space-y-2">
+          <div key={i} className="p-4 rounded-lg border border-border-default space-y-2">
             <Skeleton className="h-6 w-48" />
             <Skeleton className="h-4 w-32" />
           </div>
@@ -249,7 +249,7 @@ export function MenuManagement() {
         </div>
         <button
           onClick={handleAddCategory}
-          className="flex items-center gap-2 px-4 py-2.5 bg-brand text-white rounded-[var(--radius-md)] font-medium text-sm transition-all hover:opacity-90 active:opacity-80 touch-target"
+          className="flex items-center gap-2 px-4 py-2.5 bg-brand text-white rounded-md font-medium text-sm transition-all hover:opacity-90 active:opacity-80 touch-target"
         >
           <Plus className="w-4 h-4" />
           Category
@@ -266,7 +266,7 @@ export function MenuManagement() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="border border-border-default rounded-[var(--radius-lg)] overflow-hidden"
+              className="border border-border-default rounded-lg overflow-hidden"
             >
               {/* Category Header */}
               <div className="flex items-center gap-2 px-3 py-3 bg-surface-elevated/50">
@@ -366,7 +366,7 @@ export function MenuManagement() {
                       <div className="p-3">
                         <button
                           onClick={() => handleAddItem(cat.id)}
-                          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-dashed border-border-default text-text-secondary rounded-[var(--radius-md)] text-sm font-medium hover:border-brand hover:text-brand transition-colors touch-target"
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-dashed border-border-default text-text-secondary rounded-md text-sm font-medium hover:border-brand hover:text-brand transition-colors touch-target"
                         >
                           <Plus className="w-4 h-4" />
                           Add Item
@@ -643,7 +643,7 @@ function ModifierGroupSection({ group, onDelete, onAddModifier, onDeleteModifier
   };
 
   return (
-    <div className="bg-surface-elevated/50 rounded-[var(--radius-md)] p-3">
+    <div className="bg-surface-elevated/50 rounded-md p-3">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Layers className="w-3.5 h-3.5 text-text-muted" />
@@ -683,7 +683,7 @@ function ModifierGroupSection({ group, onDelete, onAddModifier, onDeleteModifier
               <div className="flex items-end gap-2">
                 <label className="flex items-center gap-1.5 text-sm cursor-pointer">
                   <input type="checkbox" checked={required} onChange={(e) => setRequired(e.target.checked)}
-                    className="accent-[var(--brand-primary)]" />
+                    className="accent-brand" />
                   Required
                 </label>
               </div>

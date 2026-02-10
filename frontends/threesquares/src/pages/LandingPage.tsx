@@ -116,7 +116,7 @@ export function LandingPage({ slug }: LandingPageProps) {
       <section className="relative overflow-hidden">
         {/* Background gradient */}
         <div 
-          className="absolute inset-0 bg-gradient-to-br from-brand via-brand to-brand-dark"
+          className="absolute inset-0 bg-linear-to-br from-brand via-brand to-brand-dark"
           style={{ opacity: 0.95 }}
         />
         

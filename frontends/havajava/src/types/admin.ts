@@ -106,6 +106,7 @@ export interface AdminRestaurant {
   stripe_onboarding_complete: boolean;
   active: boolean;
   sms_configured: boolean;
+  email_configured?: boolean;
   smtp_configured: boolean;
 }
 

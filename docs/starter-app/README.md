@@ -42,7 +42,7 @@ This folder contains standard guides and best practices used across all Shimizu 
 | [STRIPE_SETUP_GUIDE.md](./STRIPE_SETUP_GUIDE.md) | Payment processing with Stripe |
 | [CLERK_AUTH_SETUP_GUIDE.md](./CLERK_AUTH_SETUP_GUIDE.md) | Authentication with Clerk |
 | [AWS_S3_SETUP_GUIDE.md](./AWS_S3_SETUP_GUIDE.md) | File storage with AWS S3 |
-| [EMAIL_SETUP_GUIDE.md](./EMAIL_SETUP_GUIDE.md) | Email delivery (SendGrid, etc.) |
+| [EMAIL_SETUP_GUIDE.md](./EMAIL_SETUP_GUIDE.md) | Email delivery with Resend |
 
 ### Deployment
 

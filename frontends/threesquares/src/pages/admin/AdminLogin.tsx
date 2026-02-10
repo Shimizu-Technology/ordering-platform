@@ -62,7 +62,7 @@ export function AdminLogin({ onSuccess }: AdminLoginProps) {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Admin password"
               autoFocus
-              className="w-full px-4 py-3 bg-surface-elevated border border-border-default rounded-[var(--radius-md)] text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-colors"
+              className="w-full px-4 py-3 bg-surface-elevated border border-border-default rounded-md text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-colors"
             />
           </div>
 
@@ -80,7 +80,7 @@ export function AdminLogin({ onSuccess }: AdminLoginProps) {
           <button
             type="submit"
             disabled={loading || !password.trim()}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-brand text-white rounded-[var(--radius-md)] font-medium transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-brand text-white rounded-md font-medium transition-all hover:opacity-90 active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

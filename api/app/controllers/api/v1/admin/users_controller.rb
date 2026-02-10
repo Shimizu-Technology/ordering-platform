@@ -53,8 +53,20 @@ module Api
           @user = @restaurant.users.find(params[:id])
         end
 
+        def permitted_role
+          requested_role = params.dig(:user, :role)
+          return nil if requested_role.blank?
+
+          # Only super admins can assign the super_admin role.
+          return nil if requested_role == "super_admin" && !current_user&.super_admin?
+
+          requested_role
+        end
+
         def user_params
-          params.require(:user).permit(:email, :first_name, :last_name, :role)
+          base = params.require(:user).permit(:email, :first_name, :last_name)
+          role = permitted_role
+          role.present? ? base.merge(role: role) : base
         end
       end
     end

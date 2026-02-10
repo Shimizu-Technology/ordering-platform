@@ -11,7 +11,14 @@
     "build:threesquares": "pnpm --filter @shimizu/threesquares build",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
-    "gate": "./scripts/gate.sh"
+    "gate": "./scripts/gate.sh",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:smoke": "playwright test --project=smoke",
+    "test:e2e:smoke:headed": "playwright test --project=smoke --headed",
+    "test:e2e:comprehensive": "playwright test --project=comprehensive",
+    "test:e2e:comprehensive:headed": "playwright test --project=comprehensive --headed",
+    "test:e2e:install": "playwright install chromium"
   },
   "keywords": ["restaurant", "ordering", "saas", "multi-tenant"],
   "author": "Shimizu Technology",
@@ -19,5 +26,8 @@
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
   }
 }

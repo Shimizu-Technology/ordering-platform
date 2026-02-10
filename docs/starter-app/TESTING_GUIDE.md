@@ -1131,14 +1131,21 @@ npx playwright codegen http://localhost:5173
 
 **Cause:** Daemon not running or port conflict
 
+**Version note:** On `agent-browser` `0.6.0`, `agent-browser kill` may not be available. Use session commands instead.
+
 **Fix:**
 ```bash
-# Kill existing daemon
-agent-browser kill
+# See active sessions
+agent-browser session list
+
+# Close a stuck session (example)
+agent-browser close --session ordering-test
 
 # Start fresh
-agent-browser open http://localhost:5173
+agent-browser open http://localhost:5173 --session ordering-test
 ```
+
+If a specific click intermittently fails with `Failed to read: Resource temporarily unavailable (os error 35)`, retry once. If it still fails, use `agent-browser eval` for a targeted fallback click while keeping the same session.
 
 ---
 

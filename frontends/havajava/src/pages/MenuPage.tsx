@@ -113,7 +113,7 @@ export function MenuPage({ slug }: MenuPageProps) {
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-6 px-5 py-2.5 bg-brand text-white text-sm font-medium rounded-[var(--radius-md)] hover:bg-brand-hover transition-colors touch-target"
+            className="mt-6 px-5 py-2.5 bg-brand text-white text-sm font-medium rounded-md hover:bg-brand-hover transition-colors touch-target"
           >
             Try Again
           </button>
@@ -191,7 +191,7 @@ export function MenuPage({ slug }: MenuPageProps) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search the menu..."
-                className="w-full pl-10 pr-4 py-2.5 bg-white/15 text-white placeholder-white/50 text-sm rounded-[var(--radius-md)] border border-white/10 focus:outline-none focus:border-white/30 focus:bg-white/20 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-white/15 text-white placeholder-white/50 text-sm rounded-md border border-white/10 focus:outline-none focus:border-white/30 focus:bg-white/20 transition-colors"
                 autoFocus
               />
               {searchQuery && (

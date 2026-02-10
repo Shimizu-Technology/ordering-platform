@@ -1,142 +1,112 @@
 # Ordering Platform
 
-A multi-tenant restaurant ordering SaaS platform. Built by [Shimizu Technology](https://shimizu-technology.com).
+Multi-tenant restaurant ordering SaaS built by [Shimizu Technology](https://shimizu-technology.com).
 
-**First tenant:** HavaJava 671 Café — Hagåtña, Guam
+Current tenants:
 
-## Architecture
+- `havajava` — coffee shop ordering
+- `threesquares` — restaurant ordering + multi-location + catering + Latte Stone Cookies module
 
-```
+## Monorepo Structure
+
+```text
 ordering-platform/
-├── ordering-platform-api/    # Rails 7 API-only (Ruby 3.3+)
-├── ordering-platform-web/    # React + Vite + TypeScript + Tailwind + Framer Motion
-├── AGENTS.md                 # AI agent context
-├── PRD.md                    # Product Requirements Document
-├── BUILD_PLAN.md             # Phase-by-phase build plan
-└── .cursor/rules/            # Cursor IDE rules
+├── api/                          # Rails API
+├── frontends/
+│   ├── havajava/                 # Tenant frontend
+│   └── threesquares/             # Tenant frontend
+├── packages/
+│   └── shared/                   # Shared TS package (types/components/utils)
+├── docs/
+├── AGENTS.md
+├── PRD.md
+├── ARCHITECTURE.md
+├── BUILD_PLAN.md
+└── STABILIZATION_CHECKLIST.md
 ```
 
-## Tech Stack
+## Stack
 
-| Layer | Technology |
-|-------|------------|
-| **Backend** | Rails 7 API-only, Ruby 3.3+ |
-| **Frontend** | React 19, Vite, TypeScript, Tailwind CSS v4, Framer Motion |
-| **Database** | PostgreSQL 17 |
-| **Payments** | Stripe |
-| **State** | Zustand (client-side cart) |
-| **Icons** | Lucide React (no emoji in UI) |
+- Backend: Rails 7/8 API mode, Ruby 3.3+, PostgreSQL
+- Frontend: React 19, Vite, TypeScript, Tailwind CSS v4, Framer Motion
+- State: Zustand
+- Payments: Stripe
+- Auth: Clerk (admin/staff), guest checkout for customers
+- Icons: Lucide React
+- Package manager: pnpm workspaces
 
-## Getting Started
+## Deployment (Canonical)
+
+- API: Render
+- Frontends: Netlify (one site per tenant)
+- Database: Neon PostgreSQL
+
+See `docs/DEPLOYMENT_STACK.md` for deployment details.
+
+## Quick Start
 
 ### Prerequisites
 
-- Ruby 3.2+ (via rbenv)
-- Node.js 20+ and npm
-- PostgreSQL 14+
-- Git
+- Node.js 20+
+- pnpm 9+
+- Ruby 3.3+
+- PostgreSQL (or Neon connection string)
 
-### Backend Setup
-
-```bash
-cd ordering-platform-api
-
-# Install dependencies
-bundle install
-
-# Set up database
-cp .env.example .env  # Edit with your DB credentials
-bin/rails db:create
-bin/rails db:migrate
-bin/rails db:seed     # Seeds HavaJava restaurant + full menu
-
-# Start the server
-bin/rails server -p 3001
-```
-
-### Frontend Setup
+### Install
 
 ```bash
-cd ordering-platform-web
-
-# Install dependencies
-npm install
-
-# Start dev server (proxies API to localhost:3001)
-npm run dev
+pnpm install
+cd api && bundle install
 ```
 
-Visit `http://localhost:5173/havajava` to see the menu.
+### Run Locally
 
-### Verify API
+Terminal 1 (API):
 
 ```bash
-# Restaurant info
-curl http://localhost:3001/api/v1/restaurants/havajava | jq .
-
-# Full menu with modifiers
-curl http://localhost:3001/api/v1/restaurants/havajava/menu | jq .
-
-# Place an order
-curl -X POST http://localhost:3001/api/v1/restaurants/havajava/orders \
-  -H "Content-Type: application/json" \
-  -d '{
-    "order": {
-      "customer_name": "Test User",
-      "phone": "671-555-0100",
-      "order_type": "pickup",
-      "items": [
-        {
-          "menu_item_id": 1,
-          "quantity": 1,
-          "modifier_ids": [1, 3]
-        }
-      ]
-    }
-  }' | jq .
+cd api
+bin/rails db:setup
+bin/rails server -p 3000
 ```
 
-## API Endpoints
+Terminal 2 (HavaJava):
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/v1/restaurants/:slug` | Restaurant info + branding |
-| `GET` | `/api/v1/restaurants/:slug/menu` | Full menu with categories, items, modifier groups, modifiers |
-| `POST` | `/api/v1/restaurants/:slug/orders` | Create order with items + modifiers |
-| `GET` | `/api/v1/restaurants/:slug/orders/:id` | Order status and details |
-| `POST` | `/api/v1/restaurants/:slug/orders/:id/pay` | Create Stripe PaymentIntent |
-
-## Data Model
-
-```
-Restaurant (tenant)
-├── MenuCategory → MenuItem → ModifierGroup → Modifier
-└── Order → OrderItem → OrderItemModifier
+```bash
+cd frontends/havajava
+pnpm dev
 ```
 
-The modifier group system is the key innovation — it handles everything from drink sizes to full sandwich builders with a single flexible model:
+Terminal 3 (Three Squares):
 
-- **Drink size:** Required, pick 1 (Tall / Grande)
-- **Hot/Cold:** Required, pick 1
-- **Sandwich meat:** Required, pick 1
-- **Cheese:** Optional, pick 0-1 (+$0.60 each)
-- **Veggies:** Optional, pick any
-- **Smoothie fruits:** Required, pick exactly 2
+```bash
+cd frontends/threesquares
+pnpm dev
+```
 
-## Seeded Data
+## Quality Gate
 
-The seed file includes the complete HavaJava 671 Café menu:
-- **9 categories** (Espresso, Ice-Blended, Iced Tea, Hot Beverages, Grab & Go, Breakfast, Custom Sandwiches, Pastries, Retail)
-- **44 menu items**
-- **51 modifier groups**
-- **135 modifiers**
+Run before commits:
 
-## Design System
+```bash
+./scripts/gate.sh
+```
 
-The platform uses a dynamic brand token system. Colors, fonts, and branding are loaded from the API and applied as CSS custom properties at runtime. Each restaurant tenant can have its own look and feel without code changes.
+Gate covers:
 
-### Design Rules
-- No emoji in UI — Lucide React icons only
-- Mobile-first, 44px minimum touch targets
-- Framer Motion for all animations
-- Brand tokens via CSS custom properties (not hardcoded)
+- shared package type checks
+- both frontends: typecheck, lint, build
+- API: RuboCop, Brakeman, bundle-audit, tests
+
+## Current Execution Plan
+
+- Product scope: `PRD.md`
+- Architecture details: `ARCHITECTURE.md`
+- Delivery tracking: `BUILD_PLAN.md`
+- Stabilization tasks and status: `STABILIZATION_CHECKLIST.md`
+
+## Design Rules
+
+- No emoji in UI (Lucide icons only)
+- Mobile-first layout, minimum 44px touch targets
+- Use brand tokens/CSS custom properties (no hardcoded tenant colors)
+- Use Framer Motion for animation

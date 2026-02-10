@@ -95,29 +95,11 @@ module Api
           return render json: { error: "Order cannot be paid in current status" }, status: :unprocessable_entity
         end
 
-        unless ENV["STRIPE_SECRET_KEY"].present?
+        unless @restaurant.stripe_secret_key.present? || ENV["STRIPE_SECRET_KEY"].present? || Rails.application.credentials.dig(:stripe, :secret_key).present?
           return render json: { error: "Payment processing is not configured" }, status: :service_unavailable
         end
 
-        intent_params = {
-          amount: (order.total * 100).to_i,
-          currency: "usd",
-          metadata: {
-            order_id: order.id,
-            restaurant_id: @restaurant.id,
-            restaurant_slug: @restaurant.slug
-          }
-        }
-
-        # Use Stripe Connect if restaurant has a connected account
-        if @restaurant.stripe_account_id.present? && @restaurant.stripe_onboarding_complete
-          fee_percent = StripeConnectService.platform_fee_percent
-          application_fee = ((order.total * 100) * (fee_percent / 100.0)).round
-          intent_params[:application_fee_amount] = application_fee
-          intent_params[:transfer_data] = { destination: @restaurant.stripe_account_id }
-        end
-
-        payment_intent = Stripe::PaymentIntent.create(intent_params)
+        payment_intent = PaymentService.new(order).create_payment_intent
 
         order.update!(stripe_payment_intent_id: payment_intent.id)
 
@@ -128,6 +110,8 @@ module Api
         }
       rescue Stripe::StripeError => e
         render json: { error: e.message }, status: :payment_required
+      rescue PaymentService::PaymentError, PaymentService::AlreadyProcessedError => e
+        render json: { error: e.message }, status: :unprocessable_entity
       end
 
       private
@@ -137,9 +121,9 @@ module Api
         return unless restaurant.notifications_enabled
 
         # Email confirmation to customer
-        if order.email.present? && ENV["SMTP_HOST"].present?
+        if order.email.present? && EmailService.configured?
           begin
-            OrderMailer.order_confirmation(order).deliver_later
+            OrderEmailJob.perform_later(order.id, "order_confirmation")
           rescue StandardError => e
             Rails.logger.error "[Notification] Email failed: #{e.message}"
           end
