@@ -9,7 +9,8 @@ import {
   Users, 
   Cookie,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  ExternalLink
 } from 'lucide-react';
 import { apiClient } from '../api/client';
 import { isCurrentlyOpen, getTodayHours, formatWeeklyHours, type WeekHours } from '@shimizu/shared';
@@ -278,9 +279,34 @@ export function LandingPage({ slug }: LandingPageProps) {
                 <div className="w-10 h-10 bg-brand-light rounded-lg flex items-center justify-center flex-shrink-0">
                   <MapPin className="w-5 h-5 text-brand" />
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-text-primary mb-1">{location.name}</h3>
                   <p className="text-text-secondary text-sm">{location.address}</p>
+                  {location.address && (
+                    <a
+                      href={`https://maps.google.com/?q=${encodeURIComponent(location.address)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand text-sm hover:underline mt-1 inline-flex items-center gap-1"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      Get Directions
+                    </a>
+                  )}
+                  {location.map_url && (
+                    <div className="mt-3 rounded-lg overflow-hidden border border-border" style={{ height: '200px' }}>
+                      <iframe
+                        src={location.map_url}
+                        width="100%"
+                        height="200"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title={`Map for ${location.name}`}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             ))

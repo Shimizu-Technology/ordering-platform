@@ -39,7 +39,8 @@ module Api
           phone: location.phone,
           email: location.email,
           hours: location.hours,
-          active: location.active
+          active: location.active,
+          map_url: location.map_url
         }
       end
     end

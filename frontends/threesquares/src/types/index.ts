@@ -44,6 +44,7 @@ export interface Location {
   email: string | null;
   hours: Record<string, { open?: string; close?: string; closed?: boolean }>;
   active: boolean;
+  map_url: string | null;
 }
 
 export interface MenuCategory {
