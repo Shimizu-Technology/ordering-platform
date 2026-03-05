@@ -100,13 +100,18 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
   useEffect(() => {
     fetchRestaurant();
     fetchStripeStatus();
-    adminApi.getLocations('threesquares').then((locs) => {
+  }, [fetchRestaurant, fetchStripeStatus]);
+
+  // Fetch locations once restaurant slug is known
+  useEffect(() => {
+    if (!restaurant?.slug) return;
+    adminApi.getLocations(restaurant.slug).then((locs) => {
       setLocations(locs);
       const urls: Record<number, string> = {};
       locs.forEach((loc) => { urls[loc.id] = loc.map_url ?? ''; });
       setLocationMapUrls(urls);
     }).catch(console.error);
-  }, [fetchRestaurant, fetchStripeStatus]);
+  }, [restaurant?.slug]);
 
   const populateForm = (r: AdminRestaurant) => {
     setName(r.name || '');
@@ -631,7 +636,7 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
                     onClick={async () => {
                       setLocationSaving((prev) => ({ ...prev, [loc.id]: true }));
                       try {
-                        const updated = await adminApi.updateLocation('threesquares', loc.id, {
+                        const updated = await adminApi.updateLocation(restaurant?.slug ?? '', loc.id, {
                           map_url: locationMapUrls[loc.id] || null,
                         });
                         setLocations((prev) =>

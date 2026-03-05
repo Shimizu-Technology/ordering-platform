@@ -4,7 +4,7 @@ module Api
   module V1
     module Admin
       class LocationsController < Admin::BaseController
-        before_action :set_restaurant
+        # NOTE: set_restaurant is inherited from Admin::BaseController — no override needed.
 
         # GET /api/v1/admin/restaurants/:restaurant_slug/locations
         def index
@@ -23,10 +23,6 @@ module Api
         end
 
         private
-
-        def set_restaurant
-          @restaurant = Restaurant.find_by!(slug: params[:restaurant_slug])
-        end
 
         def location_params
           params.require(:location).permit(:name, :address, :phone, :email, :map_url, :active)
