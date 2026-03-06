@@ -39,7 +39,7 @@ export function SectionNav({ slug }: SectionNavProps) {
                 key={section.id}
                 onClick={() => navigate(`/${slug}${section.path}`)}
                 className={`
-                  relative flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium
+                  relative flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-lg text-sm font-medium
                   transition-colors duration-200
                   ${isActive 
                     ? 'text-brand' 

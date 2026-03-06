@@ -203,7 +203,7 @@ export function LandingPage({ slug }: LandingPageProps) {
                     <Icon className="w-7 h-7 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-xl font-bold text-white mb-1">
+                    <h2 className="text-lg md:text-xl font-bold text-white mb-1 leading-tight">
                       {section.title}
                     </h2>
                     <p className="text-white/90 font-medium text-sm mb-1">
@@ -308,7 +308,7 @@ export function LandingPage({ slug }: LandingPageProps) {
               <h3 className="font-medium text-text-primary mb-1">Phone</h3>
               <a 
                 href={`tel:${restaurant.phone || '6716462652'}`}
-                className="text-brand text-sm hover:underline"
+                className="text-brand text-sm hover:underline inline-flex items-center min-h-[44px]"
               >
                 {restaurant.phone || '(671) 646-2652'}
               </a>
