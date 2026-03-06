@@ -287,7 +287,7 @@ export function LandingPage({ slug }: LandingPageProps) {
                       href={`https://maps.google.com/?q=${encodeURIComponent(location.address)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-brand text-sm hover:underline mt-1 inline-flex items-center gap-1"
+                      className="text-brand text-sm hover:underline mt-1 inline-flex items-center gap-1 min-h-[44px]"
                     >
                       <ExternalLink className="w-3 h-3" />
                       Get Directions
