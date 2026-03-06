@@ -21,6 +21,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import type { AdminRestaurant, StripeConnectStatus } from '../../types/admin';
+import type { Location } from '../../types';
 import { adminApi } from '../../api/adminClient';
 import { Skeleton } from '../../components/ui/Skeleton';
 
@@ -67,9 +68,10 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
   const [stripeConnecting, setStripeConnecting] = useState(false);
 
   // Locations state
-  const [locations, setLocations] = useState<import('../../types').Location[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [locationSaving, setLocationSaving] = useState<Record<number, boolean>>({});
   const [locationSaved, setLocationSaved] = useState<Record<number, boolean>>({});
+  const [locationError, setLocationError] = useState<Record<number, string>>({});
   const [locationMapUrls, setLocationMapUrls] = useState<Record<number, string>>({});
 
   const fetchRestaurant = useCallback(async () => {
@@ -649,6 +651,11 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
                         );
                       } catch (err) {
                         console.error('Failed to update location:', err);
+                        setLocationError((prev) => ({ ...prev, [loc.id]: 'Save failed. Please try again.' }));
+                        setTimeout(
+                          () => setLocationError((prev) => ({ ...prev, [loc.id]: '' })),
+                          4000
+                        );
                       } finally {
                         setLocationSaving((prev) => ({ ...prev, [loc.id]: false }));
                       }
@@ -665,6 +672,12 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
                     Save
                   </button>
                 </div>
+                {locationError[loc.id] && (
+                  <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                    {locationError[loc.id]}
+                  </p>
+                )}
               </div>
             ))}
           </div>
