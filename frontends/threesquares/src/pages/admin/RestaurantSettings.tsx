@@ -21,6 +21,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import type { AdminRestaurant, StripeConnectStatus } from '../../types/admin';
+import type { Location } from '../../types';
 import { adminApi } from '../../api/adminClient';
 import { Skeleton } from '../../components/ui/Skeleton';
 
@@ -66,6 +67,13 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
   const [stripeLoading, setStripeLoading] = useState(false);
   const [stripeConnecting, setStripeConnecting] = useState(false);
 
+  // Locations state
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [locationSaving, setLocationSaving] = useState<Record<number, boolean>>({});
+  const [locationSaved, setLocationSaved] = useState<Record<number, boolean>>({});
+  const [locationError, setLocationError] = useState<Record<number, string>>({});
+  const [locationMapUrls, setLocationMapUrls] = useState<Record<number, string>>({});
+
   const fetchRestaurant = useCallback(async () => {
     try {
       const data = await adminApi.getRestaurant();
@@ -95,6 +103,17 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
     fetchRestaurant();
     fetchStripeStatus();
   }, [fetchRestaurant, fetchStripeStatus]);
+
+  // Fetch locations once restaurant slug is known
+  useEffect(() => {
+    if (!restaurant?.slug) return;
+    adminApi.getLocations(restaurant.slug).then((locs) => {
+      setLocations(locs);
+      const urls: Record<number, string> = {};
+      locs.forEach((loc) => { urls[loc.id] = loc.map_url ?? ''; });
+      setLocationMapUrls(urls);
+    }).catch(console.error);
+  }, [restaurant?.slug]);
 
   const populateForm = (r: AdminRestaurant) => {
     setName(r.name || '');
@@ -589,6 +608,81 @@ export function RestaurantSettings({ onRestaurantUpdate }: RestaurantSettingsPro
           </div>
         </div>
       </Section>
+
+      {/* Locations */}
+      {locations.length > 0 && (
+        <Section title="Locations" icon={<MapPin className="w-4 h-4" />}>
+          <p className="text-sm text-text-secondary">
+            Set a Google Maps embed URL for each location. Copy it from Google Maps &rarr; Share &rarr; Embed a map &rarr; the <code>src=</code> value.
+          </p>
+          <div className="space-y-4">
+            {locations.map((loc) => (
+              <div key={loc.id} className="space-y-1.5">
+                <label className="flex items-center gap-1.5 text-sm font-medium text-text-secondary">
+                  <MapPin className="w-4 h-4" />
+                  {loc.name} — Google Maps Embed URL
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={locationMapUrls[loc.id] ?? ''}
+                    onChange={(e) =>
+                      setLocationMapUrls((prev) => ({ ...prev, [loc.id]: e.target.value }))
+                    }
+                    placeholder="https://www.google.com/maps/embed?pb=..."
+                    className="input-field flex-1"
+                  />
+                  <button
+                    type="button"
+                    disabled={locationSaving[loc.id]}
+                    onClick={async () => {
+                      setLocationSaving((prev) => ({ ...prev, [loc.id]: true }));
+                      try {
+                        const updated = await adminApi.updateLocation(restaurant?.slug ?? '', loc.id, {
+                          map_url: locationMapUrls[loc.id] || null,
+                        });
+                        setLocations((prev) =>
+                          prev.map((l) => (l.id === loc.id ? updated : l))
+                        );
+                        setLocationSaved((prev) => ({ ...prev, [loc.id]: true }));
+                        setTimeout(
+                          () => setLocationSaved((prev) => ({ ...prev, [loc.id]: false })),
+                          2000
+                        );
+                      } catch (err) {
+                        console.error('Failed to update location:', err);
+                        setLocationError((prev) => ({ ...prev, [loc.id]: 'Save failed. Please try again.' }));
+                        setTimeout(
+                          () => setLocationError((prev) => ({ ...prev, [loc.id]: '' })),
+                          4000
+                        );
+                      } finally {
+                        setLocationSaving((prev) => ({ ...prev, [loc.id]: false }));
+                      }
+                    }}
+                    className="px-3 py-2 rounded-[var(--radius-md)] bg-brand text-white text-sm font-medium flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    {locationSaving[loc.id] ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : locationSaved[loc.id] ? (
+                      <Check className="w-4 h-4" />
+                    ) : (
+                      <Save className="w-4 h-4" />
+                    )}
+                    Save
+                  </button>
+                </div>
+                {locationError[loc.id] && (
+                  <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                    {locationError[loc.id]}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
     </div>
   );
 }

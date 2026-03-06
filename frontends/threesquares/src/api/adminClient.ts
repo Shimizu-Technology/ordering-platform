@@ -18,6 +18,7 @@ import type {
   MerchandiseItem,
   MerchandiseVariant,
 } from '../types/admin';
+import type { Location } from '../types';
 import type {
   AnalyticsOverview,
   RevenueResponse,
@@ -312,5 +313,15 @@ export const adminApi = {
     adminRequest<MerchandiseVariant>(`/merchandise/variants/${variantId}/adjust_stock`, {
       method: 'PATCH',
       body: JSON.stringify({ adjustment, reason, notes }),
+    }),
+
+  // ── Locations ───────────────────────────────────────────────────────
+  getLocations: (restaurantSlug: string) =>
+    adminRequest<Location[]>(`/restaurants/${restaurantSlug}/locations`),
+
+  updateLocation: (restaurantSlug: string, locationId: number, data: Partial<Location>) =>
+    adminRequest<Location>(`/restaurants/${restaurantSlug}/locations/${locationId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ location: data }),
     }),
 };

@@ -36,6 +36,10 @@ Rails.application.routes.draw do
 
       # Admin namespace
       namespace :admin do
+        resources :restaurants, param: :restaurant_slug, only: [] do
+          resources :locations, only: [ :index, :update ]
+        end
+
         resource :restaurant, only: [ :show, :update ]
         resources :users, only: [ :index, :show, :create, :update, :destroy ]
         resources :orders, only: [ :index, :show, :update ] do
