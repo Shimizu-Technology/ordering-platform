@@ -206,10 +206,10 @@ export function LandingPage({ slug }: LandingPageProps) {
                     <h2 className="text-lg md:text-xl font-bold text-white mb-1 leading-tight">
                       {section.title}
                     </h2>
-                    <p className="text-white/90 font-medium text-xs sm:text-sm mb-1">
+                    <p className="text-white/90 font-medium text-sm mb-1">
                       {section.subtitle}
                     </p>
-                    <p className="text-white/70 text-xs sm:text-sm">
+                    <p className="text-white/70 text-sm">
                       {section.description}
                     </p>
                   </div>
